@@ -4,11 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	errors "github.com/pkg/errors"
 )
 
+// TypePro constant for Pro project type value
 const TypePro = "pro"
+
+// TypeBasic constant for Basic project type value
 const TypeBasic = "basic"
 
+// Project structure for Project object
 type Project struct {
 	AesKey              string    `json:"aes_key"`
 	AuthenticationUser  string    `json:"authentication_user"`
@@ -58,6 +64,7 @@ type Project struct {
 	UUID      string    `json:"uuid"`
 }
 
+// ProjectList holds a list of Project objects
 type ProjectList struct {
 	Projects []Project
 }
@@ -74,10 +81,13 @@ func (api *API) ListProjects(orgID string) (ProjectList, error) {
 
 	resp, err := api.makeRequest("GET", path, nil)
 	if err != nil {
-		return projectList, fmt.Errorf("Unable to list projects: %s", err)
+		return projectList, errors.Wrap(err, "Unable to list projects")
 	}
 
-	json.Unmarshal(resp, &projectList)
+	err = json.Unmarshal(resp, &projectList)
+	if err != nil {
+		return projectList, errors.Wrap(err, "Unable to unmarshal JSON into ProjectList")
+	}
 
 	return projectList, nil
 }
@@ -88,14 +98,13 @@ func (api *API) GetProject(orgID string, projectID string) (Project, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", orgID, projectID)
 
 	resp, err := api.makeRequest("GET", path, nil)
-	//return project, fmt.Errorf("%s", resp)
 	if err != nil {
-		return project.Project, fmt.Errorf("Unable to get project: %s", err)
+		return project.Project, errors.Wrap(err, "Unable to get project")
 	}
 
 	err = json.Unmarshal(resp, &project)
 	if err != nil {
-		return project.Project, fmt.Errorf("Unable to unmarshal API response, error: %s", err)
+		return project.Project, errors.Wrap(err, "Unable to unmarshal API response, error")
 	}
 
 	return project.Project, nil
@@ -107,14 +116,14 @@ func (api *API) CreateProject(orgID string, project Project) (Project, error) {
 
 	resp, err := api.makeRequest("POST", path, project)
 	if err != nil {
-		return project, fmt.Errorf("Unable to create project, error: %s", err)
+		return project, errors.Wrap(err, "Unable to create project, error")
 	}
 
-	projectResponse := projectResponse{}
-	err = json.Unmarshal(resp, &projectResponse)
+	projResponse := projectResponse{}
+	err = json.Unmarshal(resp, &projResponse)
 	if err != nil {
-		return project, fmt.Errorf("Unable to unmarshal response into Project, error: %s", err)
+		return project, errors.Wrap(err, "Unable to unmarshal response into Project, error")
 	}
 
-	return projectResponse.Project, nil
+	return projResponse.Project, nil
 }

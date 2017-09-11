@@ -13,7 +13,7 @@ To start, you need to import the package:
 package main
 
 import (
-	codeship "github.com/fillup/codeship-go"
+	codeship "github.com/codeship/codeship-go"
 )
 ```
 
@@ -141,5 +141,4 @@ If you really want to run tests:
 add support for passing pagination parameters to the function
 - [ ] Iterate through pages of builds in List Builds to get full list or
 add support for passing pagination parameters to the function
-- [ ] Decide on proper interface for methods, should each parameter be sent
-separately or all together in the relevant struct?
+- [ ] Create constants for all http error codes and use them

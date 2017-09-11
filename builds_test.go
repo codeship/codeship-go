@@ -18,7 +18,7 @@ func TestCreateBuild(t *testing.T) {
 	buildTestFixtures := getBuildFixtures()
 	fixture := buildTestFixtures["create"]
 
-	ok, err := apiClient.CreateBuild(fixture.Build)
+	ok, err := apiClient.CreateBuild(fixture.Build.OrganizationUUID, fixture.Build.ProjectUUID, fixture.Build.Ref, fixture.Build.CommitSha)
 	if !ok || err != nil {
 		t.Errorf("Unable to create new build. Org ID: %s, Project ID: %s, From Build ID: %s, Ref: %s, Commit: %s, Error: %s", fixture.Build.OrganizationUUID, fixture.Build.ProjectUUID, fixture.Build.UUID, fixture.Build.Ref, fixture.Build.CommitSha, err)
 		t.FailNow()
@@ -82,7 +82,7 @@ func TestGetBuildPipelines(t *testing.T) {
 	buildTestFixtures := getBuildFixtures()
 	fixture := buildTestFixtures["restart"]
 
-	buildPipelines, err := apiClient.GetBuildPipelines(fixture.Build)
+	buildPipelines, err := apiClient.GetBuildPipelines(fixture.Build.OrganizationUUID, fixture.Build.ProjectUUID, fixture.Build.UUID)
 	if err != nil {
 		t.Errorf("Unable to get build pipelines. Org ID: %s, Project ID: %s, Error: %s", fixture.Build.OrganizationUUID, fixture.Build.ProjectUUID, err)
 	}
@@ -105,13 +105,13 @@ func TestStopBuild(t *testing.T) {
 	buildTestFixtures := getBuildFixtures()
 	fixture := buildTestFixtures["restart"]
 
-	_, err = apiClient.RestartBuild(fixture.Build)
+	_, err = apiClient.RestartBuild(fixture.Build.OrganizationUUID, fixture.Build.ProjectUUID, fixture.Build.UUID)
 	if err != nil {
 		t.Errorf("Unable to restart build: %s", err)
 		t.FailNow()
 	}
 
-	_, err = apiClient.StopBuild(fixture.Build)
+	_, err = apiClient.StopBuild(fixture.Build.OrganizationUUID, fixture.Build.ProjectUUID, fixture.Build.UUID)
 	if err != nil {
 		t.Errorf("Unable to stop build: %s", err)
 		t.FailNow()
@@ -131,7 +131,7 @@ func TestRestartBuild(t *testing.T) {
 	buildTestFixtures := getBuildFixtures()
 	fixture := buildTestFixtures["restart"]
 
-	_, err = apiClient.RestartBuild(fixture.Build)
+	_, err = apiClient.RestartBuild(fixture.Build.OrganizationUUID, fixture.Build.ProjectUUID, fixture.Build.UUID)
 	if err != nil {
 		t.Errorf("Unable to restart build: %s", err)
 		t.FailNow()
@@ -151,7 +151,7 @@ func TestGetBuildServices(t *testing.T) {
 	buildTestFixtures := getBuildFixtures()
 	fixture := buildTestFixtures["buildservices"]
 
-	buildServices, err := apiClient.GetBuildServices(fixture.Build)
+	buildServices, err := apiClient.GetBuildServices(fixture.Build.OrganizationUUID, fixture.Build.ProjectUUID, fixture.Build.UUID)
 	if err != nil {
 		t.Errorf("Unable to get build services: %s", err)
 		t.FailNow()
@@ -173,7 +173,7 @@ func TestGetBuildSteps(t *testing.T) {
 	buildTestFixtures := getBuildFixtures()
 	fixture := buildTestFixtures["buildservices"]
 
-	buildSteps, err := apiClient.GetBuildSteps(fixture.Build)
+	buildSteps, err := apiClient.GetBuildSteps(fixture.Build.OrganizationUUID, fixture.Build.ProjectUUID, fixture.Build.UUID)
 	if err != nil {
 		t.Errorf("Unable to get build steps: %s", err)
 		t.FailNow()

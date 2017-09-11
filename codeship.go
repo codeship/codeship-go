@@ -8,9 +8,35 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
+
+	errors "github.com/pkg/errors"
 )
 
 const apiURL = "https://api.codeship.com/v2"
+
+// HTTP Status Codes
+
+// OK - Status 200 - OK
+const OK = 200
+
+// BadRequest - Status 400 - Bad Request
+const BadRequest = 400
+
+// Unauthorized - Status 401 - Unauthorized
+const Unauthorized = 401
+
+// Forbidden - Status 403 - Forbidden
+const Forbidden = 403
+
+// MethodNotSupported - Status 405 - Method not supported
+const MethodNotSupported = 405
+
+// TooManyRequests - Status 429 - Too many requests
+const TooManyRequests = 429
+
+// ServerError - Status 500 - Server Error
+const ServerError = 500
 
 // API holds the configuration for the current API client. A client should not
 // be modified concurrently.
@@ -47,21 +73,21 @@ func New(username, password string, orgName string, opts ...Option) (*API, error
 
 	err := api.parseOptions(opts...)
 	if err != nil {
-		return nil, fmt.Errorf("options parsing failed: %s", err)
+		return nil, errors.Wrap(err, "options parsing failed")
 	}
 
 	// Fall back to http.DefaultClient if the package user does not provide
 	// their own.
 	if api.httpClient == nil {
-		api.httpClient = http.DefaultClient
+		api.httpClient = &http.Client{
+			Timeout: time.Second * 30,
+		}
 	}
 
 	// Swap username/password for temporary auth token
 	api.Authentication, err = api.authenticate()
 	if err != nil {
-		return nil, fmt.Errorf(
-			"Unable to exchange username/password for auth token: %s",
-			err)
+		return nil, errors.Wrap(err, "Unable to exchange username/password for auth token")
 	}
 
 	// If orgName provided, get UUID for it and store in api.DefaultOrg
@@ -85,13 +111,11 @@ func (api *API) makeRequest(method, path string, params interface{}) ([]byte, er
 	// Replace nil with a JSON object if needed
 	var reqBody io.Reader
 	if params != nil {
-		json, err := json.Marshal(params)
-		if err != nil {
-			return nil, fmt.Errorf("error marshalling params to JSON: %s", err)
+		buf := &bytes.Buffer{}
+		if err := json.NewEncoder(buf).Encode(params); err != nil {
+			return nil, err
 		}
-		reqBody = bytes.NewReader(json)
-	} else {
-		reqBody = nil
+		reqBody = buf
 	}
 
 	resp, err := api.request(method, url, reqBody)
@@ -102,7 +126,7 @@ func (api *API) makeRequest(method, path string, params interface{}) ([]byte, er
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("could not read response body: %s", err)
+		return nil, errors.Wrap(err, "could not read response body")
 	}
 
 	switch resp.StatusCode {
@@ -112,10 +136,11 @@ func (api *API) makeRequest(method, path string, params interface{}) ([]byte, er
 		return nil, fmt.Errorf("HTTP status %d: invalid credentials", resp.StatusCode)
 	case http.StatusForbidden:
 		return nil, fmt.Errorf("HTTP status %d: insufficient permissions", resp.StatusCode)
-	case http.StatusServiceUnavailable, http.StatusBadGateway, http.StatusGatewayTimeout,
-		522, 523, 524:
-		return nil, fmt.Errorf("HTTP status %d: service failure", resp.StatusCode)
 	default:
+		if resp.StatusCode >= 500 {
+			return nil, fmt.Errorf("HTTP status %d: server error", resp.StatusCode)
+		}
+
 		var s string
 		if body != nil {
 			s = string(body)
@@ -132,7 +157,7 @@ func (api *API) makeRequest(method, path string, params interface{}) ([]byte, er
 func (api *API) request(method, url string, reqBody io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
-		return nil, fmt.Errorf("HTTP request creation failed: %s", err)
+		return nil, errors.Wrap(err, "HTTP request creation failed")
 	}
 
 	// Apply any user-defined headers first.
@@ -144,7 +169,7 @@ func (api *API) request(method, url string, reqBody io.Reader) (*http.Response, 
 
 	resp, err := api.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("HTTP request failed: %s", err)
+		return nil, errors.Wrap(err, "HTTP request failed")
 	}
 
 	return resp, nil

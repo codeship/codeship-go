@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	errors "github.com/pkg/errors"
 )
 
 // Authentication object holds access token and scope information
@@ -27,14 +29,14 @@ func (api *API) authenticate() (Authentication, error) {
 
 	resp, err := api.httpClient.Do(req)
 	if err != nil {
-		return Authentication{}, fmt.Errorf("Unable to call %s%s. Error: %s", api.BaseURL, path, err)
+		return Authentication{}, errors.Wrap(err, fmt.Sprintf("Unable to call %s%s", api.BaseURL, path))
 	}
 	defer resp.Body.Close()
 
 	authentication := Authentication{}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return Authentication{}, fmt.Errorf("Unable to read API response. Error: %s", err)
+		return Authentication{}, errors.Wrap(err, "Unable to read API response")
 	}
 
 	switch resp.StatusCode {
@@ -55,7 +57,10 @@ func (api *API) authenticate() (Authentication, error) {
 		return Authentication{}, fmt.Errorf("HTTP status %d: content %q", resp.StatusCode, s)
 	}
 
-	json.Unmarshal(body, &authentication)
+	err = json.Unmarshal(body, &authentication)
+	if err != nil {
+		return Authentication{}, errors.Wrap(err, "unable to unmarshal JSON into Authentication")
+	}
 
 	return authentication, nil
 }
