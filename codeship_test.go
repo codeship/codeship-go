@@ -9,7 +9,8 @@ func TestAuthenticate(t *testing.T) {
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
-	client, err := New(username, password, "")
+	orgName := os.Getenv("CODESHIP_ORGNAME")
+	client, err := New(username, password, orgName)
 	if err != nil {
 		t.Error("New returned error:", err)
 	}

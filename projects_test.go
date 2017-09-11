@@ -10,14 +10,15 @@ func TestListProjects(t *testing.T) {
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
-	apiClient, err := New(username, password, "")
+	orgName := os.Getenv("CODESHIP_ORGNAME")
+	apiClient, err := New(username, password, orgName)
 	if err != nil {
 		t.Error("New returned error:", err)
 	}
 
 	orgID := apiClient.Authentication.Organizations[0].UUID
 
-	projectList, err := apiClient.ListProjects(orgID)
+	projectList, err := apiClient.ListProjects()
 	if err != nil {
 		t.Errorf("Unable to list projects. Org ID: %s, Error: %s", orgID, err)
 	}
@@ -32,14 +33,13 @@ func TestGetProject(t *testing.T) {
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
-	apiClient, err := New(username, password, "")
+	orgName := os.Getenv("CODESHIP_ORGNAME")
+	apiClient, err := New(username, password, orgName)
 	if err != nil {
 		t.Error("New returned error:", err)
 	}
 
-	orgID := apiClient.Authentication.Organizations[0].UUID
-
-	projectList, err := apiClient.ListProjects(orgID)
+	projectList, err := apiClient.ListProjects()
 	if err != nil {
 		t.Error("Unable to list projects:", err)
 	}
@@ -50,7 +50,7 @@ func TestGetProject(t *testing.T) {
 
 	projectID := projectList.Projects[0].UUID
 
-	project, err := apiClient.GetProject(orgID, projectID)
+	project, err := apiClient.GetProject(projectID)
 	if err != nil {
 		t.Errorf("Unable to get project %s, error: %s ", projectID, err)
 		t.Fail()
@@ -68,7 +68,8 @@ func TestCreateProject(t *testing.T) {
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
-	apiClient, err := New(username, password, "")
+	orgName := os.Getenv("CODESHIP_ORGNAME")
+	apiClient, err := New(username, password, orgName)
 	if err != nil {
 		t.Error("New returned error:", err)
 	}
@@ -76,7 +77,7 @@ func TestCreateProject(t *testing.T) {
 	createProjectFixtures := getCreateProjectFixtures()
 
 	for _, projectFixture := range createProjectFixtures {
-		project, err := apiClient.CreateProject(projectFixture.OrgUUID, projectFixture.Project)
+		project, err := apiClient.CreateProject(projectFixture.Project)
 		if err != nil {
 			t.Errorf("Unable to create project, error: %s", err)
 			t.Fail()
@@ -95,12 +96,13 @@ func TestCreateProject(t *testing.T) {
 // 	testSetup()
 // 	username := os.Getenv("CODESHIP_USERNAME")
 // 	password := os.Getenv("CODESHIP_PASSWORD")
-// 	apiClient, err := New(username, password, "")
+//  orgName := os.Getenv("CODESHIP_ORGNAME")
+// 	apiClient, err := New(username, password, orgName)
 // 	if err != nil {
 // 		t.Error("New returned error:", err)
 // 	}
 //
-// 	projects, _ := apiClient.ListProjects("28955f10-e93d-0133-b53e-76bef8d7b14f")
+// 	projects, _ := apiClient.ListProjects()
 // 	projectStr := ""
 // 	for _, p := range projects.Projects {
 // 		projectStr += p.Name + "=" + p.UUID + ", "

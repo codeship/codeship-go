@@ -117,7 +117,8 @@ type buildRequest struct {
 }
 
 // CreateBuild Create a new build
-func (api *API) CreateBuild(orgUUID, projectUUID, ref, commitSha string) (bool, error) {
+func (api *API) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
+	orgUUID := api.getOrgUUID()
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", orgUUID, projectUUID)
 
 	buildReq := buildRequest{
@@ -134,9 +135,9 @@ func (api *API) CreateBuild(orgUUID, projectUUID, ref, commitSha string) (bool, 
 }
 
 // GetBuild Fetch a build
-func (api *API) GetBuild(orgUUID, projectUUID, buildUUID string) (Build, error) {
+func (api *API) GetBuild(projectUUID, buildUUID string) (Build, error) {
 	build := Build{}
-	orgUUID = api.getOrgUUID(orgUUID)
+	orgUUID := api.getOrgUUID()
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", orgUUID, projectUUID, buildUUID)
 
 	resp, err := api.makeRequest("GET", path, nil)
@@ -154,9 +155,9 @@ func (api *API) GetBuild(orgUUID, projectUUID, buildUUID string) (Build, error) 
 }
 
 // ListBuilds Fetch a list of builds for the given organization
-func (api *API) ListBuilds(orgUUID string, projectUUID string) (BuildList, error) {
+func (api *API) ListBuilds(projectUUID string) (BuildList, error) {
 	buildList := BuildList{}
-	orgUUID = api.getOrgUUID(orgUUID)
+	orgUUID := api.getOrgUUID()
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", orgUUID, projectUUID)
 
 	resp, err := api.makeRequest("GET", path, nil)
@@ -173,7 +174,8 @@ func (api *API) ListBuilds(orgUUID string, projectUUID string) (BuildList, error
 }
 
 // GetBuildPipelines Basic projects only
-func (api *API) GetBuildPipelines(orgUUID, projectUUID, buildUUID string) (BuildPipelines, error) {
+func (api *API) GetBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, error) {
+	orgUUID := api.getOrgUUID()
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", orgUUID, projectUUID, buildUUID)
 
 	buildPipelines := BuildPipelines{}
@@ -191,7 +193,8 @@ func (api *API) GetBuildPipelines(orgUUID, projectUUID, buildUUID string) (Build
 }
 
 // StopBuild Stop a running build
-func (api *API) StopBuild(orgUUID, projectUUID, buildUUID string) (bool, error) {
+func (api *API) StopBuild(projectUUID, buildUUID string) (bool, error) {
+	orgUUID := api.getOrgUUID()
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", orgUUID, projectUUID, buildUUID)
 
 	_, err := api.makeRequest("POST", path, nil)
@@ -203,7 +206,8 @@ func (api *API) StopBuild(orgUUID, projectUUID, buildUUID string) (bool, error) 
 }
 
 // RestartBuild Restart a previous build
-func (api *API) RestartBuild(orgUUID, projectUUID, buildUUID string) (bool, error) {
+func (api *API) RestartBuild(projectUUID, buildUUID string) (bool, error) {
+	orgUUID := api.getOrgUUID()
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", orgUUID, projectUUID, buildUUID)
 
 	_, err := api.makeRequest("POST", path, nil)
@@ -215,7 +219,8 @@ func (api *API) RestartBuild(orgUUID, projectUUID, buildUUID string) (bool, erro
 }
 
 // GetBuildServices Pro projects only
-func (api *API) GetBuildServices(orgUUID, projectUUID, buildUUID string) (BuildServices, error) {
+func (api *API) GetBuildServices(projectUUID, buildUUID string) (BuildServices, error) {
+	orgUUID := api.getOrgUUID()
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", orgUUID, projectUUID, buildUUID)
 
 	buildServices := BuildServices{}
@@ -233,7 +238,8 @@ func (api *API) GetBuildServices(orgUUID, projectUUID, buildUUID string) (BuildS
 }
 
 // GetBuildSteps Pro projects only
-func (api *API) GetBuildSteps(orgUUID, projectUUID, buildUUID string) (BuildSteps, error) {
+func (api *API) GetBuildSteps(projectUUID, buildUUID string) (BuildSteps, error) {
+	orgUUID := api.getOrgUUID()
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", orgUUID, projectUUID, buildUUID)
 
 	buildSteps := BuildSteps{}

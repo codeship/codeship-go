@@ -64,6 +64,10 @@ func New(username, password string, orgName string, opts ...Option) (*API, error
 		return nil, fmt.Errorf("Missing username or password")
 	}
 
+	if orgName == "" {
+		return nil, fmt.Errorf("Organization Name is reqiured")
+	}
+
 	api := &API{
 		Username: username,
 		Password: password,
@@ -90,18 +94,16 @@ func New(username, password string, orgName string, opts ...Option) (*API, error
 		return nil, errors.Wrap(err, "Unable to exchange username/password for auth token")
 	}
 
-	// If orgName provided, get UUID for it and store in api.DefaultOrg
-	// if orgName != "" {
-	// 	orgMap := api.Authentication.GetOrgMap()
-	// 	ok := false
-	// 	if api.DefaultOrg, ok = orgMap[orgName]; !ok {
-	// 		validOrgs := ""
-	// 		for org := range orgMap {
-	// 			validOrgs += " " + org
-	// 		}
-	// 		return api, fmt.Errorf("API initialized successfully, but unable to find organization named %s. Valid options are: %s", orgName, validOrgs)
-	// 	}
-	// }
+	// Get OrganizationUUID based on orgName
+	orgMap := api.Authentication.GetOrgMap()
+	ok := false
+	if api.DefaultOrg, ok = orgMap[orgName]; !ok {
+		validOrgs := ""
+		for org := range orgMap {
+			validOrgs += " " + org
+		}
+		return api, fmt.Errorf("API initialized successfully, but unable to find organization named %s. Valid options are: %s", orgName, validOrgs)
+	}
 
 	return api, nil
 }
@@ -185,10 +187,6 @@ func cloneHeader(header http.Header) http.Header {
 	return h
 }
 
-func (api *API) getOrgUUID(orgID string) string {
-	if orgID != "" {
-		return orgID
-	}
-
+func (api *API) getOrgUUID() string {
 	return api.DefaultOrg
 }

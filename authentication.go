@@ -66,10 +66,10 @@ func (api *API) authenticate() (Authentication, error) {
 }
 
 // GetOrgMap Return a map of orgs with the org name being the key and uuid as value
-// func (auth *Authentication) GetOrgMap() map[string]string {
-// 	orgMap := map[string]string{}
-// 	for _, org := range auth.Organizations {
-// 		orgMap[org.Name] = org.UUID
-// 	}
-// 	return orgMap
-// }
+func (auth *Authentication) GetOrgMap() map[string]string {
+	orgMap := map[string]string{}
+	for _, org := range auth.Organizations {
+		orgMap[org.Name] = org.UUID
+	}
+	return orgMap
+}

@@ -22,7 +22,7 @@ This library exposes the package `codeship`.
 Getting a new API Client from it is done by calling `codeship.New()`:
 
 ```go
-codeshipClient := codeship.New("username", "password")
+codeshipClient := codeship.New("username", "password", "orgname")
 ```
 
 With `codeshipClient` you can perform many actions on `Projects` and `Builds`:

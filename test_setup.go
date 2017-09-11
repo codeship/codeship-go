@@ -11,4 +11,8 @@ func testSetup() {
 	if password == "" {
 		os.Setenv("CODESHIP_PASSWORD", CodeshipPassword)
 	}
+	orgName := os.Getenv("CODESHIP_ORGNAME")
+	if orgName == "" {
+		os.Setenv("CODESHIP_ORGNAME", CodeshipOrgName)
+	}
 }

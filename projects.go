@@ -74,11 +74,11 @@ type projectResponse struct {
 }
 
 // ListProjects Fetch a list of projects for the given organization
-func (api *API) ListProjects(orgID string) (ProjectList, error) {
-	projectList := ProjectList{}
-	orgID = api.getOrgUUID(orgID)
-	path := fmt.Sprintf("/organizations/%s/projects", orgID)
+func (api *API) ListProjects() (ProjectList, error) {
+	orgUUID := api.getOrgUUID()
+	path := fmt.Sprintf("/organizations/%s/projects", orgUUID)
 
+	projectList := ProjectList{}
 	resp, err := api.makeRequest("GET", path, nil)
 	if err != nil {
 		return projectList, errors.Wrap(err, "Unable to list projects")
@@ -93,10 +93,11 @@ func (api *API) ListProjects(orgID string) (ProjectList, error) {
 }
 
 // GetProject Fetch a project by ID
-func (api *API) GetProject(orgID string, projectID string) (Project, error) {
-	project := projectResponse{}
-	path := fmt.Sprintf("/organizations/%s/projects/%s", orgID, projectID)
+func (api *API) GetProject(projectID string) (Project, error) {
+	orgUUID := api.getOrgUUID()
+	path := fmt.Sprintf("/organizations/%s/projects/%s", orgUUID, projectID)
 
+	project := projectResponse{}
 	resp, err := api.makeRequest("GET", path, nil)
 	if err != nil {
 		return project.Project, errors.Wrap(err, "Unable to get project")
@@ -111,8 +112,9 @@ func (api *API) GetProject(orgID string, projectID string) (Project, error) {
 }
 
 // CreateProject Create a new project
-func (api *API) CreateProject(orgID string, project Project) (Project, error) {
-	path := fmt.Sprintf("/organizations/%s/projects", orgID)
+func (api *API) CreateProject(project Project) (Project, error) {
+	orgUUID := api.getOrgUUID()
+	path := fmt.Sprintf("/organizations/%s/projects", orgUUID)
 
 	resp, err := api.makeRequest("POST", path, project)
 	if err != nil {
