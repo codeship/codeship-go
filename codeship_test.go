@@ -20,8 +20,8 @@ func TestAuthenticate(t *testing.T) {
 }
 
 func TestNewFailsWithoutUsernameOrPassword(t *testing.T) {
-	os.Setenv("CODESHIP_USERNAME", "")
-	os.Setenv("CODESHIP_PASSWORD", "")
+	_ = os.Setenv("CODESHIP_USERNAME", "")
+	_ = os.Setenv("CODESHIP_PASSWORD", "")
 	_, err := New("", "", "")
 	if err == nil {
 		t.Error("Constructor did not throw error when username and password were not available")

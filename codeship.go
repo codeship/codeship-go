@@ -99,7 +99,7 @@ func New(username, password string, orgName string, opts ...Option) (*API, error
 	// 		for org := range orgMap {
 	// 			validOrgs += " " + org
 	// 		}
-	// 		return api, fmt.Errorf("API initialized successfuly, but unable to find organization named %s. Valid options are: %s", orgName, validOrgs)
+	// 		return api, fmt.Errorf("API initialized successfully, but unable to find organization named %s. Valid options are: %s", orgName, validOrgs)
 	// 	}
 	// }
 
