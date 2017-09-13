@@ -1,4 +1,0 @@
-package codeship
-
-const CodeshipPassword = ""
-const CodeshipUsername = ""

@@ -1,8 +1,10 @@
-// +build ignore
-
 package codeship
 
 import "os"
+
+const CodeshipPassword = ""
+const CodeshipUsername = ""
+const CodeshipOrgName = ""
 
 func testSetup() {
 	username := os.Getenv("CODESHIP_USERNAME")
