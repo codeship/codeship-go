@@ -95,7 +95,21 @@ func TestNew(t *testing.T) {
 				password: "bar",
 				orgName:  "",
 			},
-			err: optionalError{want: true, value: errors.New("missing username or password")},
+			err: optionalError{want: true, value: errors.New("organization name is required")},
+		},
+		{
+			name: "handles error option func",
+			args: args{
+				username: "foo",
+				password: "bar",
+				orgName:  "codeship",
+				opts: []codeship.Option{
+					func(*codeship.API) error {
+						return errors.New("boom")
+					},
+				},
+			},
+			err: optionalError{want: true, value: errors.New("options parsing failed: boom")},
 		},
 	}
 	for _, tt := range tests {
@@ -109,27 +123,29 @@ func TestNew(t *testing.T) {
 
 			got, err := codeship.New(tt.args.username, tt.args.password, tt.args.orgName, tt.args.opts...)
 
-			if err != nil {
-				if !tt.err.want {
-					assert.Fail(t, "Unexpected error: %v", err)
-				}
-				assert.Error(t, err, tt.err.value)
+			if err != nil && !tt.err.want {
+				assert.Fail(t, "Unexpected error: %s", err.Error())
+				return
+			} else if err != nil {
+				assert.Equal(t, tt.err.value.Error(), err.Error())
 				return
 			}
 
 			assert.NotNil(t, got)
 
 			if tt.env.username.want && tt.args.username == "" {
-				assert.Equal(t, got.Username, tt.env.username.value)
+				assert.Equal(t, tt.env.username.value, got.Username)
 			} else {
-				assert.Equal(t, got.Username, tt.args.username)
+				assert.Equal(t, tt.args.username, got.Username)
 			}
 
 			if tt.env.password.want && tt.args.password == "" {
-				assert.Equal(t, got.Password, tt.env.password.value)
+				assert.Equal(t, tt.env.password.value, got.Password)
 			} else {
-				assert.Equal(t, got.Password, tt.args.password)
+				assert.Equal(t, tt.args.password, got.Password)
 			}
+
+			assert.Equal(t, tt.args.orgName, got.Organization.Name)
 		})
 	}
 }
