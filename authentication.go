@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	errors "github.com/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Authentication object holds access token and scope information
@@ -20,6 +20,29 @@ type Authentication struct {
 	ExpiresAt int `json:"expires_at"`
 }
 
+func (api *API) Authenticate() error {
+	var err error
+
+	// Swap username/password for temporary auth token
+	api.Authentication, err = api.authenticate()
+	if err != nil {
+		return errors.Wrap(err, "unable to exchange username/password for auth token")
+	}
+
+	// Get OrganizationUUID based on orgName
+	orgs := api.Authentication.GetOrganizations()
+	var ok bool
+
+	if api.Organization.UUID, ok = orgs[api.Organization.Name]; !ok {
+		validOrgs := ""
+		for org := range orgs {
+			validOrgs += " " + org
+		}
+		return fmt.Errorf("unable to find organization named %s. Valid options are: %s", api.Organization.Name, validOrgs)
+	}
+	return nil
+}
+
 // Exchange username and password for an authentication object
 func (api *API) authenticate() (Authentication, error) {
 	path := "/auth"
@@ -31,12 +54,14 @@ func (api *API) authenticate() (Authentication, error) {
 	if err != nil {
 		return Authentication{}, errors.Wrap(err, fmt.Sprintf("Unable to call %s%s", api.BaseURL, path))
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	authentication := Authentication{}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return Authentication{}, errors.Wrap(err, "Unable to read API response")
+		return Authentication{}, errors.Wrap(err, "unable to read API response")
 	}
 
 	switch resp.StatusCode {
@@ -46,10 +71,11 @@ func (api *API) authenticate() (Authentication, error) {
 		return Authentication{}, fmt.Errorf("HTTP status %d: invalid credentials", resp.StatusCode)
 	case http.StatusForbidden:
 		return Authentication{}, fmt.Errorf("HTTP status %d: insufficient permissions", resp.StatusCode)
-	case http.StatusServiceUnavailable, http.StatusBadGateway, http.StatusGatewayTimeout,
-		522, 523, 524:
-		return Authentication{}, fmt.Errorf("HTTP status %d: service failure", resp.StatusCode)
 	default:
+		if resp.StatusCode >= 500 {
+			return Authentication{}, fmt.Errorf("HTTP status %d: service failure", resp.StatusCode)
+		}
+
 		var s string
 		if body != nil {
 			s = string(body)
@@ -65,8 +91,8 @@ func (api *API) authenticate() (Authentication, error) {
 	return authentication, nil
 }
 
-// GetOrgMap Return a map of orgs with the org name being the key and uuid as value
-func (auth *Authentication) GetOrgMap() map[string]string {
+// GetOrganizations Return a map of orgs with the org name being the key and uuid as value
+func (auth *Authentication) GetOrganizations() map[string]string {
 	orgMap := map[string]string{}
 	for _, org := range auth.Organizations {
 		orgMap[org.Name] = org.UUID

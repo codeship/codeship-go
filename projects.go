@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	errors "github.com/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // TypePro constant for Pro project type value
@@ -73,58 +73,55 @@ type projectResponse struct {
 	Project Project
 }
 
-// ListProjects Fetch a list of projects for the given organization
+// ListProjects fetches a list of projects for the given organization
 func (api *API) ListProjects() (ProjectList, error) {
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects", orgUUID)
+	path := fmt.Sprintf("/organizations/%s/projects", api.Organization.UUID)
 
 	projectList := ProjectList{}
 	resp, err := api.makeRequest("GET", path, nil)
 	if err != nil {
-		return projectList, errors.Wrap(err, "Unable to list projects")
+		return projectList, errors.Wrap(err, "unable to list projects")
 	}
 
 	err = json.Unmarshal(resp, &projectList)
 	if err != nil {
-		return projectList, errors.Wrap(err, "Unable to unmarshal JSON into ProjectList")
+		return projectList, errors.Wrap(err, "unable to unmarshal JSON into ProjectList")
 	}
 
 	return projectList, nil
 }
 
-// GetProject Fetch a project by ID
+// GetProject fetches a project by ID
 func (api *API) GetProject(projectID string) (Project, error) {
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects/%s", orgUUID, projectID)
+	path := fmt.Sprintf("/organizations/%s/projects/%s", api.Organization.UUID, projectID)
 
 	project := projectResponse{}
 	resp, err := api.makeRequest("GET", path, nil)
 	if err != nil {
-		return project.Project, errors.Wrap(err, "Unable to get project")
+		return project.Project, errors.Wrap(err, "unable to get project")
 	}
 
 	err = json.Unmarshal(resp, &project)
 	if err != nil {
-		return project.Project, errors.Wrap(err, "Unable to unmarshal API response, error")
+		return project.Project, errors.Wrap(err, "unable to unmarshal API response, error")
 	}
 
 	return project.Project, nil
 }
 
-// CreateProject Create a new project
+// CreateProject creates a new project
 func (api *API) CreateProject(project Project) (Project, error) {
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects", orgUUID)
+	path := fmt.Sprintf("/organizations/%s/projects", api.Organization.UUID)
 
 	resp, err := api.makeRequest("POST", path, project)
 	if err != nil {
-		return project, errors.Wrap(err, "Unable to create project, error")
+		return project, errors.Wrap(err, "unable to create project, error")
 	}
 
 	projResponse := projectResponse{}
 	err = json.Unmarshal(resp, &projResponse)
 	if err != nil {
-		return project, errors.Wrap(err, "Unable to unmarshal response into Project, error")
+		return project, errors.Wrap(err, "unable to unmarshal response into Project, error")
 	}
 
 	return projResponse.Project, nil

@@ -10,33 +10,15 @@ import (
 	"os"
 	"time"
 
-	errors "github.com/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 const apiURL = "https://api.codeship.com/v2"
 
-// HTTP Status Codes
-
-// OK - Status 200 - OK
-const OK = 200
-
-// BadRequest - Status 400 - Bad Request
-const BadRequest = 400
-
-// Unauthorized - Status 401 - Unauthorized
-const Unauthorized = 401
-
-// Forbidden - Status 403 - Forbidden
-const Forbidden = 403
-
-// MethodNotSupported - Status 405 - Method not supported
-const MethodNotSupported = 405
-
-// TooManyRequests - Status 429 - Too many requests
-const TooManyRequests = 429
-
-// ServerError - Status 500 - Server Error
-const ServerError = 500
+type Organization struct {
+	UUID string
+	Name string
+}
 
 // API holds the configuration for the current API client. A client should not
 // be modified concurrently.
@@ -45,7 +27,7 @@ type API struct {
 	Password       string
 	Authentication Authentication
 	BaseURL        string
-	DefaultOrg     string
+	Organization   Organization
 	headers        http.Header
 	httpClient     *http.Client
 }
@@ -61,18 +43,21 @@ func New(username, password string, orgName string, opts ...Option) (*API, error
 	}
 
 	if username == "" || password == "" {
-		return nil, fmt.Errorf("Missing username or password")
+		return nil, errors.New("missing username or password")
 	}
 
 	if orgName == "" {
-		return nil, fmt.Errorf("Organization Name is reqiured")
+		return nil, errors.New("organization name is required")
 	}
 
 	api := &API{
 		Username: username,
 		Password: password,
 		BaseURL:  apiURL,
-		headers:  make(http.Header),
+		Organization: Organization{
+			Name: orgName,
+		},
+		headers: make(http.Header),
 	}
 
 	err := api.parseOptions(opts...)
@@ -86,23 +71,6 @@ func New(username, password string, orgName string, opts ...Option) (*API, error
 		api.httpClient = &http.Client{
 			Timeout: time.Second * 30,
 		}
-	}
-
-	// Swap username/password for temporary auth token
-	api.Authentication, err = api.authenticate()
-	if err != nil {
-		return nil, errors.Wrap(err, "Unable to exchange username/password for auth token")
-	}
-
-	// Get OrganizationUUID based on orgName
-	orgMap := api.Authentication.GetOrgMap()
-	ok := false
-	if api.DefaultOrg, ok = orgMap[orgName]; !ok {
-		validOrgs := ""
-		for org := range orgMap {
-			validOrgs += " " + org
-		}
-		return api, fmt.Errorf("API initialized successfully, but unable to find organization named %s. Valid options are: %s", orgName, validOrgs)
 	}
 
 	return api, nil
@@ -124,7 +92,9 @@ func (api *API) makeRequest(method, path string, params interface{}) ([]byte, er
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -185,8 +155,4 @@ func cloneHeader(header http.Header) http.Header {
 		h[k] = vs
 	}
 	return h
-}
-
-func (api *API) getOrgUUID() string {
-	return api.DefaultOrg
 }
