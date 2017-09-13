@@ -6,6 +6,7 @@ import (
 )
 
 func TestCreateBuild(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
@@ -27,6 +28,7 @@ func TestCreateBuild(t *testing.T) {
 }
 
 func TestGetBuild(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
@@ -50,6 +52,7 @@ func TestGetBuild(t *testing.T) {
 }
 
 func TestListBuilds(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
@@ -74,6 +77,7 @@ func TestListBuilds(t *testing.T) {
 }
 
 func TestGetBuildPipelines(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
@@ -97,6 +101,7 @@ func TestGetBuildPipelines(t *testing.T) {
 }
 
 func TestStopBuild(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
@@ -124,6 +129,7 @@ func TestStopBuild(t *testing.T) {
 }
 
 func TestRestartBuild(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
@@ -145,6 +151,7 @@ func TestRestartBuild(t *testing.T) {
 }
 
 func TestGetBuildServices(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
@@ -170,6 +177,7 @@ func TestGetBuildServices(t *testing.T) {
 }
 
 func TestGetBuildSteps(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")

@@ -7,6 +7,7 @@ import (
 )
 
 func TestListProjects(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
@@ -30,6 +31,7 @@ func TestListProjects(t *testing.T) {
 }
 
 func TestGetProject(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")

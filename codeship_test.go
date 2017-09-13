@@ -6,6 +6,7 @@ import (
 )
 
 func TestAuthenticate(t *testing.T) {
+	t.SkipNow()
 	testSetup()
 	username := os.Getenv("CODESHIP_USERNAME")
 	password := os.Getenv("CODESHIP_PASSWORD")
@@ -31,6 +32,7 @@ func TestNewFailsWithoutUsernameOrPassword(t *testing.T) {
 }
 
 func TestAuthenticateFailesWithInvalidUsernameAndPassword(t *testing.T) {
+	t.SkipNow()
 	_, err := New("invalid", "invalid", "")
 	if err == nil {
 		t.Error("Authentication did not throw error when username and password were invalid")
