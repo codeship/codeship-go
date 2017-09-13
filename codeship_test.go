@@ -89,6 +89,28 @@ func TestNew(t *testing.T) {
 			},
 		},
 		{
+			name: "uses env username if not passed in",
+			args: args{
+				username: "",
+				password: "bar",
+				orgName:  "codeship",
+			},
+			env: env{
+				username: optionalString{want: true, value: "baz"},
+			},
+		},
+		{
+			name: "uses env password if not passed in",
+			args: args{
+				username: "foo",
+				password: "",
+				orgName:  "codeship",
+			},
+			env: env{
+				password: optionalString{want: true, value: "baz"},
+			},
+		},
+		{
 			name: "requires organization name",
 			args: args{
 				username: "foo",
