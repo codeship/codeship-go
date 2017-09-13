@@ -15,6 +15,7 @@ import (
 
 const apiURL = "https://api.codeship.com/v2"
 
+// Organization represents a single organization.
 type Organization struct {
 	UUID string
 	Name string
@@ -88,6 +89,13 @@ func (api *API) makeRequest(method, path string, params interface{}) ([]byte, er
 		reqBody = buf
 	}
 
+	if api.authenticationRequired() {
+		err := api.Authenticate()
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	resp, err := api.request(method, url, reqBody)
 	if err != nil {
 		return nil, err
@@ -145,6 +153,11 @@ func (api *API) request(method, url string, reqBody io.Reader) (*http.Response, 
 	}
 
 	return resp, nil
+}
+
+// authenticationRequired determines if a client must re-authenticate before making a request.
+func (api *API) authenticationRequired() bool {
+	return api.Authentication.AccessToken == "" || api.Authentication.ExpiresAt <= time.Now().Unix()
 }
 
 // cloneHeader returns a shallow copy of the header.

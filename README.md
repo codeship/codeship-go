@@ -28,9 +28,9 @@ client := codeship.New("username", "password", "orgName")
 
 ## Authentication
 
-Before performing any API requests you must first get an Authentication Token.
+Authentication is handled automatically via the API Client using the provided `username` and `password.
 
-You do this by calling the `Authenticate` method on the `client`:
+If you would like to manually re-authenticate, you may do this by calling the `Authenticate` method on the `client`:
 
 ```go
 client.Authenticate()
@@ -39,6 +39,18 @@ client.Authenticate()
 ## Documentation
 
 TODO: link to GoDoc
+
+## Contributing
+
+### Setup
+
+This project uses [dep](https://github.com/golang/dep) for dependency management.
+
+To install/update dep and all dependencies, run:
+
+```bash
+make setup
+```
 
 ## Testing
 
@@ -50,6 +62,6 @@ make test
 
 - [ ] Finish unit tests and stub out JSON responses
 - [ ] Support pagination
-- [ ] (Optionally) Auto-refresh token if expired before calling endpoints?
+- [x] Auto-refresh token if expired before calling endpoints?
 - [ ] Make sure all endpoints are covered
 - [ ] Publish GoDoc

@@ -5,7 +5,6 @@ setup: ## Install all the build and lint dependencies
 	go get -u github.com/golang/dep/cmd/dep
 	gometalinter --install --update
 	dep ensure
-	dep prune
 
 .PHONY: test
 test: ## Run all the tests

@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Authentication object holds access token and scope information
+// Authentication object holds access token and scope information.
 type Authentication struct {
 	AccessToken   string `json:"access_token"`
 	Organizations []struct {
@@ -17,9 +17,11 @@ type Authentication struct {
 		UUID   string   `json:"uuid"`
 		Scopes []string `json:"scopes"`
 	} `json:"organizations"`
-	ExpiresAt int `json:"expires_at"`
+	ExpiresAt int64 `json:"expires_at"`
 }
 
+// Authenticate swaps username/password for an authentication token and sets
+// it in the API object for future requests.
 func (api *API) Authenticate() error {
 	var err error
 
@@ -43,7 +45,7 @@ func (api *API) Authenticate() error {
 	return nil
 }
 
-// Exchange username and password for an authentication object
+// Exchange username and password for an authentication object.
 func (api *API) authenticate() (Authentication, error) {
 	path := "/auth"
 	req, _ := http.NewRequest("POST", api.BaseURL+path, nil)
@@ -91,7 +93,7 @@ func (api *API) authenticate() (Authentication, error) {
 	return authentication, nil
 }
 
-// GetOrganizations Return a map of orgs with the org name being the key and uuid as value
+// GetOrganizations returns a map of orgs with the org name being the key and uuid as value.
 func (auth *Authentication) GetOrganizations() map[string]string {
 	orgMap := map[string]string{}
 	for _, org := range auth.Organizations {
