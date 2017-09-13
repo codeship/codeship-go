@@ -28,7 +28,7 @@ client := codeship.New("username", "password", "orgName")
 
 ## Authentication
 
-Authentication is handled automatically via the API Client using the provided `username` and `password.
+Authentication is handled automatically via the API Client using the provided `username` and `password`.
 
 If you would like to manually re-authenticate, you may do this by calling the `Authenticate` method on the `client`:
 
