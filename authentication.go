@@ -5,19 +5,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/pkg/errors"
 )
 
+// Organization object holds organization information from Authentication.
+type Organization struct {
+	Name   string   `json:"name"`
+	UUID   string   `json:"uuid"`
+	Scopes []string `json:"scopes"`
+}
+
 // Authentication object holds access token and scope information.
 type Authentication struct {
-	AccessToken   string `json:"access_token"`
-	Organizations []struct {
-		Name   string   `json:"name"`
-		UUID   string   `json:"uuid"`
-		Scopes []string `json:"scopes"`
-	} `json:"organizations"`
-	ExpiresAt int64 `json:"expires_at"`
+	AccessToken   string         `json:"access_token"`
+	Organizations []Organization `json:"organizations"`
+	ExpiresAt     int64          `json:"expires_at"`
 }
 
 // Authenticate swaps username/password for an authentication token and sets
@@ -31,11 +35,12 @@ func (api *API) Authenticate() error {
 		return errors.Wrap(err, "unable to exchange username/password for auth token")
 	}
 
-	// Get OrganizationUUID based on orgName
+	// Get all organizations the user is authenticated with
 	orgs := api.Authentication.GetOrganizations()
 	var ok bool
 
-	if api.Organization.UUID, ok = orgs[api.Organization.Name]; !ok {
+	// Set current organization to the one they requested by name
+	if api.Organization, ok = orgs[strings.ToLower(api.Organization.Name)]; !ok {
 		validOrgs := ""
 		for org := range orgs {
 			validOrgs += " " + org
@@ -93,11 +98,11 @@ func (api *API) authenticate() (Authentication, error) {
 	return authentication, nil
 }
 
-// GetOrganizations returns a map of orgs with the org name being the key and uuid as value.
-func (auth *Authentication) GetOrganizations() map[string]string {
-	orgMap := map[string]string{}
+// GetOrganizations returns a map of orgs with the org name being the key and Organization as the value.
+func (auth *Authentication) GetOrganizations() map[string]Organization {
+	orgs := map[string]Organization{}
 	for _, org := range auth.Organizations {
-		orgMap[org.Name] = org.UUID
+		orgs[org.Name] = org
 	}
-	return orgMap
+	return orgs
 }

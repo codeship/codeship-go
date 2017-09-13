@@ -15,12 +15,6 @@ import (
 
 const apiURL = "https://api.codeship.com/v2"
 
-// Organization represents a single organization.
-type Organization struct {
-	UUID string
-	Name string
-}
-
 // API holds the configuration for the current API client. A client should not
 // be modified concurrently.
 type API struct {
@@ -155,7 +149,7 @@ func (api *API) request(method, url string, reqBody io.Reader) (*http.Response, 
 	return resp, nil
 }
 
-// authenticationRequired determines if a client must re-authenticate before making a request.
+// authenticationRequired determines if a client must authenticate before making a request.
 func (api *API) authenticationRequired() bool {
 	return api.Authentication.AccessToken == "" || api.Authentication.ExpiresAt <= time.Now().Unix()
 }
