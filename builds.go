@@ -146,7 +146,7 @@ func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, error) {
 	buildResp := buildResponse{}
 	err = json.Unmarshal(resp, &buildResp)
 	if err != nil {
-		return build, errors.Wrap(err, "unable to unmarshal JSON into Build")
+		return build, errors.Wrap(err, "unable to unmarshal response into Build")
 	}
 
 	return buildResp.Build, nil
@@ -164,7 +164,7 @@ func (o *Organization) ListBuilds(projectUUID string) (BuildList, error) {
 
 	err = json.Unmarshal(resp, &buildList)
 	if err != nil {
-		return buildList, errors.Wrap(err, "unable to unmarshal JSON into BuildList")
+		return buildList, errors.Wrap(err, "unable to unmarshal response into BuildList")
 	}
 
 	return buildList, nil
@@ -182,7 +182,7 @@ func (o *Organization) GetBuildPipelines(projectUUID, buildUUID string) (BuildPi
 
 	err = json.Unmarshal(resp, &buildPipelines)
 	if err != nil {
-		return buildPipelines, errors.Wrap(err, "unable to unmarshal JSON into BuildPipelines")
+		return buildPipelines, errors.Wrap(err, "unable to unmarshal response into BuildPipelines")
 	}
 
 	return buildPipelines, nil
@@ -206,7 +206,7 @@ func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error)
 
 	_, err := o.makeRequest("POST", path, nil)
 	if err != nil {
-		return false, errors.Wrap(err, "unable to restart build, error")
+		return false, errors.Wrap(err, "unable to restart build")
 	}
 
 	return true, nil
@@ -224,7 +224,7 @@ func (o *Organization) GetBuildServices(projectUUID, buildUUID string) (BuildSer
 
 	err = json.Unmarshal(resp, &buildServices)
 	if err != nil {
-		return buildServices, errors.Wrap(err, "unable to unmarshal JSON into BuildServices")
+		return buildServices, errors.Wrap(err, "unable to unmarshal response into BuildServices")
 	}
 
 	return buildServices, nil
@@ -242,7 +242,7 @@ func (o *Organization) GetBuildSteps(projectUUID, buildUUID string) (BuildSteps,
 
 	err = json.Unmarshal(resp, &buildSteps)
 	if err != nil {
-		return buildSteps, errors.Wrap(err, "unable to unmarshal JSON into BuildSteps")
+		return buildSteps, errors.Wrap(err, "unable to unmarshal response into BuildSteps")
 	}
 
 	return buildSteps, nil

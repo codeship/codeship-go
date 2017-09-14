@@ -85,7 +85,7 @@ func (o *Organization) ListProjects() (ProjectList, error) {
 
 	err = json.Unmarshal(resp, &projectList)
 	if err != nil {
-		return projectList, errors.Wrap(err, "unable to unmarshal JSON into ProjectList")
+		return projectList, errors.Wrap(err, "unable to unmarshal response into ProjectList")
 	}
 
 	return projectList, nil
@@ -103,7 +103,7 @@ func (o *Organization) GetProject(projectID string) (Project, error) {
 
 	err = json.Unmarshal(resp, &project)
 	if err != nil {
-		return project.Project, errors.Wrap(err, "unable to unmarshal o response, error")
+		return project.Project, errors.Wrap(err, "unable to unmarshal response into Project")
 	}
 
 	return project.Project, nil
@@ -115,13 +115,13 @@ func (o *Organization) CreateProject(project Project) (Project, error) {
 
 	resp, err := o.makeRequest("POST", path, project)
 	if err != nil {
-		return project, errors.Wrap(err, "unable to create project, error")
+		return project, errors.Wrap(err, "unable to create project")
 	}
 
 	projResponse := projectResponse{}
 	err = json.Unmarshal(resp, &projResponse)
 	if err != nil {
-		return project, errors.Wrap(err, "unable to unmarshal response into Project, error")
+		return project, errors.Wrap(err, "unable to unmarshal response into Project")
 	}
 
 	return projResponse.Project, nil
