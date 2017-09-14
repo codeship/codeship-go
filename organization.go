@@ -7,7 +7,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"github.com/pkg/errors"
 )
@@ -35,9 +34,9 @@ func (o *Organization) makeRequest(method, path string, params interface{}) ([]b
 
 	var err error
 
-	if o.authenticationRequired() {
+	if o.client.authenticationRequired() {
 		if err = o.client.Authenticate(); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "authentication failed")
 		}
 	}
 
@@ -98,11 +97,6 @@ func (o *Organization) request(method, url string, reqBody io.Reader) (*http.Res
 	}
 
 	return resp, nil
-}
-
-// authenticationRequired determines if a client must authenticate before making a request
-func (o *Organization) authenticationRequired() bool {
-	return o.client.authentication.AccessToken == "" || o.client.authentication.ExpiresAt <= time.Now().Unix()
 }
 
 // cloneHeader returns a shallow copy of the header.

@@ -60,6 +60,12 @@ func New(username, password string, opts ...Option) (*Client, error) {
 
 // Scope scopes a client to a single Organization, allowing the user to make calls to the API
 func (c *Client) Scope(name string) (*Organization, error) {
+	if c.authenticationRequired() {
+		if err := c.Authenticate(); err != nil {
+			return nil, errors.Wrap(err, "authentication failed")
+		}
+	}
+
 	for _, org := range c.authentication.Organizations {
 		if org.Name == strings.ToLower(name) {
 			return &Organization{
@@ -71,4 +77,9 @@ func (c *Client) Scope(name string) (*Organization, error) {
 		}
 	}
 	return nil, fmt.Errorf("organization %s not authorized. Authorized organizations: %v", name, c.authentication.Organizations)
+}
+
+// authenticationRequired determines if a client must authenticate before making a request
+func (c *Client) authenticationRequired() bool {
+	return c.authentication.AccessToken == "" || c.authentication.ExpiresAt <= time.Now().Unix()
 }

@@ -23,7 +23,19 @@ This library exposes the package `codeship`.
 Getting a new API Client from it is done by calling `codeship.New()`:
 
 ```go
-client := codeship.New("username", "password", "orgName")
+client, err := codeship.New("username", "password")
+```
+
+You must then scope the client to a single Organization that you have access to:
+
+```go
+org, err := client.Scope('codeship')
+```
+
+You can then perform calls to the API on behalf of an Organization:
+
+```go
+projects, err := org.ListProjects()
 ```
 
 ## Authentication
@@ -33,7 +45,7 @@ Authentication is handled automatically via the API Client using the provided `u
 If you would like to manually re-authenticate, you may do this by calling the `Authenticate` method on the `client`:
 
 ```go
-client.Authenticate()
+err := client.Authenticate()
 ```
 
 ## Documentation
