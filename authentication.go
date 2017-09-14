@@ -41,11 +41,7 @@ func (api *API) Authenticate() error {
 
 	// Set current organization to the one they requested by name
 	if api.Organization, ok = orgs[strings.ToLower(api.Organization.Name)]; !ok {
-		validOrgs := ""
-		for org := range orgs {
-			validOrgs += " " + org
-		}
-		return fmt.Errorf("unable to find organization named %s. Valid options are: %s", api.Organization.Name, validOrgs)
+		return fmt.Errorf("unable to find organization named %s. Valid organizations are: %v", api.Organization.Name, orgs)
 	}
 	return nil
 }
