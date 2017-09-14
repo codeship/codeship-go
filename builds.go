@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Build structure of Build object.
+// Build structure of Build object
 type Build struct {
 	AllocatedAt   time.Time `json:"allocated_at"`
 	CommitMessage string    `json:"commit_message"`
@@ -28,7 +28,7 @@ type Build struct {
 	UUID             string    `json:"uuid"`
 }
 
-// BuildList holds a list of Build objects.
+// BuildList holds a list of Build objects
 type BuildList struct {
 	Builds []Build
 }
@@ -37,7 +37,7 @@ type buildResponse struct {
 	Build Build
 }
 
-// BuildPipelines holds a list of Pipeline objects.
+// BuildPipelines holds a list of Pipeline objects
 type BuildPipelines struct {
 	Pipelines []struct {
 		UUID       string    `json:"uuid"`
@@ -70,7 +70,7 @@ type BuildPipelines struct {
 	Page    int `json:"page"`
 }
 
-// BuildStep structure of BuildStep object.
+// BuildStep structure of BuildStep object
 type BuildStep struct {
 	BuildUUID   string    `json:"build_uuid,omitempty"`
 	BuildingAt  time.Time `json:"building_at,omitempty"`
@@ -88,12 +88,12 @@ type BuildStep struct {
 	UUID        string    `json:"uuid,omitempty"`
 }
 
-// BuildSteps holds a list of BuildStep objects.
+// BuildSteps holds a list of BuildStep objects
 type BuildSteps struct {
 	Steps []BuildStep
 }
 
-// BuildService structure of BuildService object.
+// BuildService structure of BuildService object
 type BuildService struct {
 	BuildUUID  string    `json:"build_uuid,omitempty"`
 	BuildingAt time.Time `json:"building_at,omitempty"`
@@ -106,7 +106,7 @@ type BuildService struct {
 	Status     string    `json:"status,omitempty"`
 }
 
-// BuildServices holds a list of BuildService objects.
+// BuildServices holds a list of BuildService objects
 type BuildServices struct {
 	Services []BuildService
 }
@@ -116,16 +116,16 @@ type buildRequest struct {
 	Ref       string `json:"ref"`
 }
 
-// CreateBuild creates a new build.
-func (api *API) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", api.Organization.UUID, projectUUID)
+// CreateBuild creates a new build
+func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
 	buildReq := buildRequest{
 		Ref:       ref,
 		CommitSha: commitSha,
 	}
 
-	_, err := api.makeRequest("POST", path, buildReq)
+	_, err := o.makeRequest("POST", path, buildReq)
 	if err != nil {
 		return false, errors.Wrap(err, "unable to create build")
 	}
@@ -133,12 +133,12 @@ func (api *API) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
 	return true, nil
 }
 
-// GetBuild fetches a build.
-func (api *API) GetBuild(projectUUID, buildUUID string) (Build, error) {
+// GetBuild fetches a build
+func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, error) {
 	build := Build{}
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", api.Organization.UUID, projectUUID, buildUUID)
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", o.UUID, projectUUID, buildUUID)
 
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
 		return build, errors.Wrap(err, "unable to get build")
 	}
@@ -152,12 +152,12 @@ func (api *API) GetBuild(projectUUID, buildUUID string) (Build, error) {
 	return buildResp.Build, nil
 }
 
-// ListBuilds fetches a list of builds for the given organization.
-func (api *API) ListBuilds(projectUUID string) (BuildList, error) {
+// ListBuilds fetches a list of builds for the given organization
+func (o *Organization) ListBuilds(projectUUID string) (BuildList, error) {
 	buildList := BuildList{}
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", api.Organization.UUID, projectUUID)
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
 		return buildList, errors.Wrap(err, "unable to list builds")
 	}
@@ -170,12 +170,12 @@ func (api *API) ListBuilds(projectUUID string) (BuildList, error) {
 	return buildList, nil
 }
 
-// GetBuildPipelines gets Basic build pipelines.
-func (api *API) GetBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", api.Organization.UUID, projectUUID, buildUUID)
+// GetBuildPipelines gets Basic build pipelines
+func (o *Organization) GetBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
 
 	buildPipelines := BuildPipelines{}
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
 		return buildPipelines, errors.Wrap(err, "unable to get build pipelines")
 	}
@@ -188,11 +188,11 @@ func (api *API) GetBuildPipelines(projectUUID, buildUUID string) (BuildPipelines
 	return buildPipelines, nil
 }
 
-// StopBuild stops a running build.
-func (api *API) StopBuild(projectUUID, buildUUID string) (bool, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", api.Organization.UUID, projectUUID, buildUUID)
+// StopBuild stops a running build
+func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", o.UUID, projectUUID, buildUUID)
 
-	_, err := api.makeRequest("POST", path, nil)
+	_, err := o.makeRequest("POST", path, nil)
 	if err != nil {
 		return false, errors.Wrap(err, "unable to stop build")
 	}
@@ -200,11 +200,11 @@ func (api *API) StopBuild(projectUUID, buildUUID string) (bool, error) {
 	return true, nil
 }
 
-// RestartBuild restarts a previous build.
-func (api *API) RestartBuild(projectUUID, buildUUID string) (bool, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", api.Organization.UUID, projectUUID, buildUUID)
+// RestartBuild restarts a previous build
+func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", o.UUID, projectUUID, buildUUID)
 
-	_, err := api.makeRequest("POST", path, nil)
+	_, err := o.makeRequest("POST", path, nil)
 	if err != nil {
 		return false, errors.Wrap(err, "unable to restart build, error")
 	}
@@ -212,12 +212,12 @@ func (api *API) RestartBuild(projectUUID, buildUUID string) (bool, error) {
 	return true, nil
 }
 
-// GetBuildServices gets Pro build services.
-func (api *API) GetBuildServices(projectUUID, buildUUID string) (BuildServices, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", api.Organization.UUID, projectUUID, buildUUID)
+// GetBuildServices gets Pro build services
+func (o *Organization) GetBuildServices(projectUUID, buildUUID string) (BuildServices, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
 
 	buildServices := BuildServices{}
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
 		return buildServices, errors.Wrap(err, "unable to get build services")
 	}
@@ -230,12 +230,12 @@ func (api *API) GetBuildServices(projectUUID, buildUUID string) (BuildServices, 
 	return buildServices, nil
 }
 
-// GetBuildSteps gets Pro build steps.
-func (api *API) GetBuildSteps(projectUUID, buildUUID string) (BuildSteps, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", api.Organization.UUID, projectUUID, buildUUID)
+// GetBuildSteps gets Pro build steps
+func (o *Organization) GetBuildSteps(projectUUID, buildUUID string) (BuildSteps, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
 
 	buildSteps := BuildSteps{}
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
 		return buildSteps, errors.Wrap(err, "unable to get build steps")
 	}

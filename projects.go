@@ -73,12 +73,12 @@ type projectResponse struct {
 	Project Project
 }
 
-// ListProjects fetches a list of projects for the given organization
-func (api *API) ListProjects() (ProjectList, error) {
-	path := fmt.Sprintf("/organizations/%s/projects", api.Organization.UUID)
+// ListProjects fetches a list of projects
+func (o *Organization) ListProjects() (ProjectList, error) {
+	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
 	projectList := ProjectList{}
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
 		return projectList, errors.Wrap(err, "unable to list projects")
 	}
@@ -92,28 +92,28 @@ func (api *API) ListProjects() (ProjectList, error) {
 }
 
 // GetProject fetches a project by ID
-func (api *API) GetProject(projectID string) (Project, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s", api.Organization.UUID, projectID)
+func (o *Organization) GetProject(projectID string) (Project, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectID)
 
 	project := projectResponse{}
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
 		return project.Project, errors.Wrap(err, "unable to get project")
 	}
 
 	err = json.Unmarshal(resp, &project)
 	if err != nil {
-		return project.Project, errors.Wrap(err, "unable to unmarshal API response, error")
+		return project.Project, errors.Wrap(err, "unable to unmarshal o response, error")
 	}
 
 	return project.Project, nil
 }
 
 // CreateProject creates a new project
-func (api *API) CreateProject(project Project) (Project, error) {
-	path := fmt.Sprintf("/organizations/%s/projects", api.Organization.UUID)
+func (o *Organization) CreateProject(project Project) (Project, error) {
+	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
-	resp, err := api.makeRequest("POST", path, project)
+	resp, err := o.makeRequest("POST", path, project)
 	if err != nil {
 		return project, errors.Wrap(err, "unable to create project, error")
 	}

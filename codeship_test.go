@@ -45,7 +45,7 @@ func TestNew(t *testing.T) {
 		name string
 		args args
 		env  env
-		want *codeship.API
+		want *codeship.Client
 		err  optionalError
 	}{
 		{
@@ -126,7 +126,7 @@ func TestNew(t *testing.T) {
 				password: "bar",
 				orgName:  "codeship",
 				opts: []codeship.Option{
-					func(*codeship.API) error {
+					func(*codeship.Client) error {
 						return errors.New("boom")
 					},
 				},
@@ -143,7 +143,7 @@ func TestNew(t *testing.T) {
 				os.Setenv("CODESHIP_PASSWORD", tt.env.password.value)
 			}
 
-			got, err := codeship.New(tt.args.username, tt.args.password, tt.args.orgName, tt.args.opts...)
+			got, err := codeship.New(tt.args.username, tt.args.password, tt.args.opts...)
 
 			if err != nil && !tt.err.want {
 				assert.Fail(t, "Unexpected error: %s", err.Error())
@@ -166,8 +166,6 @@ func TestNew(t *testing.T) {
 			} else {
 				assert.Equal(t, tt.args.password, got.Password)
 			}
-
-			assert.Equal(t, tt.args.orgName, got.Organization.Name)
 		})
 	}
 }
