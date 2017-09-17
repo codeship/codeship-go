@@ -21,6 +21,10 @@ type Organization struct {
 }
 
 func (o *Organization) makeRequest(method, path string, params interface{}) ([]byte, error) {
+	if o.client == nil {
+		return nil, errors.New("client not instantiated")
+	}
+
 	url := o.client.BaseURL + path
 	// Replace nil with a JSON object if needed
 	var reqBody io.Reader
