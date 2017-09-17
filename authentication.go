@@ -9,6 +9,10 @@ import (
 	"github.com/pkg/errors"
 )
 
+type ErrUnauthorized struct {
+	error
+}
+
 // Authentication object holds access token and scope information
 type Authentication struct {
 	AccessToken   string `json:"access_token"`
@@ -24,23 +28,19 @@ type Authentication struct {
 func (c *Client) Authenticate() error {
 	var err error
 	c.authentication, err = c.authenticate()
-	if err != nil {
-		return errors.Wrap(err, "unable to exchange username/password for auth token")
-	}
-
-	return nil
+	return err
 }
 
 // Exchange username and password for an authentication object.
 func (c *Client) authenticate() (Authentication, error) {
 	path := "/auth"
-	req, _ := http.NewRequest("POST", c.BaseURL+path, nil)
+	req, _ := http.NewRequest("POST", c.baseURL+path, nil)
 	req.SetBasicAuth(c.Username, c.Password)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return Authentication{}, errors.Wrap(err, fmt.Sprintf("Unable to call %s%s", c.BaseURL, path))
+		return Authentication{}, errors.Wrap(err, fmt.Sprintf("unable to call %s%s", c.baseURL, path))
 	}
 	defer func() {
 		_ = resp.Body.Close()
@@ -55,9 +55,9 @@ func (c *Client) authenticate() (Authentication, error) {
 	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
 		break
 	case http.StatusUnauthorized:
-		return Authentication{}, fmt.Errorf("HTTP status %d: invalid credentials", resp.StatusCode)
+		return Authentication{}, ErrUnauthorized{errors.New("invalid credentials")}
 	case http.StatusForbidden:
-		return Authentication{}, fmt.Errorf("HTTP status %d: insufficient permissions", resp.StatusCode)
+		return Authentication{}, ErrUnauthorized{errors.New("insufficient permissions")}
 	default:
 		if resp.StatusCode >= 500 {
 			return Authentication{}, fmt.Errorf("HTTP status %d: service failure", resp.StatusCode)

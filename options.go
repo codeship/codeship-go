@@ -22,6 +22,14 @@ func Headers(headers http.Header) Option {
 	}
 }
 
+// BaseURL allows overriding of API client baseURL for testing
+func BaseURL(baseURL string) Option {
+	return func(c *Client) error {
+		c.baseURL = baseURL
+		return nil
+	}
+}
+
 // parseOptions parses the supplied options functions and returns a configured
 // *Client instance
 func (c *Client) parseOptions(opts ...Option) error {

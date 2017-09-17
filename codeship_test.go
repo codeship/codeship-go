@@ -1,12 +1,23 @@
 package codeship_test
 
 import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 
 	codeship "github.com/codeship/codeship-go"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+)
+
+var (
+	mux    *http.ServeMux
+	server *httptest.Server
+	client *codeship.Client
+	org    *codeship.Organization
 )
 
 type optionalError struct {
@@ -19,15 +30,30 @@ type optionalString struct {
 	value string
 }
 
-func TestMain(m *testing.M) {
-	code := m.Run()
-	teardown()
-	os.Exit(code)
+func setup() func() {
+	mux = http.NewServeMux()
+	server = httptest.NewServer(mux)
+
+	mux.HandleFunc("/auth", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, fixture("auth/success.json"))
+	})
+
+	client, _ = codeship.New("test", "pass", codeship.BaseURL(server.URL))
+	org, _ = client.Scope("codeship")
+
+	return func() {
+		server.Close()
+	}
 }
 
-func teardown() {
-	os.Unsetenv("CODESHIP_USERNAME")
-	os.Unsetenv("CODESHIP_PASSWORD")
+func fixture(path string) string {
+	b, err := ioutil.ReadFile("testdata/fixtures/" + path)
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
 }
 
 func TestNew(t *testing.T) {
@@ -134,38 +160,141 @@ func TestNew(t *testing.T) {
 			err: optionalError{want: true, value: errors.New("options parsing failed: boom")},
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				_ = os.Unsetenv("CODESHIP_USERNAME")
+				_ = os.Unsetenv("CODESHIP_PASSWORD")
+			}()
+
 			if tt.env.username.want {
-				os.Setenv("CODESHIP_USERNAME", tt.env.username.value)
+				_ = os.Setenv("CODESHIP_USERNAME", tt.env.username.value)
 			}
 			if tt.env.password.want {
-				os.Setenv("CODESHIP_PASSWORD", tt.env.password.value)
+				_ = os.Setenv("CODESHIP_PASSWORD", tt.env.password.value)
 			}
 
 			got, err := codeship.New(tt.args.username, tt.args.password, tt.args.opts...)
 
-			if err != nil && !tt.err.want {
-				assert.Fail(t, "Unexpected error: %s", err.Error())
-				return
-			} else if err != nil {
-				assert.Equal(t, tt.err.value.Error(), err.Error())
+			if err != nil {
+				if !tt.err.want {
+					assert.Fail("Unexpected error: %s", err.Error())
+				} else {
+					assert.Equal(tt.err.value.Error(), err.Error())
+				}
 				return
 			}
 
-			assert.NotNil(t, got)
+			assert.NotNil(got)
 
 			if tt.env.username.want && tt.args.username == "" {
-				assert.Equal(t, tt.env.username.value, got.Username)
+				assert.Equal(tt.env.username.value, got.Username)
 			} else {
-				assert.Equal(t, tt.args.username, got.Username)
+				assert.Equal(tt.args.username, got.Username)
 			}
 
 			if tt.env.password.want && tt.args.password == "" {
-				assert.Equal(t, tt.env.password.value, got.Password)
+				assert.Equal(tt.env.password.value, got.Password)
 			} else {
-				assert.Equal(t, tt.args.password, got.Password)
+				assert.Equal(tt.args.password, got.Password)
 			}
+		})
+	}
+}
+
+func TestScope(t *testing.T) {
+	type args struct {
+		name string
+	}
+	tests := []struct {
+		name    string
+		handler http.HandlerFunc
+		args    args
+		want    *codeship.Organization
+		err     optionalError
+	}{
+		{
+			name: "success",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+
+				fmt.Fprint(w, fixture("auth/success.json"))
+			},
+			args: args{
+				name: "codeship",
+			},
+			want: &codeship.Organization{
+				Name: "codeship",
+				UUID: "28123f10-e33d-5533-b53f-111ef8d7b14f",
+				Scopes: []string{
+					"project.read",
+					"project.write",
+					"build.read",
+					"build.write",
+				},
+			},
+		},
+		{
+			name: "unauthorized",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusUnauthorized)
+
+				fmt.Fprint(w, fixture("auth/unauthorized.json"))
+			},
+			args: args{
+				name: "codeship",
+			},
+			err: optionalError{want: true, value: errors.New("authentication failed: invalid credentials")},
+		},
+		{
+			name: "wrong organization",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+
+				fmt.Fprint(w, fixture("auth/success.json"))
+			},
+			args: args{
+				name: "foo",
+			},
+			err: optionalError{want: true, value: errors.New("organization 'foo' not authorized. Authorized organizations: [{codeship 28123f10-e33d-5533-b53f-111ef8d7b14f [project.read project.write build.read build.write]}]")},
+		},
+	}
+
+	assert := assert.New(t)
+
+	for _, tt := range tests {
+		mux = http.NewServeMux()
+		server = httptest.NewServer(mux)
+
+		defer func() {
+			server.Close()
+		}()
+
+		mux.HandleFunc("/auth", tt.handler)
+
+		t.Run(tt.name, func(t *testing.T) {
+			c, _ := codeship.New("username", "password", codeship.BaseURL(server.URL))
+			got, err := c.Scope(tt.args.name)
+
+			if err != nil {
+				if !tt.err.want {
+					assert.Fail("Unexpected error: %s", err.Error())
+				} else {
+					assert.Equal(tt.err.value.Error(), err.Error())
+				}
+				return
+			}
+
+			assert.NotNil(got)
+			assert.Equal(tt.want.UUID, got.UUID)
+			assert.Equal(tt.want.Name, got.Name)
+			assert.Equal(tt.want.Scopes, got.Scopes)
 		})
 	}
 }

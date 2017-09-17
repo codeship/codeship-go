@@ -1,0 +1,41 @@
+{
+  "builds": [
+    {
+      "uuid": "25a3dd8c-eb3e-4e75-1298-8cbcbe621342",
+      "project_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
+      "organization_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
+      "ref": "heads/master",
+      "commit_sha": "185ab4c7dc4eda2a027c284f7a669cac3f50a5ed",
+      "status": "success",
+      "username": "fillup",
+      "commit_message": "implemented interface for handling tests",
+      "finished_at": "2017-09-13T17:13:55.193+00:00",
+      "allocated_at": "2017-09-13T17:13:36.967+00:00",
+      "queued_at": "2017-09-13T17:13:39.314+00:00",
+      "links": {
+        "services": "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/services",
+        "steps": "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/steps"
+      }
+    },
+    {
+      "uuid": "25a3dd8c-eb3e-4e75-1298-8cbcbe611111",
+      "project_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
+      "organization_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
+      "ref": "heads/master",
+      "commit_sha": "185ab4c7dc4eda2a027c284f7a669cac3f512345",
+      "status": "success",
+      "username": "fillup",
+      "commit_message": "updated tests",
+      "finished_at": "2017-09-13T17:13:55.193+00:00",
+      "allocated_at": "2017-09-13T17:13:36.967+00:00",
+      "queued_at": "2017-09-13T17:13:39.314+00:00",
+      "links": {
+        "services": "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe611111/services",
+        "steps": "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe611111/steps"
+      }
+    }
+  ],
+  "total": 2,
+  "per_page": 30,
+  "page": 1
+}

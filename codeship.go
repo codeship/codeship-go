@@ -16,7 +16,7 @@ const apiURL = "https://api.codeship.com/v2"
 type Client struct {
 	Username       string
 	Password       string
-	BaseURL        string
+	baseURL        string
 	authentication Authentication
 	headers        http.Header
 	httpClient     *http.Client
@@ -39,7 +39,7 @@ func New(username, password string, opts ...Option) (*Client, error) {
 	client := &Client{
 		Username: username,
 		Password: password,
-		BaseURL:  apiURL,
+		baseURL:  apiURL,
 		headers:  make(http.Header),
 	}
 
@@ -60,7 +60,7 @@ func New(username, password string, opts ...Option) (*Client, error) {
 
 // Scope scopes a client to a single Organization, allowing the user to make calls to the API
 func (c *Client) Scope(name string) (*Organization, error) {
-	if c.authenticationRequired() {
+	if c.AuthenticationRequired() {
 		if err := c.Authenticate(); err != nil {
 			return nil, errors.Wrap(err, "authentication failed")
 		}
@@ -76,10 +76,15 @@ func (c *Client) Scope(name string) (*Organization, error) {
 			}, nil
 		}
 	}
-	return nil, fmt.Errorf("organization %s not authorized. Authorized organizations: %v", name, c.authentication.Organizations)
+	return nil, ErrUnauthorized{fmt.Errorf("organization '%s' not authorized. Authorized organizations: %v", name, c.authentication.Organizations)}
 }
 
-// authenticationRequired determines if a client must authenticate before making a request
-func (c *Client) authenticationRequired() bool {
+// Authentication returns the client's current Authentication object
+func (c *Client) Authentication() Authentication {
+	return c.authentication
+}
+
+// AuthenticationRequired determines if a client must authenticate before making a request
+func (c *Client) AuthenticationRequired() bool {
 	return c.authentication.AccessToken == "" || c.authentication.ExpiresAt <= time.Now().Unix()
 }

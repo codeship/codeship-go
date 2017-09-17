@@ -30,85 +30,90 @@ type Build struct {
 
 // BuildList holds a list of Build objects
 type BuildList struct {
-	Builds []Build
+	Builds []Build `json:"builds"`
+	Pagination
 }
 
 type buildResponse struct {
 	Build Build
 }
 
-// BuildPipelines holds a list of Pipeline objects
+// BuildPipeline structure of BuildPipeline object
+type BuildPipeline struct {
+	UUID       string    `json:"uuid"`
+	BuildUUID  string    `json:"build_uuid"`
+	Type       string    `json:"type"`
+	Status     string    `json:"status"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	FinishedAt time.Time `json:"finished_at"`
+	Metrics    struct {
+		AmiID                 string `json:"ami_id"`
+		Queries               string `json:"queries"`
+		CPUUser               string `json:"cpu_user"`
+		Duration              string `json:"duration"`
+		CPUSystem             string `json:"cpu_system"`
+		InstanceID            string `json:"instance_id"`
+		Architecture          string `json:"architecture"`
+		InstanceType          string `json:"instance_type"`
+		CPUPerSecond          string `json:"cpu_per_second"`
+		DiskFreeBytes         string `json:"disk_free_bytes"`
+		DiskUsedBytes         string `json:"disk_used_bytes"`
+		NetworkRxBytes        string `json:"network_rx_bytes"`
+		NetworkTxBytes        string `json:"network_tx_bytes"`
+		MaxUsedConnections    string `json:"max_used_connections"`
+		MemoryMaxUsageInBytes string `json:"memory_max_usage_in_bytes"`
+	} `json:"metrics"`
+}
+
+// BuildPipelines holds a list of BuildPipeline objects
 type BuildPipelines struct {
-	Pipelines []struct {
-		UUID       string    `json:"uuid"`
-		BuildUUID  string    `json:"build_uuid"`
-		Type       string    `json:"type"`
-		Status     string    `json:"status"`
-		CreatedAt  time.Time `json:"created_at"`
-		UpdatedAt  time.Time `json:"updated_at"`
-		FinishedAt time.Time `json:"finished_at"`
-		Metrics    struct {
-			AmiID                 string `json:"ami_id,omitempty"`
-			Queries               string `json:"queries,omitempty"`
-			CPUUser               string `json:"cpu_user,omitempty"`
-			Duration              string `json:"duration,omitempty"`
-			CPUSystem             string `json:"cpu_system,omitempty"`
-			InstanceID            string `json:"instance_id,omitempty"`
-			Architecture          string `json:"architecture,omitempty"`
-			InstanceType          string `json:"instance_type,omitempty"`
-			CPUPerSecond          string `json:"cpu_per_second,omitempty"`
-			DiskFreeBytes         string `json:"disk_free_bytes,omitempty"`
-			DiskUsedBytes         string `json:"disk_used_bytes,omitempty"`
-			NetworkRxBytes        string `json:"network_rx_bytes,omitempty"`
-			NetworkTxBytes        string `json:"network_tx_bytes,omitempty"`
-			MaxUsedConnections    string `json:"max_used_connections,omitempty"`
-			MemoryMaxUsageInBytes string `json:"memory_max_usage_in_bytes,omitempty"`
-		} `json:"metrics,omitempty"`
-	} `json:"pipelines"`
-	Total   int `json:"total"`
-	PerPage int `json:"per_page"`
-	Page    int `json:"page"`
+	Pipelines []BuildPipeline `json:"pipelines"`
+	Pagination
 }
 
 // BuildStep structure of BuildStep object
 type BuildStep struct {
-	BuildUUID   string    `json:"build_uuid,omitempty"`
-	BuildingAt  time.Time `json:"building_at,omitempty"`
-	Command     string    `json:"command,omitempty"`
-	FinishedAt  time.Time `json:"finished_at,omitempty"`
-	ImageName   string    `json:"image_name,omitempty"`
-	Name        string    `json:"name,omitempty"`
-	Registry    string    `json:"registry,omitempty"`
-	ServiceUUID string    `json:"service_uuid,omitempty"`
-	StartedAt   time.Time `json:"started_at,omitempty"`
-	Status      string    `json:"status,omitempty"`
-	Tag         string    `json:"tag,omitempty"`
-	Type        string    `json:"type,omitempty"`
-	UpdatedAt   time.Time `json:"updated_at,omitempty"`
-	UUID        string    `json:"uuid,omitempty"`
+	BuildUUID   string      `json:"build_uuid"`
+	BuildingAt  time.Time   `json:"building_at"`
+	Command     string      `json:"command"`
+	FinishedAt  time.Time   `json:"finished_at"`
+	ImageName   string      `json:"image_name"`
+	Name        string      `json:"name"`
+	Registry    string      `json:"registry"`
+	ServiceUUID string      `json:"service_uuid"`
+	StartedAt   time.Time   `json:"started_at"`
+	Status      string      `json:"status"`
+	Steps       []BuildStep `json:"steps"`
+	Tag         string      `json:"tag"`
+	Type        string      `json:"type"`
+	UpdatedAt   time.Time   `json:"updated_at"`
+	UUID        string      `json:"uuid"`
 }
 
 // BuildSteps holds a list of BuildStep objects
 type BuildSteps struct {
-	Steps []BuildStep
+	Steps []BuildStep `json:"steps"`
+	Pagination
 }
 
 // BuildService structure of BuildService object
 type BuildService struct {
-	BuildUUID  string    `json:"build_uuid,omitempty"`
-	BuildingAt time.Time `json:"building_at,omitempty"`
-	CreatedAt  time.Time `json:"created_at,omitempty"`
-	FinishedAt time.Time `json:"finished_at,omitempty"`
-	Name       string    `json:"name,omitempty"`
-	PullingAt  time.Time `json:"pulling_at,omitempty"`
-	UpdatedAt  time.Time `json:"updated_at,omitempty"`
-	UUID       string    `json:"uuid,omitempty"`
-	Status     string    `json:"status,omitempty"`
+	BuildUUID  string    `json:"build_uuid"`
+	BuildingAt time.Time `json:"building_at"`
+	CreatedAt  time.Time `json:"created_at"`
+	FinishedAt time.Time `json:"finished_at"`
+	Name       string    `json:"name"`
+	PullingAt  time.Time `json:"pulling_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	UUID       string    `json:"uuid"`
+	Status     string    `json:"status"`
 }
 
 // BuildServices holds a list of BuildService objects
 type BuildServices struct {
-	Services []BuildService
+	Services []BuildService `json:"services"`
+	Pagination
 }
 
 type buildRequest struct {

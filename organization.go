@@ -25,7 +25,7 @@ func (o *Organization) makeRequest(method, path string, params interface{}) ([]b
 		return nil, errors.New("client not instantiated")
 	}
 
-	url := o.client.BaseURL + path
+	url := o.client.baseURL + path
 	// Replace nil with a JSON object if needed
 	var reqBody io.Reader
 	if params != nil {
@@ -38,7 +38,7 @@ func (o *Organization) makeRequest(method, path string, params interface{}) ([]b
 
 	var err error
 
-	if o.client.authenticationRequired() {
+	if o.client.AuthenticationRequired() {
 		if err = o.client.Authenticate(); err != nil {
 			return nil, errors.Wrap(err, "authentication failed")
 		}
