@@ -9,8 +9,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-type ErrUnauthorized struct {
-	error
+type ErrUnauthorized string
+
+func (e ErrUnauthorized) Error() string {
+	return string(e)
 }
 
 // Authentication object holds access token and scope information
@@ -55,9 +57,9 @@ func (c *Client) authenticate() (Authentication, error) {
 	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
 		break
 	case http.StatusUnauthorized:
-		return Authentication{}, ErrUnauthorized{errors.New("invalid credentials")}
+		return Authentication{}, ErrUnauthorized("invalid credentials")
 	case http.StatusForbidden:
-		return Authentication{}, ErrUnauthorized{errors.New("insufficient permissions")}
+		return Authentication{}, ErrUnauthorized("insufficient permissions")
 	default:
 		if resp.StatusCode >= 500 {
 			return Authentication{}, fmt.Errorf("HTTP status %d: service failure", resp.StatusCode)

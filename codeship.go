@@ -76,7 +76,7 @@ func (c *Client) Scope(name string) (*Organization, error) {
 			}, nil
 		}
 	}
-	return nil, ErrUnauthorized{fmt.Errorf("organization '%s' not authorized. Authorized organizations: %v", name, c.authentication.Organizations)}
+	return nil, ErrUnauthorized(fmt.Sprintf("organization '%s' not authorized. Authorized organizations: %v", name, c.authentication.Organizations))
 }
 
 // Authentication returns the client's current Authentication object
