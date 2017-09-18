@@ -2,9 +2,10 @@
 
 This is the start of an API client for the Codeship API written in Go.
 
-> As a warning to all, I am really new to Go and this library may be crap.
+[![Codeship Status for codeship/codeship-go](https://app.codeship.com/projects/c38f3280-792b-0135-21bb-4e0cf8ff365b/status?branch=master)](https://app.codeship.com/projects/244943)
 
 ## Usage
+
 This library is intended to make integrating with Codeship fairly simple.
 
 To start, you need to import the package:
@@ -13,7 +14,7 @@ To start, you need to import the package:
 package main
 
 import (
-	codeship "github.com/codeship/codeship-go"
+    codeship "github.com/codeship/codeship-go"
 )
 ```
 
@@ -22,123 +23,57 @@ This library exposes the package `codeship`.
 Getting a new API Client from it is done by calling `codeship.New()`:
 
 ```go
-codeshipClient := codeship.New("username", "password", "orgname")
+client, err := codeship.New("username", "password")
 ```
 
-With `codeshipClient` you can perform many actions on `Projects` and `Builds`:
-
-### Projects
-
-The `Project` type is defined as:
+You must then scope the client to a single Organization that you have access to:
 
 ```go
-type Project struct {
-	AesKey              string    `json:"aes_key"`
-	AuthenticationUser  string    `json:"authentication_user"`
-	CreatedAt           time.Time `json:"created_at"`
-	DeploymentPipelines []struct {
-		Branch struct {
-			BranchName string `json:"branch_name"`
-			MatchNode  string `json:"match_node"`
-		} `json:"branch"`
-		Config   []string `json:"config"`
-		Position int      `json:"position,omitempty"`
-	} `json:"deployment_pipelines"`
-	EnvironmentVariables []struct {
-		Name  string `json:"name"`
-		Value string `json:"value"`
-	} `json:"environment_variables"`
-	Name              string `json:"name"`
-	NotificationRules []struct {
-		Branch      string `json:"branch"`
-		BranchMatch string `json:"branch_match"`
-		Notifier    string `json:"notifier"`
-		Options     struct {
-			Campfire struct {
-				Room string `json:"room"`
-			} `json:"campfire"`
-			FlowdockKey string `json:"flowdock_key"`
-			Hipchat     struct {
-				Key string `json:"key"`
-			} `json:"hipchat"`
-			WebhookURL string `json:"webhook_url"`
-		} `json:"options"`
-		BuildOwner    string `json:"build_owner,omitempty"`
-		BuildStatuses []string `json:"build_statuses,omitempty"`
-		EmailTarget   string `json:"email_target,omitempty"`
-	} `json:"notification_rules"`
-	RepositoryProvider string   `json:"repository_provider"`
-	RepositoryURL      string   `json:"repository_url"`
-	SetupCommands      []string `json:"setup_commands"`
-	SSHKey             string   `json:"ssh_key"`
-	TeamIds            []int    `json:"team_ids"`
-	TestPipelines      []struct {
-		Commands []string `json:"commands,omitempty"`
-		Name     string   `json:"name,omitempty"`
-	} `json:"test_pipelines"`
-	Type      string    `json:"type"`
-	UpdatedAt time.Time `json:"updated_at"`
-	UUID      string    `json:"uuid"`
-}
+org, err := client.Scope('codeship')
 ```
 
-#### List Projects
-
-The `ProjectList` type is defined as:
+You can then perform calls to the API on behalf of an Organization:
 
 ```go
-type ProjectList struct {
-	Projects []Project
-}
+projects, err := org.ListProjects()
 ```
 
-Get a list of all projects:
+## Authentication
+
+Authentication is handled automatically via the API Client using the provided `username` and `password`.
+
+If you would like to manually re-authenticate, you may do this by calling the `Authenticate` method on the `client`:
+
 ```go
-projectList, err := codeshipClient.ListProjects(orgUUID)
-// Loop through projects:
-for project := range projectList.Projects {
-  // do something with project
-}
+err := client.Authenticate()
 ```
 
-#### Get Project
-Get a specific project
+## Documentation
 
-```go
-project, err := codeshipClient.GetProject(orgUUID, projectUUID)
-```
+TODO: link to GoDoc
 
-#### Create Project
-Create a new project
+## Contributing
 
-```go
-newProject := Project{
-  Type:          codeship.TypePro,
-  RepositoryURL: "git@github.com:my/repo.git",
-  // ...
-}
+### Setup
 
-project, err := codeshipClient.CreateProject(orgUUID, newProject)
+This project uses [dep](https://github.com/golang/dep) for dependency management.
+
+To install/update dep and all dependencies, run:
+
+```bash
+make setup
 ```
 
 ## Testing
-Testing for this library is actually integration testing, not just unit testing.
-It requires credentials to be able to talk to the Codeship API, so only run
-tests if you know what you are doing and want to potentially change things
-on your Codeship projects or builds.
 
-If you really want to run tests:
+```bash
+make test
+```
 
- - Export ENV vars for `CODESHIP_USERNAME` and `CODESHIP_PASSWORD`, or copy
-   `local.go.dist` to `local.go` and set username and password in that file.
- - Copy `test_fixtures.go.dist` to `test_fixtures.go` and fill it in with
-   fixture information for real org/project/build data
- - Run `go test`
+## TODO
 
-## Todo
-
-- [ ] Iterate through pages of projects in List Projects to get full list or
-add support for passing pagination parameters to the function
-- [ ] Iterate through pages of builds in List Builds to get full list or
-add support for passing pagination parameters to the function
-- [ ] Create constants for all http error codes and use them
+- [ ] Finish unit tests and stub out JSON responses
+- [ ] Support pagination
+- [x] Auto-refresh token if expired before calling endpoints?
+- [ ] Make sure all endpoints are covered
+- [ ] Publish GoDoc

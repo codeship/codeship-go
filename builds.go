@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	errors "github.com/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // Build structure of Build object
@@ -116,141 +116,133 @@ type buildRequest struct {
 	Ref       string `json:"ref"`
 }
 
-// CreateBuild Create a new build
-func (api *API) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", orgUUID, projectUUID)
+// CreateBuild creates a new build
+func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
 	buildReq := buildRequest{
 		Ref:       ref,
 		CommitSha: commitSha,
 	}
 
-	_, err := api.makeRequest("POST", path, buildReq)
+	_, err := o.makeRequest("POST", path, buildReq)
 	if err != nil {
-		return false, errors.Wrap(err, "Unable to create build")
+		return false, errors.Wrap(err, "unable to create build")
 	}
 
 	return true, nil
 }
 
-// GetBuild Fetch a build
-func (api *API) GetBuild(projectUUID, buildUUID string) (Build, error) {
+// GetBuild fetches a build
+func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, error) {
 	build := Build{}
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", orgUUID, projectUUID, buildUUID)
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", o.UUID, projectUUID, buildUUID)
 
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
-		return build, errors.Wrap(err, "Unable to get build")
+		return build, errors.Wrap(err, "unable to get build")
 	}
 
 	buildResp := buildResponse{}
 	err = json.Unmarshal(resp, &buildResp)
 	if err != nil {
-		return build, errors.Wrap(err, "Unable to unmarshal JSON into Build")
+		return build, errors.Wrap(err, "unable to unmarshal response into Build")
 	}
 
 	return buildResp.Build, nil
 }
 
-// ListBuilds Fetch a list of builds for the given organization
-func (api *API) ListBuilds(projectUUID string) (BuildList, error) {
+// ListBuilds fetches a list of builds for the given organization
+func (o *Organization) ListBuilds(projectUUID string) (BuildList, error) {
 	buildList := BuildList{}
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", orgUUID, projectUUID)
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
-		return buildList, errors.Wrap(err, "Unable to list builds")
+		return buildList, errors.Wrap(err, "unable to list builds")
 	}
 
 	err = json.Unmarshal(resp, &buildList)
 	if err != nil {
-		return buildList, errors.Wrap(err, "Unable to unmarshal JSON into BuildList")
+		return buildList, errors.Wrap(err, "unable to unmarshal response into BuildList")
 	}
 
 	return buildList, nil
 }
 
-// GetBuildPipelines Basic projects only
-func (api *API) GetBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, error) {
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", orgUUID, projectUUID, buildUUID)
+// GetBuildPipelines gets Basic build pipelines
+func (o *Organization) GetBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
 
 	buildPipelines := BuildPipelines{}
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
-		return buildPipelines, errors.Wrap(err, "Unable to get build pipelines")
+		return buildPipelines, errors.Wrap(err, "unable to get build pipelines")
 	}
 
 	err = json.Unmarshal(resp, &buildPipelines)
 	if err != nil {
-		return buildPipelines, errors.Wrap(err, "Unable to unmarshal JSON into BuildPipelines")
+		return buildPipelines, errors.Wrap(err, "unable to unmarshal response into BuildPipelines")
 	}
 
 	return buildPipelines, nil
 }
 
-// StopBuild Stop a running build
-func (api *API) StopBuild(projectUUID, buildUUID string) (bool, error) {
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", orgUUID, projectUUID, buildUUID)
+// StopBuild stops a running build
+func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", o.UUID, projectUUID, buildUUID)
 
-	_, err := api.makeRequest("POST", path, nil)
+	_, err := o.makeRequest("POST", path, nil)
 	if err != nil {
-		return false, errors.Wrap(err, "Unable to stop build")
+		return false, errors.Wrap(err, "unable to stop build")
 	}
 
 	return true, nil
 }
 
-// RestartBuild Restart a previous build
-func (api *API) RestartBuild(projectUUID, buildUUID string) (bool, error) {
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", orgUUID, projectUUID, buildUUID)
+// RestartBuild restarts a previous build
+func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", o.UUID, projectUUID, buildUUID)
 
-	_, err := api.makeRequest("POST", path, nil)
+	_, err := o.makeRequest("POST", path, nil)
 	if err != nil {
-		return false, errors.Wrap(err, "Unable to restart build, error")
+		return false, errors.Wrap(err, "unable to restart build")
 	}
 
 	return true, nil
 }
 
-// GetBuildServices Pro projects only
-func (api *API) GetBuildServices(projectUUID, buildUUID string) (BuildServices, error) {
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", orgUUID, projectUUID, buildUUID)
+// GetBuildServices gets Pro build services
+func (o *Organization) GetBuildServices(projectUUID, buildUUID string) (BuildServices, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
 
 	buildServices := BuildServices{}
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
-		return buildServices, errors.Wrap(err, "Unable to get build services")
+		return buildServices, errors.Wrap(err, "unable to get build services")
 	}
 
 	err = json.Unmarshal(resp, &buildServices)
 	if err != nil {
-		return buildServices, errors.Wrap(err, "Unable to unmarshal JSON into BuildServices")
+		return buildServices, errors.Wrap(err, "unable to unmarshal response into BuildServices")
 	}
 
 	return buildServices, nil
 }
 
-// GetBuildSteps Pro projects only
-func (api *API) GetBuildSteps(projectUUID, buildUUID string) (BuildSteps, error) {
-	orgUUID := api.getOrgUUID()
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", orgUUID, projectUUID, buildUUID)
+// GetBuildSteps gets Pro build steps
+func (o *Organization) GetBuildSteps(projectUUID, buildUUID string) (BuildSteps, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
 
 	buildSteps := BuildSteps{}
-	resp, err := api.makeRequest("GET", path, nil)
+	resp, err := o.makeRequest("GET", path, nil)
 	if err != nil {
-		return buildSteps, errors.Wrap(err, "Unable to get build steps")
+		return buildSteps, errors.Wrap(err, "unable to get build steps")
 	}
 
 	err = json.Unmarshal(resp, &buildSteps)
 	if err != nil {
-		return buildSteps, errors.Wrap(err, "Unable to unmarshal JSON into BuildSteps")
+		return buildSteps, errors.Wrap(err, "unable to unmarshal response into BuildSteps")
 	}
 
 	return buildSteps, nil
