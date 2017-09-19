@@ -2,6 +2,7 @@ package codeship
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -20,6 +21,8 @@ type Client struct {
 	authentication Authentication
 	headers        http.Header
 	httpClient     *http.Client
+	logger         *log.Logger
+	verbose        bool
 }
 
 // New creates a new Codeship API client
@@ -47,12 +50,19 @@ func New(username, password string, opts ...Option) (*Client, error) {
 		return nil, errors.Wrap(err, "options parsing failed")
 	}
 
-	// Fall back to http.DefaultClient if the package user does not provide
+	// Fall back to http.DefaultClient if the user does not provide
 	// their own
 	if client.httpClient == nil {
 		client.httpClient = &http.Client{
 			Timeout: time.Second * 30,
 		}
+	}
+
+	// Fall back to default log.Logger (STDOUT) if the user does not provide
+	// their own
+	if client.logger == nil {
+		client.logger = &log.Logger{}
+		client.logger.SetOutput(os.Stdout)
 	}
 
 	return client, nil

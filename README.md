@@ -4,6 +4,8 @@
 
 ## Usage
 
+`go get -u github.com/codeship/codeship-go`
+
 This library is intended to make integrating with Codeship fairly simple.
 
 To start, you need to import the package:
@@ -44,6 +46,25 @@ If you would like to manually re-authenticate, you may do this by calling the `A
 
 ```go
 err := client.Authenticate()
+```
+
+## Logging
+
+You can enable verbose logging of all HTTP requests/responses by configuring the `client` via the functional option `Verbose(verbose bool)` when instantiating the client:
+
+```go
+client, err := codeship.New("username", "password", codeship.Verbose(true))
+```
+
+The default logger logs to STDOUT but can be replaced by any instance of `*log.Logger`:
+
+```go
+var (
+    buf    bytes.Buffer
+    logger = log.New(&buf, "INFO: ", log.Lshortfile)
+)
+
+client, err := codeship.New("username", "password", codeship.Verbose(true), codeship.Logger(logger))
 ```
 
 ## Documentation

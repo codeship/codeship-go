@@ -1,6 +1,9 @@
 package codeship
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+)
 
 // Option is a functional option for configuring the API client
 type Option func(*Client) error
@@ -26,6 +29,22 @@ func Headers(headers http.Header) Option {
 func BaseURL(baseURL string) Option {
 	return func(c *Client) error {
 		c.baseURL = baseURL
+		return nil
+	}
+}
+
+// Logger allows overriding the default STDOUT logger
+func Logger(logger *log.Logger) Option {
+	return func(c *Client) error {
+		c.logger = logger
+		return nil
+	}
+}
+
+// Verbose allows enabling/disabling internal logging
+func Verbose(verbose bool) Option {
+	return func(c *Client) error {
+		c.verbose = verbose
 		return nil
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 
 	"github.com/pkg/errors"
 )
@@ -20,7 +21,7 @@ type Organization struct {
 	client *Client
 }
 
-func (o *Organization) makeRequest(method, path string, params interface{}) ([]byte, error) {
+func (o *Organization) request(method, path string, params interface{}) ([]byte, error) {
 	if o.client == nil {
 		return nil, errors.New("client not instantiated")
 	}
@@ -44,10 +45,33 @@ func (o *Organization) makeRequest(method, path string, params interface{}) ([]b
 		}
 	}
 
-	resp, err := o.request(method, url, reqBody)
+	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "HTTP request creation failed")
 	}
+
+	// Apply any user-defined headers first
+	req.Header = cloneHeader(o.client.headers)
+	req.Header.Set("Authorization", "Bearer "+o.client.authentication.AccessToken)
+	if req.Header.Get("Content-Type") == "" {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	if o.client.verbose {
+		dumpReq, _ := httputil.DumpRequest(req, params != nil)
+		o.client.logger.Println(string(dumpReq))
+	}
+
+	resp, err := o.client.httpClient.Do(req)
+	if err != nil {
+		return nil, errors.Wrap(err, "HTTP request failed")
+	}
+
+	if o.client.verbose {
+		dumpResp, _ := httputil.DumpResponse(resp, true)
+		o.client.logger.Println(string(dumpResp))
+	}
+
 	defer func() {
 		_ = resp.Body.Close()
 	}()
@@ -77,30 +101,6 @@ func (o *Organization) makeRequest(method, path string, params interface{}) ([]b
 	}
 
 	return body, nil
-}
-
-// request makes a HTTP request to the given API endpoint, returning the raw
-// *http.Response, or an error if one occurred. The caller is responsible for
-// closing the response body
-func (o *Organization) request(method, url string, reqBody io.Reader) (*http.Response, error) {
-	req, err := http.NewRequest(method, url, reqBody)
-	if err != nil {
-		return nil, errors.Wrap(err, "HTTP request creation failed")
-	}
-
-	// Apply any user-defined headers first
-	req.Header = cloneHeader(o.client.headers)
-	req.Header.Set("Authorization", "Bearer "+o.client.authentication.AccessToken)
-	if req.Header.Get("Content-Type") == "" {
-		req.Header.Set("Content-Type", "application/json")
-	}
-
-	resp, err := o.client.httpClient.Do(req)
-	if err != nil {
-		return nil, errors.Wrap(err, "HTTP request failed")
-	}
-
-	return resp, nil
 }
 
 // cloneHeader returns a shallow copy of the header.
