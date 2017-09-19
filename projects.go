@@ -78,7 +78,7 @@ func (o *Organization) ListProjects() (ProjectList, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
 	projectList := ProjectList{}
-	resp, err := o.makeRequest("GET", path, nil)
+	resp, err := o.request("GET", path, nil)
 	if err != nil {
 		return projectList, errors.Wrap(err, "unable to list projects")
 	}
@@ -96,7 +96,7 @@ func (o *Organization) GetProject(projectID string) (Project, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectID)
 
 	project := projectResponse{}
-	resp, err := o.makeRequest("GET", path, nil)
+	resp, err := o.request("GET", path, nil)
 	if err != nil {
 		return project.Project, errors.Wrap(err, "unable to get project")
 	}
@@ -113,7 +113,7 @@ func (o *Organization) GetProject(projectID string) (Project, error) {
 func (o *Organization) CreateProject(project Project) (Project, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
-	resp, err := o.makeRequest("POST", path, project)
+	resp, err := o.request("POST", path, project)
 	if err != nil {
 		return project, errors.Wrap(err, "unable to create project")
 	}
