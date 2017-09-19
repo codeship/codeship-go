@@ -14,8 +14,10 @@ func TestCreateBuild(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "POST", r.Method)
-		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
+		assert := assert.New(t)
+		assert.Equal("POST", r.Method)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
@@ -32,8 +34,10 @@ func TestStopBuild(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/stop", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "POST", r.Method)
-		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
+		assert := assert.New(t)
+		assert.Equal("POST", r.Method)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
@@ -50,8 +54,10 @@ func TestRestartBuild(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/restart", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "POST", r.Method)
-		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
+		assert := assert.New(t)
+		assert.Equal("POST", r.Method)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
@@ -68,7 +74,10 @@ func TestGetBuild(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "GET", r.Method)
+		assert := assert.New(t)
+		assert.Equal("GET", r.Method)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -104,7 +113,10 @@ func TestListBuilds(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "GET", r.Method)
+		assert := assert.New(t)
+		assert.Equal("GET", r.Method)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -128,7 +140,10 @@ func TestGetBuildPipelines(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/9ec4b230-76f8-0135-86b9-2ee351ae25fe/pipelines", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "GET", r.Method)
+		assert := assert.New(t)
+		assert.Equal("GET", r.Method)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -162,7 +177,10 @@ func TestGetBuildServices(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/28123f10-e33d-5533-b53f-111ef8d7b14f/services", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "GET", r.Method)
+		assert := assert.New(t)
+		assert.Equal("GET", r.Method)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -195,7 +213,10 @@ func TestGetBuildSteps(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/28123f10-e33d-5533-b53f-111ef8d7b14f/steps", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, "GET", r.Method)
+		assert := assert.New(t)
+		assert.Equal("GET", r.Method)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

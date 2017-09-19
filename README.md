@@ -94,5 +94,5 @@ make test
 - [ ] Finish unit tests and stub out JSON responses
 - [ ] Support pagination
 - [x] Auto-refresh token if expired before calling endpoints?
-- [ ] Make sure all endpoints are covered
 - [ ] Publish GoDoc
+- [ ] Versioning

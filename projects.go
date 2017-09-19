@@ -8,15 +8,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TypePro constant for Pro project type value
-const TypePro = "pro"
-
-// TypeBasic constant for Basic project type value
-const TypeBasic = "basic"
-
 // Project structure for Project object
 type Project struct {
-	AesKey              string    `json:"aes_key"`
+	AesKey              string    `json:"aes_key,omitempty"`
 	AuthenticationUser  string    `json:"authentication_user"`
 	CreatedAt           time.Time `json:"created_at"`
 	DeploymentPipelines []struct {
@@ -25,40 +19,35 @@ type Project struct {
 			MatchNode  string `json:"match_node"`
 		} `json:"branch"`
 		Config   []string `json:"config"`
-		Position int      `json:"position,omitempty"`
-	} `json:"deployment_pipelines"`
+		Position int      `json:"position"`
+	} `json:"deployment_pipelines,omitempty"`
 	EnvironmentVariables []struct {
 		Name  string `json:"name"`
 		Value string `json:"value"`
-	} `json:"environment_variables"`
+	} `json:"environment_variables,omitempty"`
 	Name              string `json:"name"`
 	NotificationRules []struct {
 		Branch      string `json:"branch"`
 		BranchMatch string `json:"branch_match"`
 		Notifier    string `json:"notifier"`
 		Options     struct {
-			Campfire struct {
-				Room string `json:"room"`
-			} `json:"campfire"`
-			FlowdockKey string `json:"flowdock_key"`
-			Hipchat     struct {
-				Key string `json:"key"`
-			} `json:"hipchat"`
-			WebhookURL string `json:"webhook_url"`
+			Key  string `json:"key"`
+			URL  string `json:"url"`
+			Room string `json:"room"`
 		} `json:"options"`
-		BuildOwner    string   `json:"build_owner,omitempty"`
-		BuildStatuses []string `json:"build_statuses,omitempty"`
-		EmailTarget   string   `json:"email_target,omitempty"`
+		BuildStatuses []string `json:"build_statuses"`
+		EmailTarget   string   `json:"email_target"`
 	} `json:"notification_rules"`
+	OrganizationUUID   string   `json:"organization_uuid"`
 	RepositoryProvider string   `json:"repository_provider"`
 	RepositoryURL      string   `json:"repository_url"`
-	SetupCommands      []string `json:"setup_commands"`
+	SetupCommands      []string `json:"setup_commands,omitempty"`
 	SSHKey             string   `json:"ssh_key"`
 	TeamIds            []int    `json:"team_ids"`
 	TestPipelines      []struct {
-		Commands []string `json:"commands,omitempty"`
-		Name     string   `json:"name,omitempty"`
-	} `json:"test_pipelines"`
+		Commands []string `json:"commands"`
+		Name     string   `json:"name"`
+	} `json:"test_pipelines,omitempty"`
 	Type      string    `json:"type"`
 	UpdatedAt time.Time `json:"updated_at"`
 	UUID      string    `json:"uuid"`
@@ -67,6 +56,7 @@ type Project struct {
 // ProjectList holds a list of Project objects
 type ProjectList struct {
 	Projects []Project
+	pagination
 }
 
 type projectResponse struct {

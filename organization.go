@@ -53,9 +53,8 @@ func (o *Organization) request(method, path string, params interface{}) ([]byte,
 	// Apply any user-defined headers first
 	req.Header = cloneHeader(o.client.headers)
 	req.Header.Set("Authorization", "Bearer "+o.client.authentication.AccessToken)
-	if req.Header.Get("Content-Type") == "" {
-		req.Header.Set("Content-Type", "application/json")
-	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
 
 	if o.client.verbose {
 		dumpReq, _ := httputil.DumpRequest(req, params != nil)

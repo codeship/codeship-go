@@ -31,7 +31,7 @@ type Build struct {
 // BuildList holds a list of Build objects
 type BuildList struct {
 	Builds []Build `json:"builds"`
-	Pagination
+	pagination
 }
 
 type buildResponse struct {
@@ -69,7 +69,7 @@ type BuildPipeline struct {
 // BuildPipelines holds a list of BuildPipeline objects
 type BuildPipelines struct {
 	Pipelines []BuildPipeline `json:"pipelines"`
-	Pagination
+	pagination
 }
 
 // BuildStep structure of BuildStep object
@@ -94,7 +94,7 @@ type BuildStep struct {
 // BuildSteps holds a list of BuildStep objects
 type BuildSteps struct {
 	Steps []BuildStep `json:"steps"`
-	Pagination
+	pagination
 }
 
 // BuildService structure of BuildService object
@@ -113,7 +113,7 @@ type BuildService struct {
 // BuildServices holds a list of BuildService objects
 type BuildServices struct {
 	Services []BuildService `json:"services"`
-	Pagination
+	pagination
 }
 
 type buildRequest struct {
