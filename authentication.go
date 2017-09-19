@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 
 	"github.com/pkg/errors"
 )
@@ -40,10 +41,21 @@ func (c *Client) authenticate() (Authentication, error) {
 	req.SetBasicAuth(c.Username, c.Password)
 	req.Header.Set("Content-Type", "application/json")
 
+	if c.verbose {
+		dumpReq, _ := httputil.DumpRequest(req, false)
+		c.logger.Println(string(dumpReq))
+	}
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return Authentication{}, errors.Wrap(err, fmt.Sprintf("unable to call %s%s", c.baseURL, path))
 	}
+
+	if c.verbose {
+		dumpResp, _ := httputil.DumpResponse(resp, true)
+		c.logger.Println(string(dumpResp))
+	}
+
 	defer func() {
 		_ = resp.Body.Close()
 	}()
