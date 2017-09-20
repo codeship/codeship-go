@@ -146,7 +146,7 @@ type projectResponse struct {
 func (o *Organization) ListProjects() (ProjectList, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
 		return ProjectList{}, errors.Wrap(err, "unable to list projects")
 	}
@@ -163,7 +163,7 @@ func (o *Organization) ListProjects() (ProjectList, error) {
 func (o *Organization) GetProject(projectUUID string) (Project, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
 		return Project{}, errors.Wrap(err, "unable to get project")
 	}
@@ -180,7 +180,7 @@ func (o *Organization) GetProject(projectUUID string) (Project, error) {
 func (o *Organization) CreateProject(p ProjectCreateRequest) (Project, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
-	resp, err := o.request("POST", path, p)
+	resp, err := o.client.request("POST", path, p)
 	if err != nil {
 		return Project{}, errors.Wrap(err, "unable to create project")
 	}
@@ -197,7 +197,7 @@ func (o *Organization) CreateProject(p ProjectCreateRequest) (Project, error) {
 func (o *Organization) UpdateProject(projectUUID string, p ProjectUpdateRequest) (Project, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
-	resp, err := o.request("PUT", path, p)
+	resp, err := o.client.request("PUT", path, p)
 	if err != nil {
 		return Project{}, errors.Wrap(err, "unable to update project")
 	}
