@@ -8,111 +8,204 @@ import (
 	"github.com/pkg/errors"
 )
 
+// ProjectType represents Codeship project types (Basic and Pro)
+type ProjectType int
+
+const (
+	ProjectTypeBasic ProjectType = iota
+	ProjectTypePro
+)
+
+var (
+	_projectTypeValueToName = map[ProjectType]string{
+		ProjectTypeBasic: "basic",
+		ProjectTypePro:   "pro",
+	}
+	_projectTypeNameToValue = map[string]ProjectType{
+		"basic": ProjectTypeBasic,
+		"pro":   ProjectTypePro,
+	}
+)
+
+func (t *ProjectType) String() string {
+	return _projectTypeValueToName[*t]
+}
+
+func (t *ProjectType) MarshalJSON() ([]byte, error) {
+	return json.Marshal(t.String())
+}
+
+func (t *ProjectType) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return fmt.Errorf("ProjectType should be a string, got %s", data)
+	}
+	v, ok := _projectTypeNameToValue[s]
+	if !ok {
+		return fmt.Errorf("invalid ProjectType %q", s)
+	}
+	*t = v
+	return nil
+}
+
+// DeploymentBranch structure for DeploymentBranch object for a Basic Project
+type DeploymentBranch struct {
+	BranchName string `json:"branch_name,omitempty"`
+	MatchNode  string `json:"match_node,omitempty"`
+}
+
+// DeploymentPipeline structure for DeploymentPipeline object for a Basic Project
+type DeploymentPipeline struct {
+	Branch   DeploymentBranch `json:"branch,omitempty"`
+	Config   []string         `json:"config,omitempty"`
+	Position int              `json:"position,omitempty"`
+}
+
+// EnvironmentVariable structure for EnvironmentVariable object for a Basic Project
+type EnvironmentVariable struct {
+	Name  string `json:"name,omitempty"`
+	Value string `json:"value,omitempty"`
+}
+
+// NotificationOptions structure for NotificationOptions object for a Project
+type NotificationOptions struct {
+	Key  string `json:"key,omitempty"`
+	URL  string `json:"url,omitempty"`
+	Room string `json:"room,omitempty"`
+}
+
+// NotificationRule structure for NotificationRule object for a Project
+type NotificationRule struct {
+	Branch        string              `json:"branch,omitempty"`
+	BranchMatch   string              `json:"branch_match,omitempty"`
+	Notifier      string              `json:"notifier,omitempty"`
+	Options       NotificationOptions `json:"options,omitempty"`
+	BuildStatuses []string            `json:"build_statuses,omitempty"`
+	Target        string              `json:"target,omitempty"`
+}
+
+// TestPipeline structure for Project object
+type TestPipeline struct {
+	Commands []string `json:"commands,omitempty"`
+	Name     string   `json:"name,omitempty"`
+}
+
 // Project structure for Project object
 type Project struct {
-	AesKey              string    `json:"aes_key,omitempty"`
-	AuthenticationUser  string    `json:"authentication_user"`
-	CreatedAt           time.Time `json:"created_at"`
-	DeploymentPipelines []struct {
-		Branch struct {
-			BranchName string `json:"branch_name"`
-			MatchNode  string `json:"match_node"`
-		} `json:"branch"`
-		Config   []string `json:"config"`
-		Position int      `json:"position"`
-	} `json:"deployment_pipelines,omitempty"`
-	EnvironmentVariables []struct {
-		Name  string `json:"name"`
-		Value string `json:"value"`
-	} `json:"environment_variables,omitempty"`
-	Name              string `json:"name"`
-	NotificationRules []struct {
-		Branch      string `json:"branch"`
-		BranchMatch string `json:"branch_match"`
-		Notifier    string `json:"notifier"`
-		Options     struct {
-			Key  string `json:"key"`
-			URL  string `json:"url"`
-			Room string `json:"room"`
-		} `json:"options"`
-		BuildStatuses []string `json:"build_statuses"`
-		EmailTarget   string   `json:"email_target"`
-	} `json:"notification_rules"`
-	OrganizationUUID   string   `json:"organization_uuid"`
-	RepositoryProvider string   `json:"repository_provider"`
-	RepositoryURL      string   `json:"repository_url"`
-	SetupCommands      []string `json:"setup_commands,omitempty"`
-	SSHKey             string   `json:"ssh_key"`
-	TeamIds            []int    `json:"team_ids"`
-	TestPipelines      []struct {
-		Commands []string `json:"commands"`
-		Name     string   `json:"name"`
-	} `json:"test_pipelines,omitempty"`
-	Type      string    `json:"type"`
-	UpdatedAt time.Time `json:"updated_at"`
-	UUID      string    `json:"uuid"`
+	AesKey               string                `json:"aes_key,omitempty"`
+	AuthenticationUser   string                `json:"authentication_user,omitempty"`
+	CreatedAt            time.Time             `json:"created_at,omitempty"`
+	DeploymentPipelines  []DeploymentPipeline  `json:"deployment_pipelines,omitempty"`
+	EnvironmentVariables []EnvironmentVariable `json:"environment_variables,omitempty"`
+	Name                 string                `json:"name,omitempty"`
+	NotificationRules    []NotificationRule    `json:"notification_rules,omitempty"`
+	OrganizationUUID     string                `json:"organization_uuid,omitempty"`
+	RepositoryProvider   string                `json:"repository_provider,omitempty"`
+	RepositoryURL        string                `json:"repository_url,omitempty"`
+	SetupCommands        []string              `json:"setup_commands,omitempty"`
+	SSHKey               string                `json:"ssh_key,omitempty"`
+	TeamIDs              []int                 `json:"team_ids,omitempty"`
+	TestPipelines        []TestPipeline        `json:"test_pipelines,omitempty"`
+	Type                 ProjectType           `json:"type,omitempty"`
+	UpdatedAt            time.Time             `json:"updated_at,omitempty"`
+	UUID                 string                `json:"uuid,omitempty"`
+}
+
+// ProjectCreateRequest structure for creating a Project
+type ProjectCreateRequest struct {
+	DeploymentPipelines  []DeploymentPipeline  `json:"deployment_pipelines,omitempty"`
+	EnvironmentVariables []EnvironmentVariable `json:"environment_variables,omitempty"`
+	NotificationRules    []NotificationRule    `json:"notification_rules,omitempty"`
+	RepositoryURL        string                `json:"repository_url,omitempty"`
+	SetupCommands        []string              `json:"setup_commands,omitempty"`
+	TeamIDs              []int                 `json:"team_ids,omitempty"`
+	TestPipelines        []TestPipeline        `json:"test_pipelines,omitempty"`
+	Type                 ProjectType           `json:"type,omitempty"`
+}
+
+// ProjectUpdateRequest structure for updating a Project
+type ProjectUpdateRequest struct {
+	EnvironmentVariables []EnvironmentVariable `json:"environment_variables,omitempty"`
+	NotificationRules    []NotificationRule    `json:"notification_rules,omitempty"`
+	SetupCommands        []string              `json:"setup_commands,omitempty"`
+	TeamIDs              []int                 `json:"team_ids,omitempty"`
+	Type                 ProjectType           `json:"type,omitempty"`
 }
 
 // ProjectList holds a list of Project objects
 type ProjectList struct {
-	Projects []Project
+	Projects []Project `json:"projects"`
 	pagination
 }
 
 type projectResponse struct {
-	Project Project
+	Project Project `json:"project"`
 }
 
 // ListProjects fetches a list of projects
 func (o *Organization) ListProjects() (ProjectList, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
-	projectList := ProjectList{}
 	resp, err := o.request("GET", path, nil)
 	if err != nil {
-		return projectList, errors.Wrap(err, "unable to list projects")
+		return ProjectList{}, errors.Wrap(err, "unable to list projects")
 	}
 
-	err = json.Unmarshal(resp, &projectList)
-	if err != nil {
-		return projectList, errors.Wrap(err, "unable to unmarshal response into ProjectList")
+	var projects ProjectList
+	if err = json.Unmarshal(resp, &projects); err != nil {
+		return ProjectList{}, errors.Wrap(err, "unable to unmarshal response into ProjectList")
 	}
 
-	return projectList, nil
+	return projects, nil
 }
 
-// GetProject fetches a project by ID
-func (o *Organization) GetProject(projectID string) (Project, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectID)
+// GetProject fetches a project by UUID
+func (o *Organization) GetProject(projectUUID string) (Project, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
-	project := projectResponse{}
 	resp, err := o.request("GET", path, nil)
 	if err != nil {
-		return project.Project, errors.Wrap(err, "unable to get project")
+		return Project{}, errors.Wrap(err, "unable to get project")
 	}
 
-	err = json.Unmarshal(resp, &project)
-	if err != nil {
-		return project.Project, errors.Wrap(err, "unable to unmarshal response into Project")
+	var project projectResponse
+	if err = json.Unmarshal(resp, &project); err != nil {
+		return Project{}, errors.Wrap(err, "unable to unmarshal response into Project")
 	}
 
 	return project.Project, nil
 }
 
 // CreateProject creates a new project
-func (o *Organization) CreateProject(project Project) (Project, error) {
+func (o *Organization) CreateProject(p ProjectCreateRequest) (Project, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
-	resp, err := o.request("POST", path, project)
+	resp, err := o.request("POST", path, p)
 	if err != nil {
-		return project, errors.Wrap(err, "unable to create project")
+		return Project{}, errors.Wrap(err, "unable to create project")
 	}
 
-	projResponse := projectResponse{}
-	err = json.Unmarshal(resp, &projResponse)
-	if err != nil {
-		return project, errors.Wrap(err, "unable to unmarshal response into Project")
+	var project projectResponse
+	if err = json.Unmarshal(resp, &project); err != nil {
+		return Project{}, errors.Wrap(err, "unable to unmarshal response into Project")
 	}
 
-	return projResponse.Project, nil
+	return project.Project, nil
+}
+
+// UpdateProject updates an existing project
+func (o *Organization) UpdateProject(projectUUID string, p ProjectUpdateRequest) (Project, error) {
+	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
+
+	resp, err := o.request("PUT", path, p)
+	if err != nil {
+		return Project{}, errors.Wrap(err, "unable to update project")
+	}
+
+	var project projectResponse
+	if err = json.Unmarshal(resp, &project); err != nil {
+		return Project{}, errors.Wrap(err, "unable to unmarshal response into Project")
+	}
+
+	return project.Project, nil
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// ErrUnauthorized represents an unauthorized request to the API
 type ErrUnauthorized string
 
 func (e ErrUnauthorized) Error() string {
@@ -18,13 +19,13 @@ func (e ErrUnauthorized) Error() string {
 
 // Authentication object holds access token and scope information
 type Authentication struct {
-	AccessToken   string `json:"access_token"`
+	AccessToken   string `json:"access_token,omitempty"`
 	Organizations []struct {
-		Name   string   `json:"name"`
-		UUID   string   `json:"uuid"`
-		Scopes []string `json:"scopes"`
-	} `json:"organizations"`
-	ExpiresAt int64 `json:"expires_at"`
+		Name   string   `json:"name,omitempty"`
+		UUID   string   `json:"uuid,omitempty"`
+		Scopes []string `json:"scopes,omitempty"`
+	} `json:"organizations,omitempty"`
+	ExpiresAt int64 `json:"expires_at,omitempty"`
 }
 
 // Authenticate swaps username/password for an authentication token

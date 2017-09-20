@@ -29,7 +29,7 @@
             "failed",
             "recovered"
           ],
-          "email_target": "all",
+          "target": "all",
           "options": {}
         }
       ],
@@ -60,7 +60,7 @@
             "recovered",
             "success"
           ],
-          "email_target": "all",
+          "target": "all",
           "options": {}
         },
         {
@@ -71,7 +71,7 @@
             "failed",
             "recovered"
           ],
-          "email_target": "all",
+          "target": "all",
           "options": {}
         }
       ],
