@@ -8,24 +8,27 @@ import (
 	"github.com/pkg/errors"
 )
 
+// BuildLinks structure of BuildLinks object for a Build
+type BuildLinks struct {
+	Pipelines string `json:"pipelines,omitempty"`
+	Services  string `json:"services,omitempty"`
+	Steps     string `json:"steps,omitempty"`
+}
+
 // Build structure of Build object
 type Build struct {
-	AllocatedAt   time.Time `json:"allocated_at,omitempty"`
-	CommitMessage string    `json:"commit_message,omitempty"`
-	CommitSha     string    `json:"commit_sha,omitempty"`
-	FinishedAt    time.Time `json:"finished_at,omitempty"`
-	Links         struct {
-		Pipelines string `json:"pipelines,omitempty"`
-		Services  string `json:"services,omitempty"`
-		Steps     string `json:"steps,omitempty"`
-	} `json:"links,omitempty"`
-	OrganizationUUID string    `json:"organization_uuid,omitempty"`
-	ProjectUUID      string    `json:"project_uuid,omitempty"`
-	QueuedAt         time.Time `json:"queued_at,omitempty"`
-	Ref              string    `json:"ref,omitempty"`
-	Status           string    `json:"status,omitempty"`
-	Username         string    `json:"username,omitempty"`
-	UUID             string    `json:"uuid,omitempty"`
+	AllocatedAt      time.Time  `json:"allocated_at,omitempty"`
+	CommitMessage    string     `json:"commit_message,omitempty"`
+	CommitSha        string     `json:"commit_sha,omitempty"`
+	FinishedAt       time.Time  `json:"finished_at,omitempty"`
+	Links            BuildLinks `json:"links,omitempty"`
+	OrganizationUUID string     `json:"organization_uuid,omitempty"`
+	ProjectUUID      string     `json:"project_uuid,omitempty"`
+	QueuedAt         time.Time  `json:"queued_at,omitempty"`
+	Ref              string     `json:"ref,omitempty"`
+	Status           string     `json:"status,omitempty"`
+	Username         string     `json:"username,omitempty"`
+	UUID             string     `json:"uuid,omitempty"`
 }
 
 // BuildList holds a list of Build objects
@@ -38,32 +41,35 @@ type buildResponse struct {
 	Build Build `json:"build"`
 }
 
+// BuildPipelineMetrics structure of BuildPipelineMetrics object for a BuildPipeline
+type BuildPipelineMetrics struct {
+	AmiID                 string `json:"ami_id,omitempty"`
+	Queries               string `json:"queries,omitempty"`
+	CPUUser               string `json:"cpu_user,omitempty"`
+	Duration              string `json:"duration,omitempty"`
+	CPUSystem             string `json:"cpu_system,omitempty"`
+	InstanceID            string `json:"instance_id,omitempty"`
+	Architecture          string `json:"architecture,omitempty"`
+	InstanceType          string `json:"instance_type,omitempty"`
+	CPUPerSecond          string `json:"cpu_per_second,omitempty"`
+	DiskFreeBytes         string `json:"disk_free_bytes,omitempty"`
+	DiskUsedBytes         string `json:"disk_used_bytes,omitempty"`
+	NetworkRxBytes        string `json:"network_rx_bytes,omitempty"`
+	NetworkTxBytes        string `json:"network_tx_bytes,omitempty"`
+	MaxUsedConnections    string `json:"max_used_connections,omitempty"`
+	MemoryMaxUsageInBytes string `json:"memory_max_usage_in_bytes,omitempty"`
+}
+
 // BuildPipeline structure of BuildPipeline object for a Basic Project
 type BuildPipeline struct {
-	UUID       string    `json:"uuid,omitempty"`
-	BuildUUID  string    `json:"build_uuid,omitempty"`
-	Type       string    `json:"type,omitempty"`
-	Status     string    `json:"status,omitempty"`
-	CreatedAt  time.Time `json:"created_at,omitempty"`
-	UpdatedAt  time.Time `json:"updated_at,omitempty"`
-	FinishedAt time.Time `json:"finished_at,omitempty"`
-	Metrics    struct {
-		AmiID                 string `json:"ami_id,omitempty"`
-		Queries               string `json:"queries,omitempty"`
-		CPUUser               string `json:"cpu_user,omitempty"`
-		Duration              string `json:"duration,omitempty"`
-		CPUSystem             string `json:"cpu_system,omitempty"`
-		InstanceID            string `json:"instance_id,omitempty"`
-		Architecture          string `json:"architecture,omitempty"`
-		InstanceType          string `json:"instance_type,omitempty"`
-		CPUPerSecond          string `json:"cpu_per_second,omitempty"`
-		DiskFreeBytes         string `json:"disk_free_bytes,omitempty"`
-		DiskUsedBytes         string `json:"disk_used_bytes,omitempty"`
-		NetworkRxBytes        string `json:"network_rx_bytes,omitempty"`
-		NetworkTxBytes        string `json:"network_tx_bytes,omitempty"`
-		MaxUsedConnections    string `json:"max_used_connections,omitempty"`
-		MemoryMaxUsageInBytes string `json:"memory_max_usage_in_bytes,omitempty"`
-	} `json:"metrics,omitempty"`
+	UUID       string               `json:"uuid,omitempty"`
+	BuildUUID  string               `json:"build_uuid,omitempty"`
+	Type       string               `json:"type,omitempty"`
+	Status     string               `json:"status,omitempty"`
+	CreatedAt  time.Time            `json:"created_at,omitempty"`
+	UpdatedAt  time.Time            `json:"updated_at,omitempty"`
+	FinishedAt time.Time            `json:"finished_at,omitempty"`
+	Metrics    BuildPipelineMetrics `json:"metrics,omitempty"`
 }
 
 // BuildPipelines holds a list of BuildPipeline objects for a Basic Project

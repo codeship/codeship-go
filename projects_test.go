@@ -30,33 +30,53 @@ func TestListProjects(t *testing.T) {
 	assert := assert.New(t)
 	assert.NoError(err)
 	assert.Equal(2, len(projects.Projects))
+
 	project := projects.Projects[1]
-	assert.Equal("83605ef0-76f8-0135-8810-6e5f001a2e3c", project.UUID)
-	assert.Equal("28123f10-e33d-5533-b53f-111ef8d7b14f", project.OrganizationUUID)
-	assert.Equal("org/another-project", project.Name)
-	assert.Equal(codeship.ProjectTypeBasic, project.Type)
-	assert.Equal("https://github.com/org/another-project", project.RepositoryURL)
-	assert.Equal("github", project.RepositoryProvider)
-	assert.Equal("Test User", project.AuthenticationUser)
-	assert.Equal(2, len(project.NotificationRules))
-	notificationRule := project.NotificationRules[0]
-	assert.Equal("github", notificationRule.Notifier)
-	assert.Equal("exact", notificationRule.BranchMatch)
-	assert.NotEmpty(notificationRule.BuildStatuses)
-	assert.Equal("ssh-rsa key", project.SSHKey)
+
 	createdAt, _ := time.Parse(time.RFC3339, "2017-09-08T19:19:09.556Z")
-	assert.Equal(createdAt, project.CreatedAt)
 	updatedAt, _ := time.Parse(time.RFC3339, "2017-09-08T19:19:55.252Z")
-	assert.Equal(updatedAt, project.UpdatedAt)
-	assert.Equal(2, len(project.TeamIDs))
-	assert.Equal(1007, project.TeamIDs[0])
-	assert.Equal(1009, project.TeamIDs[1])
-	assert.Equal(1, len(project.TestPipelines))
-	assert.Equal("Test Commands", project.TestPipelines[0].Name)
-	assert.Equal(1, len(project.TestPipelines[0].Commands))
-	assert.Equal("./run-tests.sh", project.TestPipelines[0].Commands[0])
-	assert.Equal(2, projects.Total)
+
+	expected := codeship.Project{
+		UUID:               "83605ef0-76f8-0135-8810-6e5f001a2e3c",
+		OrganizationUUID:   "28123f10-e33d-5533-b53f-111ef8d7b14f",
+		Name:               "org/another-project",
+		Type:               codeship.ProjectTypeBasic,
+		RepositoryURL:      "https://github.com/org/another-project",
+		RepositoryProvider: "github",
+		AuthenticationUser: "Test User",
+		NotificationRules: []codeship.NotificationRule{
+			codeship.NotificationRule{
+				Notifier:      "github",
+				BranchMatch:   "exact",
+				BuildStatuses: []string{"failed", "started", "recovered", "success"},
+				Target:        "all",
+			},
+			codeship.NotificationRule{
+				Notifier:      "email",
+				BranchMatch:   "exact",
+				Options:       codeship.NotificationOptions{},
+				BuildStatuses: []string{"failed", "recovered"},
+				Target:        "all",
+			},
+		},
+		SSHKey:        "ssh-rsa key",
+		CreatedAt:     createdAt,
+		UpdatedAt:     updatedAt,
+		TeamIDs:       []int{1007, 1009},
+		SetupCommands: []string{},
+		TestPipelines: []codeship.TestPipeline{
+			codeship.TestPipeline{
+				Name:     "Test Commands",
+				Commands: []string{"./run-tests.sh"},
+			},
+		},
+		DeploymentPipelines:  []codeship.DeploymentPipeline{},
+		EnvironmentVariables: []codeship.EnvironmentVariable{},
+	}
+
+	assert.Equal(expected, project)
 	assert.Equal(1, projects.Page)
+	assert.Equal(2, projects.Total)
 	assert.Equal(30, projects.PerPage)
 }
 
@@ -79,31 +99,46 @@ func TestGetProject(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.NoError(err)
-	assert.Equal("0059df30-7701-0135-8810-6e5f001a2e3c", project.UUID)
-	assert.Equal("28123f10-e33d-5533-b53f-111ef8d7b14f", project.OrganizationUUID)
-	assert.Equal("org/test-project", project.Name)
-	assert.Equal(codeship.ProjectTypePro, project.Type)
-	assert.Equal("https://github.com/org/test-project", project.RepositoryURL)
-	assert.Equal("github", project.RepositoryProvider)
-	assert.Equal("Test User", project.AuthenticationUser)
-	assert.Equal(2, len(project.NotificationRules))
-	notificationRule := project.NotificationRules[0]
-	assert.Equal("github", notificationRule.Notifier)
-	assert.Equal("exact", notificationRule.BranchMatch)
-	assert.NotEmpty(notificationRule.BuildStatuses)
-	assert.Equal("all", notificationRule.Target)
-	assert.NotEmpty(notificationRule.Options)
-	assert.Equal("foo", notificationRule.Options.Key)
-	assert.Equal("devs", notificationRule.Options.Room)
-	assert.Equal("https://google.com", notificationRule.Options.URL)
-	assert.Equal("ssh-rsa key", project.SSHKey)
-	assert.Equal("aeskey", project.AesKey)
+
 	createdAt, _ := time.Parse(time.RFC3339, "2017-09-08T20:19:55.199Z")
-	assert.Equal(createdAt, project.CreatedAt)
 	updatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:36.336Z")
-	assert.Equal(updatedAt, project.UpdatedAt)
-	assert.Equal(1, len(project.TeamIDs))
-	assert.Equal(1007, project.TeamIDs[0])
+
+	expected := codeship.Project{
+		UUID:               "0059df30-7701-0135-8810-6e5f001a2e3c",
+		OrganizationUUID:   "28123f10-e33d-5533-b53f-111ef8d7b14f",
+		Name:               "org/test-project",
+		Type:               codeship.ProjectTypePro,
+		RepositoryURL:      "https://github.com/org/test-project",
+		RepositoryProvider: "github",
+		AuthenticationUser: "Test User",
+		NotificationRules: []codeship.NotificationRule{
+			codeship.NotificationRule{
+				Notifier:      "github",
+				BranchMatch:   "exact",
+				BuildStatuses: []string{"failed", "started", "recovered", "success"},
+				Target:        "all",
+				Options: codeship.NotificationOptions{
+					Key:  "foo",
+					Room: "devs",
+					URL:  "https://google.com",
+				},
+			},
+			codeship.NotificationRule{
+				Notifier:      "email",
+				BranchMatch:   "exact",
+				Options:       codeship.NotificationOptions{},
+				BuildStatuses: []string{"failed", "recovered"},
+				Target:        "all",
+			},
+		},
+		AesKey:    "aeskey",
+		SSHKey:    "ssh-rsa key",
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+		TeamIDs:   []int{1007},
+	}
+
+	assert.Equal(expected, project)
 }
 
 func TestCreateProject(t *testing.T) {
@@ -134,22 +169,7 @@ func TestCreateProject(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.NoError(err)
-	assert.Equal("7de09100-7aeb-0135-b8e4-76a42f3a0b26", project.UUID)
-	assert.Equal("28123f10-e33d-5533-b53f-111ef8d7b14f", project.OrganizationUUID)
-	assert.Equal(codeship.ProjectTypeBasic, project.Type)
-	assert.Equal("https://github.com/org/example-repo", project.RepositoryURL)
-	assert.Equal("github", project.RepositoryProvider)
-	assert.Equal("Test User", project.AuthenticationUser)
-	assert.NotEmpty(project.NotificationRules)
-	assert.Equal(1, len(project.TeamIDs))
-	assert.Equal("ssh-rsa key", project.SSHKey)
-	assert.Empty(project.SetupCommands)
-	assert.Empty(project.DeploymentPipelines)
-	assert.Empty(project.EnvironmentVariables)
-	assert.Equal(1, len(project.TestPipelines))
-	assert.Equal("run tests", project.TestPipelines[0].Name)
-	assert.Equal(1, len(project.TestPipelines[0].Commands))
-	assert.Equal("./run-tests.sh", project.TestPipelines[0].Commands[0])
+	assert.NotNil(project)
 }
 
 func TestUpdateProject(t *testing.T) {
@@ -176,17 +196,5 @@ func TestUpdateProject(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.NoError(err)
-	assert.Equal("7de09100-7aeb-0135-b8e4-76a42f3a0b26", project.UUID)
-	assert.Equal("28123f10-e33d-5533-b53f-111ef8d7b14f", project.OrganizationUUID)
-	assert.Equal(codeship.ProjectTypePro, project.Type)
-	assert.Equal("https://github.com/org/example-repo", project.RepositoryURL)
-	assert.Equal("github", project.RepositoryProvider)
-	assert.Equal("Test User", project.AuthenticationUser)
-	assert.NotEmpty(project.NotificationRules)
-	assert.Equal(2, len(project.TeamIDs))
-	assert.Equal("ssh-rsa key", project.SSHKey)
-	assert.Empty(project.SetupCommands)
-	assert.Empty(project.DeploymentPipelines)
-	assert.Empty(project.EnvironmentVariables)
-	assert.Empty(project.TestPipelines)
+	assert.NotNil(project)
 }

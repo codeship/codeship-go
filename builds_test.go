@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/codeship/codeship-go"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,7 +63,7 @@ func TestRestartBuild(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
-		fmt.Fprintf(w, ``)
+		fmt.Fprint(w)
 	})
 
 	_, err := org.RestartBuild("28123f10-e33d-5533-b53f-111ef8d7b14f", "25a3dd8c-eb3e-4e75-1298-8cbcbe621342")
@@ -88,24 +90,30 @@ func TestGetBuild(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.NoError(err)
-	assert.Equal("25a3dd8c-eb3e-4e75-1298-8cbcbe621342", build.UUID)
-	assert.Equal("28123f10-e33d-5533-b53f-111ef8d7b14f", build.ProjectUUID)
-	assert.Equal("28123g10-e33d-5533-b57f-111ef8d7b14f", build.OrganizationUUID)
-	assert.Equal("heads/master", build.Ref)
-	assert.Equal("185ab4c7dc4eda2a027c284f7a669cac3f50a5ed", build.CommitSha)
-	assert.Equal("success", build.Status)
-	assert.Equal("fillup", build.Username)
-	assert.Equal("implemented interface for handling tests", build.CommitMessage)
+
 	finishedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:55.193+00:00")
-	assert.Equal(finishedAt, build.FinishedAt)
 	allocatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:36.967+00:00")
-	assert.Equal(allocatedAt, build.AllocatedAt)
 	queuedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:39.314+00:00")
-	assert.Equal(queuedAt, build.QueuedAt)
-	assert.NotEmpty(build.Links)
-	assert.Equal("https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/services", build.Links.Services)
-	assert.Equal("https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/steps", build.Links.Steps)
-	assert.Zero(build.Links.Pipelines)
+
+	expected := codeship.Build{
+		UUID:             "25a3dd8c-eb3e-4e75-1298-8cbcbe621342",
+		ProjectUUID:      "28123f10-e33d-5533-b53f-111ef8d7b14f",
+		OrganizationUUID: "28123g10-e33d-5533-b57f-111ef8d7b14f",
+		Ref:              "heads/master",
+		CommitSha:        "185ab4c7dc4eda2a027c284f7a669cac3f50a5ed",
+		Status:           "success",
+		Username:         "fillup",
+		CommitMessage:    "implemented interface for handling tests",
+		FinishedAt:       finishedAt,
+		AllocatedAt:      allocatedAt,
+		QueuedAt:         queuedAt,
+		Links: codeship.BuildLinks{
+			Services: "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/services",
+			Steps:    "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/steps",
+		},
+	}
+
+	assert.Equal(expected, build)
 }
 
 func TestListBuilds(t *testing.T) {
@@ -128,8 +136,32 @@ func TestListBuilds(t *testing.T) {
 	assert := assert.New(t)
 	assert.NoError(err)
 	assert.Equal(2, len(builds.Builds))
-	assert.Equal("25a3dd8c-eb3e-4e75-1298-8cbcbe621342", builds.Builds[0].UUID)
-	assert.Equal("25a3dd8c-eb3e-4e75-1298-8cbcbe611111", builds.Builds[1].UUID)
+
+	build := builds.Builds[0]
+
+	finishedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:55.193+00:00")
+	allocatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:36.967+00:00")
+	queuedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:39.314+00:00")
+
+	expected := codeship.Build{
+		UUID:             "25a3dd8c-eb3e-4e75-1298-8cbcbe621342",
+		ProjectUUID:      "28123f10-e33d-5533-b53f-111ef8d7b14f",
+		OrganizationUUID: "28123f10-e33d-5533-b53f-111ef8d7b14f",
+		Ref:              "heads/master",
+		CommitSha:        "185ab4c7dc4eda2a027c284f7a669cac3f50a5ed",
+		Status:           "success",
+		Username:         "fillup",
+		CommitMessage:    "implemented interface for handling tests",
+		FinishedAt:       finishedAt,
+		AllocatedAt:      allocatedAt,
+		QueuedAt:         queuedAt,
+		Links: codeship.BuildLinks{
+			Services: "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/services",
+			Steps:    "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/steps",
+		},
+	}
+
+	assert.Equal(expected, build)
 	assert.Equal(2, builds.Total)
 	assert.Equal(1, builds.Page)
 	assert.Equal(30, builds.PerPage)
@@ -150,26 +182,49 @@ func TestGetBuildPipelines(t *testing.T) {
 		fmt.Fprint(w, fixture("builds/pipelines.json"))
 	})
 
-	buildPipelines, err := org.GetBuildPipelines("28123f10-e33d-5533-b53f-111ef8d7b14f", "9ec4b230-76f8-0135-86b9-2ee351ae25fe")
+	pipelines, err := org.GetBuildPipelines("28123f10-e33d-5533-b53f-111ef8d7b14f", "9ec4b230-76f8-0135-86b9-2ee351ae25fe")
 
 	assert := assert.New(t)
 	assert.NoError(err)
-	assert.Equal(1, len(buildPipelines.Pipelines))
+	assert.Equal(1, len(pipelines.Pipelines))
 
-	pipeline := buildPipelines.Pipelines[0]
-	assert.Equal("0a341890-a899-4492-9c94-86ef24527f05", pipeline.UUID)
-	assert.Equal("9ec4b230-76f8-0135-86b9-2ee351ae25fe", pipeline.BuildUUID)
-	assert.Equal("build", pipeline.Type)
-	assert.Equal("success", pipeline.Status)
+	pipeline := pipelines.Pipelines[0]
+
 	createdAt, _ := time.Parse(time.RFC3339, "2017-09-11T19:54:16.556Z")
-	assert.Equal(createdAt, pipeline.CreatedAt)
 	updatedAt, _ := time.Parse(time.RFC3339, "2017-09-11T19:54:38.394Z")
-	assert.Equal(updatedAt, pipeline.UpdatedAt)
 	finishedAt, _ := time.Parse(time.RFC3339, "2017-09-11T19:54:38.391Z")
-	assert.Equal(finishedAt, pipeline.FinishedAt)
-	assert.Equal(1, buildPipelines.Total)
-	assert.Equal(1, buildPipelines.Page)
-	assert.Equal(30, buildPipelines.PerPage)
+
+	expected := codeship.BuildPipeline{
+		UUID:       "0a341890-a899-4492-9c94-86ef24527f05",
+		BuildUUID:  "9ec4b230-76f8-0135-86b9-2ee351ae25fe",
+		Type:       "build",
+		Status:     "success",
+		CreatedAt:  createdAt,
+		UpdatedAt:  updatedAt,
+		FinishedAt: finishedAt,
+		Metrics: codeship.BuildPipelineMetrics{
+			AmiID:                 "ami-02322b79",
+			Queries:               "112",
+			CPUUser:               "1142",
+			Duration:              "11",
+			CPUSystem:             "499",
+			InstanceID:            "i-0cfcd05a46d4cdb12",
+			Architecture:          "trusty_64",
+			InstanceType:          "i3.8xlarge",
+			CPUPerSecond:          "136",
+			DiskFreeBytes:         "128536784896",
+			DiskUsedBytes:         "362098688",
+			NetworkRxBytes:        "32221720",
+			NetworkTxBytes:        "310269",
+			MaxUsedConnections:    "1",
+			MemoryMaxUsageInBytes: "665427968",
+		},
+	}
+
+	assert.Equal(expected, pipeline)
+	assert.Equal(1, pipelines.Total)
+	assert.Equal(1, pipelines.Page)
+	assert.Equal(30, pipelines.PerPage)
 }
 
 func TestGetBuildServices(t *testing.T) {
