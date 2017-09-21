@@ -1,15 +1,29 @@
 package codeship
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/pkg/errors"
 )
+
+// Organization holds the configuration for the current API client scoped to the Organization. Should not
+// be modified concurrently
+type Organization struct {
+	UUID   string
+	Name   string
+	Scopes []string
+	client *Client
+}
 
 const apiURL = "https://api.codeship.com/v2"
 
@@ -72,7 +86,7 @@ func New(username, password string, opts ...Option) (*Client, error) {
 func (c *Client) Scope(name string) (*Organization, error) {
 	if c.AuthenticationRequired() {
 		if err := c.Authenticate(); err != nil {
-			return nil, errors.Wrap(err, "authentication failed")
+			return nil, err
 		}
 	}
 
@@ -97,4 +111,88 @@ func (c *Client) Authentication() Authentication {
 // AuthenticationRequired determines if a client must authenticate before making a request
 func (c *Client) AuthenticationRequired() bool {
 	return c.authentication.AccessToken == "" || c.authentication.ExpiresAt <= time.Now().Unix()
+}
+
+func (c *Client) request(method, path string, params interface{}) ([]byte, error) {
+	url := c.baseURL + path
+	// Replace nil with a JSON object if needed
+	var reqBody io.Reader
+	if params != nil {
+		buf := &bytes.Buffer{}
+		if err := json.NewEncoder(buf).Encode(params); err != nil {
+			return nil, err
+		}
+		reqBody = buf
+	}
+
+	if c.AuthenticationRequired() {
+		if err := c.Authenticate(); err != nil {
+			return nil, err
+		}
+	}
+
+	req, err := http.NewRequest(method, url, reqBody)
+	if err != nil {
+		return nil, errors.Wrap(err, "HTTP request creation failed")
+	}
+
+	// Apply any user-defined headers first
+	req.Header = cloneHeader(c.headers)
+	req.Header.Set("Authorization", "Bearer "+c.authentication.AccessToken)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+	return c.do(req)
+}
+
+func (c *Client) do(req *http.Request) ([]byte, error) {
+	if c.verbose {
+		dumpReq, _ := httputil.DumpRequest(req, true)
+		c.logger.Println(string(dumpReq))
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, errors.Wrap(err, "HTTP request failed")
+	}
+
+	if c.verbose {
+		dumpResp, _ := httputil.DumpResponse(resp, true)
+		c.logger.Println(string(dumpResp))
+	}
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not read response body")
+	}
+
+	switch resp.StatusCode {
+	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
+		break
+	case http.StatusUnauthorized:
+		return nil, ErrUnauthorized("invalid credentials")
+	case http.StatusForbidden:
+		return nil, ErrUnauthorized("insufficient permissions")
+	default:
+		if len(body) > 0 {
+			return nil, fmt.Errorf("HTTP status: %d; content %q", resp.StatusCode, string(body))
+		}
+		return nil, fmt.Errorf("HTTP status: %d", resp.StatusCode)
+	}
+
+	return body, nil
+}
+
+// cloneHeader returns a shallow copy of the header.
+// copied from https://godoc.org/github.com/golang/gddo/httputil/header#Copy
+func cloneHeader(header http.Header) http.Header {
+	h := make(http.Header)
+	for k, vs := range header {
+		h[k] = vs
+	}
+	return h
 }

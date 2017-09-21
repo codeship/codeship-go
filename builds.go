@@ -125,7 +125,7 @@ type buildRequest struct {
 func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
-	_, err := o.request("POST", path, buildRequest{
+	_, err := o.client.request("POST", path, buildRequest{
 		Ref:       ref,
 		CommitSha: commitSha,
 	})
@@ -140,7 +140,7 @@ func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, er
 func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
 		return Build{}, errors.Wrap(err, "unable to get build")
 	}
@@ -157,7 +157,7 @@ func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, error) {
 func (o *Organization) ListBuilds(projectUUID string) (BuildList, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
 		return BuildList{}, errors.Wrap(err, "unable to list builds")
 	}
@@ -174,7 +174,7 @@ func (o *Organization) ListBuilds(projectUUID string) (BuildList, error) {
 func (o *Organization) GetBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
 		return BuildPipelines{}, errors.Wrap(err, "unable to get build pipelines")
 	}
@@ -191,7 +191,7 @@ func (o *Organization) GetBuildPipelines(projectUUID, buildUUID string) (BuildPi
 func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", o.UUID, projectUUID, buildUUID)
 
-	if _, err := o.request("POST", path, nil); err != nil {
+	if _, err := o.client.request("POST", path, nil); err != nil {
 		return false, errors.Wrap(err, "unable to stop build")
 	}
 
@@ -202,7 +202,7 @@ func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, error) {
 func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", o.UUID, projectUUID, buildUUID)
 
-	if _, err := o.request("POST", path, nil); err != nil {
+	if _, err := o.client.request("POST", path, nil); err != nil {
 		return false, errors.Wrap(err, "unable to restart build")
 	}
 
@@ -213,7 +213,7 @@ func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error)
 func (o *Organization) GetBuildServices(projectUUID, buildUUID string) (BuildServices, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
 		return BuildServices{}, errors.Wrap(err, "unable to get build services")
 	}
@@ -230,7 +230,7 @@ func (o *Organization) GetBuildServices(projectUUID, buildUUID string) (BuildSer
 func (o *Organization) GetBuildSteps(projectUUID, buildUUID string) (BuildSteps, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
 		return BuildSteps{}, errors.Wrap(err, "unable to get build steps")
 	}

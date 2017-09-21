@@ -4,8 +4,7 @@ setup: ## Install all the build and lint dependencies
 	go get -u golang.org/x/tools/cmd/cover
 	go get -u github.com/golang/dep/cmd/dep
 	gometalinter --install --update
-	dep ensure
-	dep prune
+	@$(MAKE) dep
 
 .PHONY: dep
 dep: ## Run dep ensure and prune
@@ -14,15 +13,15 @@ dep: ## Run dep ensure and prune
 
 .PHONY: test
 test: ## Run all the tests
-	echo 'mode: atomic' > coverage.txt && go list ./... | grep -v /vendor/ | xargs -n1 -I{} sh -c 'go test -covermode=atomic -coverprofile=coverage.txt -v -race -timeout=30s {}'
+	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -race -timeout=30s ./...
 
 .PHONY: cover
 cover: test ## Run all the tests and opens the coverage report
 	go tool cover -html=coverage.txt
 
 .PHONY: fmt
-fmt: ## gofmt and goimports all go files
-	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
+fmt: ## goimports all go files
+	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do goimports -w "$$file"; done
 
 .PHONY: lint
 lint: ## Run all the linters
@@ -46,6 +45,10 @@ ci: lint test ## Run all the tests and code checks
 .PHONY: build
 build: ## Build a version
 	go build -v ./...
+
+.PHONY: clean
+clean: ## Remove temporary files
+	go clean
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .PHONY: help
