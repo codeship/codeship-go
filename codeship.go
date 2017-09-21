@@ -114,10 +114,6 @@ func (c *Client) AuthenticationRequired() bool {
 }
 
 func (c *Client) request(method, path string, params interface{}) ([]byte, error) {
-	if c == nil {
-		return nil, errors.New("client not instantiated")
-	}
-
 	url := c.baseURL + path
 	// Replace nil with a JSON object if needed
 	var reqBody io.Reader
@@ -129,10 +125,8 @@ func (c *Client) request(method, path string, params interface{}) ([]byte, error
 		reqBody = buf
 	}
 
-	var err error
-
 	if c.AuthenticationRequired() {
-		if err = c.Authenticate(); err != nil {
+		if err := c.Authenticate(); err != nil {
 			return nil, err
 		}
 	}
