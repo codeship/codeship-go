@@ -142,10 +142,24 @@ type projectResponse struct {
 	Project Project `json:"project"`
 }
 
+// ListProjectsWithPagination fetches a list of projects with a set of PaginationOptions
+func (o *Organization) ListProjectsWithPagination(opts PaginationOptions) (ProjectList, error) {
+	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
+	path, err := paginate(path, opts)
+	if err != nil {
+		return ProjectList{}, errors.Wrap(err, "unable to list projects")
+	}
+	return o.listProjects(path)
+}
+
 // ListProjects fetches a list of projects
 func (o *Organization) ListProjects() (ProjectList, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
+	return o.listProjects(path)
+}
 
+// ListProjects fetches a list of projects
+func (o *Organization) listProjects(path string) (ProjectList, error) {
 	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
 		return ProjectList{}, errors.Wrap(err, "unable to list projects")

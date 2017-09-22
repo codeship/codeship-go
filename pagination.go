@@ -17,11 +17,7 @@ type PaginationOptions struct {
 	Page    int
 }
 
-func paginate(path string, opts *PaginationOptions) (string, error) {
-	if opts == nil {
-		return path, nil
-	}
-
+func paginate(path string, opts PaginationOptions) (string, error) {
 	u, err := url.Parse(path)
 	if err != nil {
 		return path, err

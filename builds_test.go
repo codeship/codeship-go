@@ -164,7 +164,7 @@ func TestListBuilds(t *testing.T) {
 	assert.Equal(30, builds.PerPage)
 }
 
-func TestGetBuildPipelines(t *testing.T) {
+func TestListBuildPipelines(t *testing.T) {
 	teardown := setup()
 	defer teardown()
 
@@ -178,7 +178,7 @@ func TestGetBuildPipelines(t *testing.T) {
 		fmt.Fprint(w, fixture("builds/pipelines.json"))
 	})
 
-	pipelines, err := org.GetBuildPipelines("28123f10-e33d-5533-b53f-111ef8d7b14f", "9ec4b230-76f8-0135-86b9-2ee351ae25fe")
+	pipelines, err := org.ListBuildPipelines("28123f10-e33d-5533-b53f-111ef8d7b14f", "9ec4b230-76f8-0135-86b9-2ee351ae25fe")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -223,7 +223,7 @@ func TestGetBuildPipelines(t *testing.T) {
 	assert.Equal(30, pipelines.PerPage)
 }
 
-func TestGetBuildServices(t *testing.T) {
+func TestListBuildServices(t *testing.T) {
 	teardown := setup()
 	defer teardown()
 
@@ -237,7 +237,7 @@ func TestGetBuildServices(t *testing.T) {
 		fmt.Fprint(w, fixture("builds/services.json"))
 	})
 
-	buildServices, err := org.GetBuildServices("28123f10-e33d-5533-b53f-111ef8d7b14f", "28123f10-e33d-5533-b53f-111ef8d7b14f")
+	buildServices, err := org.ListBuildServices("28123f10-e33d-5533-b53f-111ef8d7b14f", "28123f10-e33d-5533-b53f-111ef8d7b14f")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -263,7 +263,7 @@ func TestGetBuildServices(t *testing.T) {
 	assert.Equal(30, buildServices.PerPage)
 }
 
-func TestGetBuildSteps(t *testing.T) {
+func TestListBuildSteps(t *testing.T) {
 	teardown := setup()
 	defer teardown()
 
@@ -277,7 +277,7 @@ func TestGetBuildSteps(t *testing.T) {
 		fmt.Fprint(w, fixture("builds/steps.json"))
 	})
 
-	buildSteps, err := org.GetBuildSteps("28123f10-e33d-5533-b53f-111ef8d7b14f", "28123f10-e33d-5533-b53f-111ef8d7b14f")
+	buildSteps, err := org.ListBuildSteps("28123f10-e33d-5533-b53f-111ef8d7b14f", "28123f10-e33d-5533-b53f-111ef8d7b14f")
 
 	assert := assert.New(t)
 	assert.NoError(err)
