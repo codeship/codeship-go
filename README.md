@@ -83,13 +83,13 @@ To install/update dep and all dependencies, run:
 make setup
 ```
 
-## Testing
+### Testing
 
 ```bash
 make test
 ```
 
-## Linting
+### Linting
 
 ```bash
 make lint
