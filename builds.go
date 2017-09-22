@@ -8,129 +8,133 @@ import (
 	"github.com/pkg/errors"
 )
 
+// BuildLinks structure of BuildLinks object for a Build
+type BuildLinks struct {
+	Pipelines string `json:"pipelines,omitempty"`
+	Services  string `json:"services,omitempty"`
+	Steps     string `json:"steps,omitempty"`
+}
+
 // Build structure of Build object
 type Build struct {
-	AllocatedAt   time.Time `json:"allocated_at"`
-	CommitMessage string    `json:"commit_message"`
-	CommitSha     string    `json:"commit_sha"`
-	FinishedAt    time.Time `json:"finished_at"`
-	Links         struct {
-		Pipelines string `json:"pipelines"`
-		Services  string `json:"services"`
-		Steps     string `json:"steps"`
-	} `json:"links"`
-	OrganizationUUID string    `json:"organization_uuid"`
-	ProjectUUID      string    `json:"project_uuid"`
-	QueuedAt         time.Time `json:"queued_at"`
-	Ref              string    `json:"ref"`
-	Status           string    `json:"status"`
-	Username         string    `json:"username"`
-	UUID             string    `json:"uuid"`
+	AllocatedAt      time.Time  `json:"allocated_at,omitempty"`
+	CommitMessage    string     `json:"commit_message,omitempty"`
+	CommitSha        string     `json:"commit_sha,omitempty"`
+	FinishedAt       time.Time  `json:"finished_at,omitempty"`
+	Links            BuildLinks `json:"links,omitempty"`
+	OrganizationUUID string     `json:"organization_uuid,omitempty"`
+	ProjectUUID      string     `json:"project_uuid,omitempty"`
+	QueuedAt         time.Time  `json:"queued_at,omitempty"`
+	Ref              string     `json:"ref,omitempty"`
+	Status           string     `json:"status,omitempty"`
+	Username         string     `json:"username,omitempty"`
+	UUID             string     `json:"uuid,omitempty"`
 }
 
 // BuildList holds a list of Build objects
 type BuildList struct {
 	Builds []Build `json:"builds"`
-	Pagination
+	pagination
 }
 
 type buildResponse struct {
-	Build Build
+	Build Build `json:"build"`
 }
 
-// BuildPipeline structure of BuildPipeline object
+// BuildPipelineMetrics structure of BuildPipelineMetrics object for a BuildPipeline
+type BuildPipelineMetrics struct {
+	AmiID                 string `json:"ami_id,omitempty"`
+	Queries               string `json:"queries,omitempty"`
+	CPUUser               string `json:"cpu_user,omitempty"`
+	Duration              string `json:"duration,omitempty"`
+	CPUSystem             string `json:"cpu_system,omitempty"`
+	InstanceID            string `json:"instance_id,omitempty"`
+	Architecture          string `json:"architecture,omitempty"`
+	InstanceType          string `json:"instance_type,omitempty"`
+	CPUPerSecond          string `json:"cpu_per_second,omitempty"`
+	DiskFreeBytes         string `json:"disk_free_bytes,omitempty"`
+	DiskUsedBytes         string `json:"disk_used_bytes,omitempty"`
+	NetworkRxBytes        string `json:"network_rx_bytes,omitempty"`
+	NetworkTxBytes        string `json:"network_tx_bytes,omitempty"`
+	MaxUsedConnections    string `json:"max_used_connections,omitempty"`
+	MemoryMaxUsageInBytes string `json:"memory_max_usage_in_bytes,omitempty"`
+}
+
+// BuildPipeline structure of BuildPipeline object for a Basic Project
 type BuildPipeline struct {
-	UUID       string    `json:"uuid"`
-	BuildUUID  string    `json:"build_uuid"`
-	Type       string    `json:"type"`
-	Status     string    `json:"status"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	FinishedAt time.Time `json:"finished_at"`
-	Metrics    struct {
-		AmiID                 string `json:"ami_id"`
-		Queries               string `json:"queries"`
-		CPUUser               string `json:"cpu_user"`
-		Duration              string `json:"duration"`
-		CPUSystem             string `json:"cpu_system"`
-		InstanceID            string `json:"instance_id"`
-		Architecture          string `json:"architecture"`
-		InstanceType          string `json:"instance_type"`
-		CPUPerSecond          string `json:"cpu_per_second"`
-		DiskFreeBytes         string `json:"disk_free_bytes"`
-		DiskUsedBytes         string `json:"disk_used_bytes"`
-		NetworkRxBytes        string `json:"network_rx_bytes"`
-		NetworkTxBytes        string `json:"network_tx_bytes"`
-		MaxUsedConnections    string `json:"max_used_connections"`
-		MemoryMaxUsageInBytes string `json:"memory_max_usage_in_bytes"`
-	} `json:"metrics"`
+	UUID       string               `json:"uuid,omitempty"`
+	BuildUUID  string               `json:"build_uuid,omitempty"`
+	Type       string               `json:"type,omitempty"`
+	Status     string               `json:"status,omitempty"`
+	CreatedAt  time.Time            `json:"created_at,omitempty"`
+	UpdatedAt  time.Time            `json:"updated_at,omitempty"`
+	FinishedAt time.Time            `json:"finished_at,omitempty"`
+	Metrics    BuildPipelineMetrics `json:"metrics,omitempty"`
 }
 
-// BuildPipelines holds a list of BuildPipeline objects
+// BuildPipelines holds a list of BuildPipeline objects for a Basic Project
 type BuildPipelines struct {
 	Pipelines []BuildPipeline `json:"pipelines"`
-	Pagination
+	pagination
 }
 
-// BuildStep structure of BuildStep object
+// BuildStep structure of BuildStep object for a Pro Project
 type BuildStep struct {
-	BuildUUID   string      `json:"build_uuid"`
-	BuildingAt  time.Time   `json:"building_at"`
-	Command     string      `json:"command"`
-	FinishedAt  time.Time   `json:"finished_at"`
-	ImageName   string      `json:"image_name"`
-	Name        string      `json:"name"`
-	Registry    string      `json:"registry"`
-	ServiceUUID string      `json:"service_uuid"`
-	StartedAt   time.Time   `json:"started_at"`
-	Status      string      `json:"status"`
-	Steps       []BuildStep `json:"steps"`
-	Tag         string      `json:"tag"`
-	Type        string      `json:"type"`
-	UpdatedAt   time.Time   `json:"updated_at"`
-	UUID        string      `json:"uuid"`
+	BuildUUID   string      `json:"build_uuid,omitempty"`
+	BuildingAt  time.Time   `json:"building_at,omitempty"`
+	Command     string      `json:"command,omitempty"`
+	FinishedAt  time.Time   `json:"finished_at,omitempty"`
+	ImageName   string      `json:"image_name,omitempty"`
+	Name        string      `json:"name,omitempty"`
+	Registry    string      `json:"registry,omitempty"`
+	ServiceUUID string      `json:"service_uuid,omitempty"`
+	StartedAt   time.Time   `json:"started_at,omitempty"`
+	Status      string      `json:"status,omitempty"`
+	Steps       []BuildStep `json:"steps,omitempty"`
+	Tag         string      `json:"tag,omitempty"`
+	Type        string      `json:"type,omitempty"`
+	UpdatedAt   time.Time   `json:"updated_at,omitempty"`
+	UUID        string      `json:"uuid,omitempty"`
 }
 
-// BuildSteps holds a list of BuildStep objects
+// BuildSteps holds a list of BuildStep objects for a Pro Project
 type BuildSteps struct {
 	Steps []BuildStep `json:"steps"`
-	Pagination
+	pagination
 }
 
-// BuildService structure of BuildService object
+// BuildService structure of BuildService object for a Pro Project
 type BuildService struct {
-	BuildUUID  string    `json:"build_uuid"`
-	BuildingAt time.Time `json:"building_at"`
-	CreatedAt  time.Time `json:"created_at"`
-	FinishedAt time.Time `json:"finished_at"`
-	Name       string    `json:"name"`
-	PullingAt  time.Time `json:"pulling_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	UUID       string    `json:"uuid"`
-	Status     string    `json:"status"`
+	BuildUUID  string    `json:"build_uuid,omitempty"`
+	BuildingAt time.Time `json:"building_at,omitempty"`
+	CreatedAt  time.Time `json:"created_at,omitempty"`
+	FinishedAt time.Time `json:"finished_at,omitempty"`
+	Name       string    `json:"name,omitempty"`
+	PullingAt  time.Time `json:"pulling_at,omitempty"`
+	UpdatedAt  time.Time `json:"updated_at,omitempty"`
+	UUID       string    `json:"uuid,omitempty"`
+	Status     string    `json:"status,omitempty"`
 }
 
-// BuildServices holds a list of BuildService objects
+// BuildServices holds a list of BuildService objects for a Pro Project
 type BuildServices struct {
 	Services []BuildService `json:"services"`
-	Pagination
+	pagination
 }
 
 type buildRequest struct {
-	CommitSha string `json:"commit_sha"`
-	Ref       string `json:"ref"`
+	CommitSha string `json:"commit_sha,omitempty"`
+	Ref       string `json:"ref,omitempty"`
 }
 
 // CreateBuild creates a new build
 func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
-	buildReq := buildRequest{
+	_, err := o.client.request("POST", path, buildRequest{
 		Ref:       ref,
 		CommitSha: commitSha,
-	}
-
-	_, err := o.request("POST", path, buildReq)
+	})
 	if err != nil {
 		return false, errors.Wrap(err, "unable to create build")
 	}
@@ -138,67 +142,62 @@ func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, er
 	return true, nil
 }
 
-// GetBuild fetches a build
+// GetBuild fetches a build by UUID
 func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, error) {
-	build := Build{}
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return build, errors.Wrap(err, "unable to get build")
+		return Build{}, errors.Wrap(err, "unable to get build")
 	}
 
-	buildResp := buildResponse{}
-	err = json.Unmarshal(resp, &buildResp)
-	if err != nil {
-		return build, errors.Wrap(err, "unable to unmarshal response into Build")
+	var build buildResponse
+	if err = json.Unmarshal(resp, &build); err != nil {
+		return Build{}, errors.Wrap(err, "unable to unmarshal response into Build")
 	}
 
-	return buildResp.Build, nil
+	return build.Build, nil
 }
 
 // ListBuilds fetches a list of builds for the given organization
 func (o *Organization) ListBuilds(projectUUID string) (BuildList, error) {
-	buildList := BuildList{}
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return buildList, errors.Wrap(err, "unable to list builds")
+		return BuildList{}, errors.Wrap(err, "unable to list builds")
 	}
 
-	err = json.Unmarshal(resp, &buildList)
-	if err != nil {
-		return buildList, errors.Wrap(err, "unable to unmarshal response into BuildList")
+	var builds BuildList
+	if err = json.Unmarshal(resp, &builds); err != nil {
+		return BuildList{}, errors.Wrap(err, "unable to unmarshal response into BuildList")
 	}
 
-	return buildList, nil
+	return builds, nil
 }
 
 // GetBuildPipelines gets Basic build pipelines
 func (o *Organization) GetBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
 
-	buildPipelines := BuildPipelines{}
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return buildPipelines, errors.Wrap(err, "unable to get build pipelines")
+		return BuildPipelines{}, errors.Wrap(err, "unable to get build pipelines")
 	}
 
-	err = json.Unmarshal(resp, &buildPipelines)
-	if err != nil {
-		return buildPipelines, errors.Wrap(err, "unable to unmarshal response into BuildPipelines")
+	var pipelines BuildPipelines
+	if err = json.Unmarshal(resp, &pipelines); err != nil {
+		return BuildPipelines{}, errors.Wrap(err, "unable to unmarshal response into BuildPipelines")
 	}
 
-	return buildPipelines, nil
+	return pipelines, nil
 }
 
 // StopBuild stops a running build
 func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", o.UUID, projectUUID, buildUUID)
 
-	_, err := o.request("POST", path, nil)
-	if err != nil {
+	if _, err := o.client.request("POST", path, nil); err != nil {
 		return false, errors.Wrap(err, "unable to stop build")
 	}
 
@@ -209,8 +208,7 @@ func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, error) {
 func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", o.UUID, projectUUID, buildUUID)
 
-	_, err := o.request("POST", path, nil)
-	if err != nil {
+	if _, err := o.client.request("POST", path, nil); err != nil {
 		return false, errors.Wrap(err, "unable to restart build")
 	}
 
@@ -221,34 +219,32 @@ func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error)
 func (o *Organization) GetBuildServices(projectUUID, buildUUID string) (BuildServices, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
 
-	buildServices := BuildServices{}
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return buildServices, errors.Wrap(err, "unable to get build services")
+		return BuildServices{}, errors.Wrap(err, "unable to get build services")
 	}
 
-	err = json.Unmarshal(resp, &buildServices)
-	if err != nil {
-		return buildServices, errors.Wrap(err, "unable to unmarshal response into BuildServices")
+	var services BuildServices
+	if err = json.Unmarshal(resp, &services); err != nil {
+		return BuildServices{}, errors.Wrap(err, "unable to unmarshal response into BuildServices")
 	}
 
-	return buildServices, nil
+	return services, nil
 }
 
 // GetBuildSteps gets Pro build steps
 func (o *Organization) GetBuildSteps(projectUUID, buildUUID string) (BuildSteps, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
 
-	buildSteps := BuildSteps{}
-	resp, err := o.request("GET", path, nil)
+	resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return buildSteps, errors.Wrap(err, "unable to get build steps")
+		return BuildSteps{}, errors.Wrap(err, "unable to get build steps")
 	}
 
-	err = json.Unmarshal(resp, &buildSteps)
-	if err != nil {
-		return buildSteps, errors.Wrap(err, "unable to unmarshal response into BuildSteps")
+	var steps BuildSteps
+	if err = json.Unmarshal(resp, &steps); err != nil {
+		return BuildSteps{}, errors.Wrap(err, "unable to unmarshal response into BuildSteps")
 	}
 
-	return buildSteps, nil
+	return steps, nil
 }

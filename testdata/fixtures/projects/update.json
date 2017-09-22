@@ -1,0 +1,48 @@
+{
+  "project": {
+    "uuid": "7de09100-7aeb-0135-b8e4-76a42f3a0b26",
+    "name": "org/example-repo",
+    "type": "pro",
+    "repository_url": "https://github.com/org/example-repo",
+    "repository_provider": "github",
+    "authentication_user": "Test User",
+    "organization_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
+    "notification_rules": [
+      {
+        "notifier": "github",
+        "branch": null,
+        "branch_match": "exact",
+        "build_statuses": [
+          "failed",
+          "started",
+          "recovered",
+          "success"
+        ],
+        "build_owner": "all",
+        "options": {}
+      },
+      {
+        "notifier": "email",
+        "branch": null,
+        "branch_match": "exact",
+        "build_statuses": [
+          "failed",
+          "recovered"
+        ],
+        "build_owner": "all",
+        "options": {}
+      }
+    ],
+    "ssh_key": "ssh-rsa key",
+    "aes_key": null,
+    "created_at": "2017-09-13T19:56:01.398Z",
+    "updated_at": "2017-09-13T19:56:02.804Z",
+    "team_ids": [
+      61593, 70000
+    ],
+    "setup_commands": [],
+    "deployment_pipelines": [],
+    "environment_variables": [],
+    "test_pipelines": []
+  }
+}

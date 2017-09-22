@@ -1,7 +1,7 @@
 package codeship
 
-type Pagination struct {
-	Total   int `json:"total"`
-	PerPage int `json:"per_page"`
-	Page    int `json:"page"`
+type pagination struct {
+	Total   int `json:"total,omitempty"`
+	PerPage int `json:"per_page,omitempty"`
+	Page    int `json:"page,omitempty"`
 }
