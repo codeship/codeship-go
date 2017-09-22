@@ -56,6 +56,11 @@ func fixture(path string) string {
 	return string(b)
 }
 
+func assertHeaders(t *testing.T, headers http.Header) {
+	assert.Equal(t, "application/json", headers.Get("Content-Type"))
+	assert.Equal(t, "application/json", headers.Get("Accept"))
+}
+
 func TestNew(t *testing.T) {
 	type args struct {
 		username string

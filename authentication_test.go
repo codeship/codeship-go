@@ -20,6 +20,8 @@ func TestAuthenticate(t *testing.T) {
 		{
 			name: "successful auth",
 			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
 
@@ -29,6 +31,8 @@ func TestAuthenticate(t *testing.T) {
 		{
 			name: "unauthorized auth",
 			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
 
@@ -39,6 +43,8 @@ func TestAuthenticate(t *testing.T) {
 		{
 			name: "forbidden auth",
 			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusForbidden)
 
@@ -49,6 +55,8 @@ func TestAuthenticate(t *testing.T) {
 		{
 			name: "server error",
 			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusInternalServerError)
 			},
@@ -57,6 +65,8 @@ func TestAuthenticate(t *testing.T) {
 		{
 			name: "other status code",
 			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusTeapot)
 			},
@@ -65,6 +75,8 @@ func TestAuthenticate(t *testing.T) {
 		{
 			name: "other status code with body",
 			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusTeapot)
 				fmt.Fprint(w, "I'm a teapot")

@@ -58,8 +58,7 @@ func TestRestartBuild(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/restart", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("POST", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusAccepted)
@@ -78,8 +77,7 @@ func TestGetBuild(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("GET", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -123,8 +121,7 @@ func TestListBuilds(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("GET", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -174,8 +171,7 @@ func TestGetBuildPipelines(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/9ec4b230-76f8-0135-86b9-2ee351ae25fe/pipelines", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("GET", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -234,8 +230,7 @@ func TestGetBuildServices(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/28123f10-e33d-5533-b53f-111ef8d7b14f/services", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("GET", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -247,17 +242,22 @@ func TestGetBuildServices(t *testing.T) {
 	assert := assert.New(t)
 	assert.NoError(err)
 	assert.Equal(1, len(buildServices.Services))
+
 	service := buildServices.Services[0]
-	assert.Equal("b46c6c6c-1bdb-4413-8e55-a9a8b1b27526", service.UUID)
-	assert.Equal("25a3dd8c-eb3e-4e75-1298-8cbcbe621342", service.BuildUUID)
-	assert.Equal("test", service.Name)
-	assert.Equal("finished", service.Status)
+
 	updatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:44+00:00")
-	assert.Equal(updatedAt, service.UpdatedAt)
-	assert.Zero(service.PullingAt)
-	assert.Zero(service.BuildingAt)
 	finishedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:41+00:00")
-	assert.Equal(service.FinishedAt, finishedAt)
+
+	expected := codeship.BuildService{
+		UUID:       "b46c6c6c-1bdb-4413-8e55-a9a8b1b27526",
+		BuildUUID:  "25a3dd8c-eb3e-4e75-1298-8cbcbe621342",
+		Name:       "test",
+		Status:     "finished",
+		UpdatedAt:  updatedAt,
+		FinishedAt: finishedAt,
+	}
+
+	assert.Equal(expected, service)
 	assert.Equal(1, buildServices.Total)
 	assert.Equal(1, buildServices.Page)
 	assert.Equal(30, buildServices.PerPage)
@@ -270,8 +270,7 @@ func TestGetBuildSteps(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/28123f10-e33d-5533-b53f-111ef8d7b14f/steps", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("GET", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -283,26 +282,30 @@ func TestGetBuildSteps(t *testing.T) {
 	assert := assert.New(t)
 	assert.NoError(err)
 	assert.Equal(1, len(buildSteps.Steps))
+
 	step := buildSteps.Steps[0]
-	assert.Equal("21adb0ec-5139-4547-b1cf-7c40160b6e9d", step.UUID)
-	assert.Equal("28123f10-e33d-5533-b53f-111ef8d7b14f", step.BuildUUID)
-	assert.Equal("b46c6c6c-1bdb-4413-8e55-a9a8b1b27526", step.ServiceUUID)
-	assert.Equal("test", step.Name)
-	assert.Equal("", step.Tag)
-	assert.Equal("run", step.Type)
-	assert.Equal("success", step.Status)
+
 	updatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:44+00:00")
-	assert.Equal(updatedAt, step.UpdatedAt)
 	startedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:41+00:00")
-	assert.Equal(startedAt, step.StartedAt)
 	buildingAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:41+00:00")
-	assert.Equal(buildingAt, step.BuildingAt)
 	finishedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:42+00:00")
-	assert.Equal(finishedAt, step.FinishedAt)
-	assert.Empty(step.Steps)
-	assert.Equal("./run-tests.sh", step.Command)
-	assert.Equal("", step.ImageName)
-	assert.Equal("", step.Registry)
+
+	expected := codeship.BuildStep{
+		UUID:        "21adb0ec-5139-4547-b1cf-7c40160b6e9d",
+		ServiceUUID: "b46c6c6c-1bdb-4413-8e55-a9a8b1b27526",
+		BuildUUID:   "28123f10-e33d-5533-b53f-111ef8d7b14f",
+		Name:        "test",
+		Type:        "run",
+		Status:      "success",
+		Command:     "./run-tests.sh",
+		UpdatedAt:   updatedAt,
+		StartedAt:   startedAt,
+		BuildingAt:  buildingAt,
+		FinishedAt:  finishedAt,
+		Steps:       []codeship.BuildStep{},
+	}
+
+	assert.Equal(expected, step)
 	assert.Equal(1, buildSteps.Total)
 	assert.Equal(1, buildSteps.Page)
 	assert.Equal(30, buildSteps.PerPage)

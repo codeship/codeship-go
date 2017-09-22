@@ -17,8 +17,7 @@ func TestListProjects(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("GET", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -87,8 +86,7 @@ func TestGetProject(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/0059df30-7701-0135-8810-6e5f001a2e3c", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("GET", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -148,8 +146,7 @@ func TestCreateProject(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("POST", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
@@ -179,8 +176,7 @@ func TestUpdateProject(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/7de09100-7aeb-0135-b8e4-76a42f3a0b26", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("PUT", r.Method)
-		assert.Equal("application/json", r.Header.Get("Content-Type"))
-		assert.Equal("application/json", r.Header.Get("Accept"))
+		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
