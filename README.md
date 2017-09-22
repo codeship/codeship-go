@@ -73,6 +73,8 @@ TODO: link to GoDoc
 
 ## Contributing
 
+This project follows Codeship's [Go best practices](https://github.com/codeship/go-best-practices). Please review them and make sure your PR follows the guidelines laid out before submitting.
+
 ### Setup
 
 This project uses [dep](https://github.com/golang/dep) for dependency management.
@@ -87,6 +89,12 @@ make setup
 
 ```bash
 make test
+```
+
+We aim for > 80% test coverage. You can view the current coverage info by running:
+
+```bash
+make cover
 ```
 
 ### Linting
