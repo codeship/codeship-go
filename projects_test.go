@@ -20,6 +20,7 @@ func TestListProjects(t *testing.T) {
 		assertHeaders(t, r.Header)
 
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Link", "<https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2>; rel=\"last\", <https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2>; rel=\"next\"")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, fixture("projects/list.json"))
 	})
@@ -30,6 +31,12 @@ func TestListProjects(t *testing.T) {
 	assert.NoError(err)
 	assert.NotNil(resp)
 	assert.Equal(http.StatusOK, resp.StatusCode)
+
+	current, _ := resp.Links.CurrentPage()
+	assert.Equal(1, current)
+	assert.Equal("https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2", resp.Links.Last)
+	assert.Equal("https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2", resp.Links.Next)
+
 	assert.Equal(2, len(projects.Projects))
 
 	project := projects.Projects[1]
@@ -46,13 +53,13 @@ func TestListProjects(t *testing.T) {
 		RepositoryProvider: "github",
 		AuthenticationUser: "Test User",
 		NotificationRules: []codeship.NotificationRule{
-			codeship.NotificationRule{
+			{
 				Notifier:      "github",
 				BranchMatch:   "exact",
 				BuildStatuses: []string{"failed", "started", "recovered", "success"},
 				Target:        "all",
 			},
-			codeship.NotificationRule{
+			{
 				Notifier:      "email",
 				BranchMatch:   "exact",
 				Options:       codeship.NotificationOptions{},
@@ -66,7 +73,7 @@ func TestListProjects(t *testing.T) {
 		TeamIDs:       []int{1007, 1009},
 		SetupCommands: []string{},
 		TestPipelines: []codeship.TestPipeline{
-			codeship.TestPipeline{
+			{
 				Name:     "Test Commands",
 				Commands: []string{"./run-tests.sh"},
 			},
@@ -114,7 +121,7 @@ func TestGetProject(t *testing.T) {
 		RepositoryProvider: "github",
 		AuthenticationUser: "Test User",
 		NotificationRules: []codeship.NotificationRule{
-			codeship.NotificationRule{
+			{
 				Notifier:      "github",
 				BranchMatch:   "exact",
 				BuildStatuses: []string{"failed", "started", "recovered", "success"},
@@ -125,7 +132,7 @@ func TestGetProject(t *testing.T) {
 					URL:  "https://google.com",
 				},
 			},
-			codeship.NotificationRule{
+			{
 				Notifier:      "email",
 				BranchMatch:   "exact",
 				Options:       codeship.NotificationOptions{},

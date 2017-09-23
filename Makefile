@@ -21,7 +21,7 @@ cover: test ## Run all the tests and opens the coverage report
 
 .PHONY: fmt
 fmt: ## goimports all go files
-	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do goimports -w "$$file"; done
+	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
 
 .PHONY: lint
 lint: ## Run all the linters

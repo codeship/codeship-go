@@ -48,6 +48,42 @@ If you would like to manually re-authenticate, you may do this by calling the `A
 err := client.Authenticate()
 ```
 
+## Pagination
+
+Pagination is provided for all requests that can return multiple results. The methods that are able to be paginated all contain the `WithPagination(opts ListOptions)` signature.
+
+Usage is as follows:
+
+```go
+projects, resp, err := org.ListProjects()
+
+// paging forwards
+for {
+    if resp.IsLastPage() || resp.Next == "" {
+        break
+    }
+
+    next, _ := resp.NextPage()
+
+    projects, resp, _ = org.ListProjectsWithPagination(codeship.ListOptions{
+        Page: next,
+    })
+}
+
+// paging backwards
+for {
+    if current, _ := resp.CurrentPage(); current == 1 || resp.Previous == "" {
+        break
+    }
+
+    prev, _ := resp.PreviousPage()
+
+    projects, resp, _ = org.ListProjectsWithPagination(codeship.ListOptions{
+        Page: prev,
+    })
+}
+```
+
 ## Logging
 
 You can enable verbose logging of all HTTP requests/responses by configuring the `client` via the functional option `Verbose(verbose bool)` when instantiating the client:

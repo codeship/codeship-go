@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -25,28 +26,37 @@ type Organization struct {
 	client *Client
 }
 
-type Links struct {
-	Next     string
-	Previous string
-	Last     string
-	First    string
-}
-
 // Response is a Codeship response. This wraps the standard http.Response returned from Codeship.
 type Response struct {
 	*http.Response
-
 	// Links that were returned with the response. These are parsed from the Link header.
-	Links Links
+	Links
 }
 
-func (r *Response) links() Links {
-	var links Links
+func (r *Response) parseLinks() {
+	urlRegex := regexp.MustCompile(`\s*<(.+)>`)
+	relRegex := regexp.MustCompile(`\s*rel="(\w+)"`)
 
-	// if linkText, ok := r.Response.Header["Link"]; ok {
-	// }
+	if linkText := r.Header.Get("Link"); linkText != "" {
+		linkMap := make(map[string]string)
 
-	return links
+		// one chunk: <url>; rel="foo"
+		for _, chunk := range strings.Split(linkText, ",") {
+
+			pieces := strings.Split(chunk, ";")
+			urlMatch := urlRegex.FindStringSubmatch(pieces[0])
+			relMatch := relRegex.FindStringSubmatch(pieces[1])
+
+			if len(relMatch) > 1 && len(urlMatch) > 1 {
+				linkMap[relMatch[1]] = urlMatch[1]
+			}
+		}
+
+		r.Links.First = linkMap["first"]
+		r.Links.Last = linkMap["last"]
+		r.Links.Next = linkMap["next"]
+		r.Links.Previous = linkMap["prev"]
+	}
 }
 
 const apiURL = "https://api.codeship.com/v2"
@@ -190,6 +200,7 @@ func (c *Client) do(req *http.Request) ([]byte, *Response, error) {
 	}()
 
 	response := &Response{Response: resp}
+	response.parseLinks()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
