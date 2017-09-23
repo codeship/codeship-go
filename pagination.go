@@ -11,13 +11,13 @@ type pagination struct {
 	Page    int `json:"page,omitempty"`
 }
 
-// PaginationOptions structure for providing pagination options for list requests
-type PaginationOptions struct {
+// ListOptions structure for providing pagination options for list requests
+type ListOptions struct {
 	PerPage int
 	Page    int
 }
 
-func paginate(path string, opts PaginationOptions) (string, error) {
+func paginate(path string, opts ListOptions) (string, error) {
 	u, err := url.Parse(path)
 	if err != nil {
 		return path, err

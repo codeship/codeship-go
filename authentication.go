@@ -26,7 +26,7 @@ type Authentication struct {
 }
 
 // Authenticate swaps username/password for an authentication token
-func (c *Client) Authenticate() error {
+func (c *Client) Authenticate() (*Response, error) {
 	path := "/auth"
 	req, _ := http.NewRequest("POST", c.baseURL+path, nil)
 	req.SetBasicAuth(c.Username, c.Password)
@@ -34,13 +34,13 @@ func (c *Client) Authenticate() error {
 
 	c.authentication = Authentication{}
 
-	resp, err := c.do(req)
+	body, resp, err := c.do(req)
 	if err != nil {
-		return errors.Wrap(err, "authentication failed")
+		return resp, errors.Wrap(err, "authentication failed")
 	}
-	if err = json.Unmarshal(resp, &c.authentication); err != nil {
-		return errors.Wrap(err, "unable to unmarshal JSON into Authentication")
+	if err = json.Unmarshal(body, &c.authentication); err != nil {
+		return resp, errors.Wrap(err, "unable to unmarshal JSON into Authentication")
 	}
 
-	return err
+	return resp, err
 }

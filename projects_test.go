@@ -24,10 +24,12 @@ func TestListProjects(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/list.json"))
 	})
 
-	projects, err := org.ListProjects()
+	projects, resp, err := org.ListProjects()
 
 	assert := assert.New(t)
 	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.Equal(2, len(projects.Projects))
 
 	project := projects.Projects[1]
@@ -93,10 +95,12 @@ func TestGetProject(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/get.json"))
 	})
 
-	project, err := org.GetProject("0059df30-7701-0135-8810-6e5f001a2e3c")
+	project, resp, err := org.GetProject("0059df30-7701-0135-8810-6e5f001a2e3c")
 
 	assert := assert.New(t)
 	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.Equal(http.StatusOK, resp.StatusCode)
 
 	createdAt, _ := time.Parse(time.RFC3339, "2017-09-08T20:19:55.199Z")
 	updatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:36.336Z")
@@ -153,7 +157,7 @@ func TestCreateProject(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/create.json"))
 	})
 
-	project, err := org.CreateProject(codeship.ProjectCreateRequest{
+	project, resp, err := org.CreateProject(codeship.ProjectCreateRequest{
 		RepositoryURL: "git@github.com/org/repo-name",
 		TestPipelines: []codeship.TestPipeline{
 			{
@@ -166,6 +170,8 @@ func TestCreateProject(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.Equal(http.StatusCreated, resp.StatusCode)
 	assert.NotNil(project)
 }
 
@@ -183,7 +189,7 @@ func TestUpdateProject(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/update.json"))
 	})
 
-	project, err := org.UpdateProject("7de09100-7aeb-0135-b8e4-76a42f3a0b26", codeship.ProjectUpdateRequest{
+	project, resp, err := org.UpdateProject("7de09100-7aeb-0135-b8e4-76a42f3a0b26", codeship.ProjectUpdateRequest{
 		Type: codeship.ProjectTypePro,
 		TeamIDs: []int{
 			61593, 70000,
@@ -192,5 +198,7 @@ func TestUpdateProject(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.NotNil(project)
 }

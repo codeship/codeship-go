@@ -128,175 +128,177 @@ type buildRequest struct {
 }
 
 // CreateBuild creates a new build
-func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
+func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
-	_, err := o.client.request("POST", path, buildRequest{
+	_, resp, err := o.client.request("POST", path, buildRequest{
 		Ref:       ref,
 		CommitSha: commitSha,
 	})
 	if err != nil {
-		return false, errors.Wrap(err, "unable to create build")
+		return false, resp, errors.Wrap(err, "unable to create build")
 	}
 
-	return true, nil
+	return true, resp, nil
 }
 
 // GetBuild fetches a build by UUID
-func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, error) {
+func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.client.request("GET", path, nil)
+	body, resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return Build{}, errors.Wrap(err, "unable to get build")
+		return Build{}, resp, errors.Wrap(err, "unable to get build")
 	}
 
 	var build buildResponse
-	if err = json.Unmarshal(resp, &build); err != nil {
-		return Build{}, errors.Wrap(err, "unable to unmarshal response into Build")
+	if err = json.Unmarshal(body, &build); err != nil {
+		return Build{}, resp, errors.Wrap(err, "unable to unmarshal response into Build")
 	}
 
-	return build.Build, nil
+	return build.Build, resp, nil
 }
 
 // ListBuildsWithPagination fetches a list of builds for the given organization with a set of PaginationOptions
-func (o *Organization) ListBuildsWithPagination(projectUUID string, opts PaginationOptions) (BuildList, error) {
+func (o *Organization) ListBuildsWithPagination(projectUUID string, opts ListOptions) (BuildList, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 	path, err := paginate(path, opts)
 	if err != nil {
-		return BuildList{}, errors.Wrap(err, "unable to list builds")
+		return BuildList{}, nil, errors.Wrap(err, "unable to list builds")
 	}
 	return o.listBuilds(path)
 }
 
 // ListBuilds fetches a list of builds for the given organization
-func (o *Organization) ListBuilds(projectUUID string) (BuildList, error) {
+func (o *Organization) ListBuilds(projectUUID string) (BuildList, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 	return o.listBuilds(path)
 }
 
-func (o *Organization) listBuilds(path string) (BuildList, error) {
-	resp, err := o.client.request("GET", path, nil)
+func (o *Organization) listBuilds(path string) (BuildList, *Response, error) {
+	body, resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return BuildList{}, errors.Wrap(err, "unable to list builds")
+		return BuildList{}, resp, errors.Wrap(err, "unable to list builds")
 	}
 
 	var builds BuildList
-	if err = json.Unmarshal(resp, &builds); err != nil {
-		return BuildList{}, errors.Wrap(err, "unable to unmarshal response into BuildList")
+	if err = json.Unmarshal(body, &builds); err != nil {
+		return BuildList{}, resp, errors.Wrap(err, "unable to unmarshal response into BuildList")
 	}
 
-	return builds, nil
+	return builds, resp, nil
 }
 
 // ListBuildPipelinesWithPagination lists Basic build pipelines with a set of PaginationOptions
-func (o *Organization) ListBuildPipelinesWithPagination(projectUUID, buildUUID string, opts PaginationOptions) (BuildPipelines, error) {
+func (o *Organization) ListBuildPipelinesWithPagination(projectUUID, buildUUID string, opts ListOptions) (BuildPipelines, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
 	path, err := paginate(path, opts)
 	if err != nil {
-		return BuildPipelines{}, errors.Wrap(err, "unable to get build pipelines")
+		return BuildPipelines{}, nil, errors.Wrap(err, "unable to get build pipelines")
 	}
 	return o.listBuildPipelines(path)
 }
 
 // ListBuildPipelines lists Basic build pipelines
-func (o *Organization) ListBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, error) {
+func (o *Organization) ListBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
 	return o.listBuildPipelines(path)
 }
 
-func (o *Organization) listBuildPipelines(path string) (BuildPipelines, error) {
-	resp, err := o.client.request("GET", path, nil)
+func (o *Organization) listBuildPipelines(path string) (BuildPipelines, *Response, error) {
+	body, resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return BuildPipelines{}, errors.Wrap(err, "unable to get build pipelines")
+		return BuildPipelines{}, resp, errors.Wrap(err, "unable to get build pipelines")
 	}
 
 	var pipelines BuildPipelines
-	if err = json.Unmarshal(resp, &pipelines); err != nil {
-		return BuildPipelines{}, errors.Wrap(err, "unable to unmarshal response into BuildPipelines")
+	if err = json.Unmarshal(body, &pipelines); err != nil {
+		return BuildPipelines{}, resp, errors.Wrap(err, "unable to unmarshal response into BuildPipelines")
 	}
 
-	return pipelines, nil
+	return pipelines, resp, nil
 }
 
 // StopBuild stops a running build
-func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, error) {
+func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", o.UUID, projectUUID, buildUUID)
 
-	if _, err := o.client.request("POST", path, nil); err != nil {
-		return false, errors.Wrap(err, "unable to stop build")
+	_, resp, err := o.client.request("POST", path, nil)
+	if err != nil {
+		return false, resp, errors.Wrap(err, "unable to stop build")
 	}
 
-	return true, nil
+	return true, resp, nil
 }
 
 // RestartBuild restarts a previous build
-func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error) {
+func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", o.UUID, projectUUID, buildUUID)
 
-	if _, err := o.client.request("POST", path, nil); err != nil {
-		return false, errors.Wrap(err, "unable to restart build")
+	_, resp, err := o.client.request("POST", path, nil)
+	if err != nil {
+		return false, resp, errors.Wrap(err, "unable to restart build")
 	}
 
-	return true, nil
+	return true, resp, nil
 }
 
 // ListBuildServicesWithPagination lists Pro build services with a set of PaginationOptions
-func (o *Organization) ListBuildServicesWithPagination(projectUUID, buildUUID string, opts PaginationOptions) (BuildServices, error) {
+func (o *Organization) ListBuildServicesWithPagination(projectUUID, buildUUID string, opts ListOptions) (BuildServices, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
 	path, err := paginate(path, opts)
 	if err != nil {
-		return BuildServices{}, errors.Wrap(err, "unable to get build services")
+		return BuildServices{}, nil, errors.Wrap(err, "unable to get build services")
 	}
 	return o.listBuildServices(path)
 }
 
 // ListBuildServices lists Pro build services
-func (o *Organization) ListBuildServices(projectUUID, buildUUID string) (BuildServices, error) {
+func (o *Organization) ListBuildServices(projectUUID, buildUUID string) (BuildServices, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
 	return o.listBuildServices(path)
 }
 
-func (o *Organization) listBuildServices(path string) (BuildServices, error) {
-	resp, err := o.client.request("GET", path, nil)
+func (o *Organization) listBuildServices(path string) (BuildServices, *Response, error) {
+	body, resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return BuildServices{}, errors.Wrap(err, "unable to get build services")
+		return BuildServices{}, resp, errors.Wrap(err, "unable to get build services")
 	}
 
 	var services BuildServices
-	if err = json.Unmarshal(resp, &services); err != nil {
-		return BuildServices{}, errors.Wrap(err, "unable to unmarshal response into BuildServices")
+	if err = json.Unmarshal(body, &services); err != nil {
+		return BuildServices{}, resp, errors.Wrap(err, "unable to unmarshal response into BuildServices")
 	}
 
-	return services, nil
+	return services, resp, nil
 }
 
 // ListBuildStepsWithPagination lists Pro build steps with a set of PaginationOptions
-func (o *Organization) ListBuildStepsWithPagination(projectUUID, buildUUID string, opts PaginationOptions) (BuildSteps, error) {
+func (o *Organization) ListBuildStepsWithPagination(projectUUID, buildUUID string, opts ListOptions) (BuildSteps, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
 	path, err := paginate(path, opts)
 	if err != nil {
-		return BuildSteps{}, errors.Wrap(err, "unable to get build steps")
+		return BuildSteps{}, nil, errors.Wrap(err, "unable to get build steps")
 	}
 	return o.listBuildSteps(path)
 }
 
 // ListBuildSteps lists Pro build steps
-func (o *Organization) ListBuildSteps(projectUUID, buildUUID string) (BuildSteps, error) {
+func (o *Organization) ListBuildSteps(projectUUID, buildUUID string) (BuildSteps, *Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
 	return o.listBuildSteps(path)
 }
 
-func (o *Organization) listBuildSteps(path string) (BuildSteps, error) {
-	resp, err := o.client.request("GET", path, nil)
+func (o *Organization) listBuildSteps(path string) (BuildSteps, *Response, error) {
+	body, resp, err := o.client.request("GET", path, nil)
 	if err != nil {
-		return BuildSteps{}, errors.Wrap(err, "unable to get build steps")
+		return BuildSteps{}, resp, errors.Wrap(err, "unable to get build steps")
 	}
 
 	var steps BuildSteps
-	if err = json.Unmarshal(resp, &steps); err != nil {
-		return BuildSteps{}, errors.Wrap(err, "unable to unmarshal response into BuildSteps")
+	if err = json.Unmarshal(body, &steps); err != nil {
+		return BuildSteps{}, resp, errors.Wrap(err, "unable to unmarshal response into BuildSteps")
 	}
 
-	return steps, nil
+	return steps, resp, nil
 }

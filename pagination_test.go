@@ -9,7 +9,7 @@ import (
 func Test_paginate(t *testing.T) {
 	type args struct {
 		path string
-		opts PaginationOptions
+		opts ListOptions
 	}
 	tests := []struct {
 		name string
@@ -20,7 +20,7 @@ func Test_paginate(t *testing.T) {
 			name: "paginates page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: PaginationOptions{
+				opts: ListOptions{
 					Page: 1,
 				},
 			},
@@ -30,7 +30,7 @@ func Test_paginate(t *testing.T) {
 			name: "paginates per_page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: PaginationOptions{
+				opts: ListOptions{
 					PerPage: 10,
 				},
 			},
@@ -40,7 +40,7 @@ func Test_paginate(t *testing.T) {
 			name: "paginates both page and per_page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: PaginationOptions{
+				opts: ListOptions{
 					PerPage: 15,
 					Page:    5,
 				},
@@ -58,7 +58,7 @@ func Test_paginate(t *testing.T) {
 			name: "handles negative page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: PaginationOptions{
+				opts: ListOptions{
 					Page: -1,
 				},
 			},
@@ -68,7 +68,7 @@ func Test_paginate(t *testing.T) {
 			name: "handles negative per_page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: PaginationOptions{
+				opts: ListOptions{
 					PerPage: -1,
 				},
 			},
