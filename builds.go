@@ -1,6 +1,7 @@
 package codeship
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -128,10 +129,10 @@ type buildRequest struct {
 }
 
 // CreateBuild creates a new build
-func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, error) {
+func (o *Organization) CreateBuild(ctx context.Context, projectUUID, ref, commitSha string) (bool, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
-	_, err := o.client.request("POST", path, buildRequest{
+	_, err := o.client.request(ctx, "POST", path, buildRequest{
 		Ref:       ref,
 		CommitSha: commitSha,
 	})
@@ -143,10 +144,10 @@ func (o *Organization) CreateBuild(projectUUID, ref, commitSha string) (bool, er
 }
 
 // GetBuild fetches a build by UUID
-func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, error) {
+func (o *Organization) GetBuild(ctx context.Context, projectUUID, buildUUID string) (Build, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.client.request("GET", path, nil)
+	resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return Build{}, errors.Wrap(err, "unable to get build")
 	}
@@ -160,10 +161,10 @@ func (o *Organization) GetBuild(projectUUID, buildUUID string) (Build, error) {
 }
 
 // ListBuilds fetches a list of builds for the given organization
-func (o *Organization) ListBuilds(projectUUID string) (BuildList, error) {
+func (o *Organization) ListBuilds(ctx context.Context, projectUUID string) (BuildList, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
-	resp, err := o.client.request("GET", path, nil)
+	resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return BuildList{}, errors.Wrap(err, "unable to list builds")
 	}
@@ -177,10 +178,10 @@ func (o *Organization) ListBuilds(projectUUID string) (BuildList, error) {
 }
 
 // GetBuildPipelines gets Basic build pipelines
-func (o *Organization) GetBuildPipelines(projectUUID, buildUUID string) (BuildPipelines, error) {
+func (o *Organization) GetBuildPipelines(ctx context.Context, projectUUID, buildUUID string) (BuildPipelines, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.client.request("GET", path, nil)
+	resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return BuildPipelines{}, errors.Wrap(err, "unable to get build pipelines")
 	}
@@ -194,10 +195,10 @@ func (o *Organization) GetBuildPipelines(projectUUID, buildUUID string) (BuildPi
 }
 
 // StopBuild stops a running build
-func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, error) {
+func (o *Organization) StopBuild(ctx context.Context, projectUUID, buildUUID string) (bool, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", o.UUID, projectUUID, buildUUID)
 
-	if _, err := o.client.request("POST", path, nil); err != nil {
+	if _, err := o.client.request(ctx, "POST", path, nil); err != nil {
 		return false, errors.Wrap(err, "unable to stop build")
 	}
 
@@ -205,10 +206,10 @@ func (o *Organization) StopBuild(projectUUID, buildUUID string) (bool, error) {
 }
 
 // RestartBuild restarts a previous build
-func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error) {
+func (o *Organization) RestartBuild(ctx context.Context, projectUUID, buildUUID string) (bool, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", o.UUID, projectUUID, buildUUID)
 
-	if _, err := o.client.request("POST", path, nil); err != nil {
+	if _, err := o.client.request(ctx, "POST", path, nil); err != nil {
 		return false, errors.Wrap(err, "unable to restart build")
 	}
 
@@ -216,10 +217,10 @@ func (o *Organization) RestartBuild(projectUUID, buildUUID string) (bool, error)
 }
 
 // GetBuildServices gets Pro build services
-func (o *Organization) GetBuildServices(projectUUID, buildUUID string) (BuildServices, error) {
+func (o *Organization) GetBuildServices(ctx context.Context, projectUUID, buildUUID string) (BuildServices, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.client.request("GET", path, nil)
+	resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return BuildServices{}, errors.Wrap(err, "unable to get build services")
 	}
@@ -233,10 +234,10 @@ func (o *Organization) GetBuildServices(projectUUID, buildUUID string) (BuildSer
 }
 
 // GetBuildSteps gets Pro build steps
-func (o *Organization) GetBuildSteps(projectUUID, buildUUID string) (BuildSteps, error) {
+func (o *Organization) GetBuildSteps(ctx context.Context, projectUUID, buildUUID string) (BuildSteps, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
 
-	resp, err := o.client.request("GET", path, nil)
+	resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return BuildSteps{}, errors.Wrap(err, "unable to get build steps")
 	}
