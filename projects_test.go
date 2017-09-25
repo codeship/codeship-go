@@ -1,6 +1,7 @@
 package codeship_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -24,7 +25,7 @@ func TestListProjects(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/list.json"))
 	})
 
-	projects, err := org.ListProjects()
+	projects, err := org.ListProjects(context.Background())
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -44,13 +45,13 @@ func TestListProjects(t *testing.T) {
 		RepositoryProvider: "github",
 		AuthenticationUser: "Test User",
 		NotificationRules: []codeship.NotificationRule{
-			codeship.NotificationRule{
+			{
 				Notifier:      "github",
 				BranchMatch:   "exact",
 				BuildStatuses: []string{"failed", "started", "recovered", "success"},
 				Target:        "all",
 			},
-			codeship.NotificationRule{
+			{
 				Notifier:      "email",
 				BranchMatch:   "exact",
 				Options:       codeship.NotificationOptions{},
@@ -64,7 +65,7 @@ func TestListProjects(t *testing.T) {
 		TeamIDs:       []int{1007, 1009},
 		SetupCommands: []string{},
 		TestPipelines: []codeship.TestPipeline{
-			codeship.TestPipeline{
+			{
 				Name:     "Test Commands",
 				Commands: []string{"./run-tests.sh"},
 			},
@@ -93,7 +94,7 @@ func TestGetProject(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/get.json"))
 	})
 
-	project, err := org.GetProject("0059df30-7701-0135-8810-6e5f001a2e3c")
+	project, err := org.GetProject(context.Background(), "0059df30-7701-0135-8810-6e5f001a2e3c")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -110,7 +111,7 @@ func TestGetProject(t *testing.T) {
 		RepositoryProvider: "github",
 		AuthenticationUser: "Test User",
 		NotificationRules: []codeship.NotificationRule{
-			codeship.NotificationRule{
+			{
 				Notifier:      "github",
 				BranchMatch:   "exact",
 				BuildStatuses: []string{"failed", "started", "recovered", "success"},
@@ -121,7 +122,7 @@ func TestGetProject(t *testing.T) {
 					URL:  "https://google.com",
 				},
 			},
-			codeship.NotificationRule{
+			{
 				Notifier:      "email",
 				BranchMatch:   "exact",
 				Options:       codeship.NotificationOptions{},
@@ -153,7 +154,7 @@ func TestCreateProject(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/create.json"))
 	})
 
-	project, err := org.CreateProject(codeship.ProjectCreateRequest{
+	project, err := org.CreateProject(context.Background(), codeship.ProjectCreateRequest{
 		RepositoryURL: "git@github.com/org/repo-name",
 		TestPipelines: []codeship.TestPipeline{
 			{
@@ -183,7 +184,7 @@ func TestUpdateProject(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/update.json"))
 	})
 
-	project, err := org.UpdateProject("7de09100-7aeb-0135-b8e4-76a42f3a0b26", codeship.ProjectUpdateRequest{
+	project, err := org.UpdateProject(context.Background(), "7de09100-7aeb-0135-b8e4-76a42f3a0b26", codeship.ProjectUpdateRequest{
 		Type: codeship.ProjectTypePro,
 		TeamIDs: []int{
 			61593, 70000,

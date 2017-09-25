@@ -2,6 +2,7 @@ package codeship
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -83,9 +84,9 @@ func New(username, password string, opts ...Option) (*Client, error) {
 }
 
 // Scope scopes a client to a single Organization, allowing the user to make calls to the API
-func (c *Client) Scope(name string) (*Organization, error) {
+func (c *Client) Scope(ctx context.Context, name string) (*Organization, error) {
 	if c.AuthenticationRequired() {
-		if err := c.Authenticate(); err != nil {
+		if err := c.Authenticate(ctx); err != nil {
 			return nil, err
 		}
 	}
@@ -113,7 +114,7 @@ func (c *Client) AuthenticationRequired() bool {
 	return c.authentication.AccessToken == "" || c.authentication.ExpiresAt <= time.Now().Unix()
 }
 
-func (c *Client) request(method, path string, params interface{}) ([]byte, error) {
+func (c *Client) request(ctx context.Context, method, path string, params interface{}) ([]byte, error) {
 	url := c.baseURL + path
 	// Replace nil with a JSON object if needed
 	var reqBody io.Reader
@@ -126,7 +127,7 @@ func (c *Client) request(method, path string, params interface{}) ([]byte, error
 	}
 
 	if c.AuthenticationRequired() {
-		if err := c.Authenticate(); err != nil {
+		if err := c.Authenticate(ctx); err != nil {
 			return nil, err
 		}
 	}
@@ -142,6 +143,7 @@ func (c *Client) request(method, path string, params interface{}) ([]byte, error
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
+	req = req.WithContext(ctx)
 	return c.do(req)
 }
 
