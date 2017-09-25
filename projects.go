@@ -143,23 +143,23 @@ type projectResponse struct {
 }
 
 // ListProjectsWithPagination fetches a list of projects with a set of PaginationOptions
-func (o *Organization) ListProjectsWithPagination(opts ListOptions) (ProjectList, *Response, error) {
+func (o *Organization) ListProjectsWithPagination(opts ListOptions) (ProjectList, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 	path, err := paginate(path, opts)
 	if err != nil {
-		return ProjectList{}, nil, errors.Wrap(err, "unable to list projects")
+		return ProjectList{}, Response{}, errors.Wrap(err, "unable to list projects")
 	}
 	return o.listProjects(path)
 }
 
 // ListProjects fetches a list of projects
-func (o *Organization) ListProjects() (ProjectList, *Response, error) {
+func (o *Organization) ListProjects() (ProjectList, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 	return o.listProjects(path)
 }
 
 // ListProjects fetches a list of projects
-func (o *Organization) listProjects(path string) (ProjectList, *Response, error) {
+func (o *Organization) listProjects(path string) (ProjectList, Response, error) {
 	body, resp, err := o.client.request("GET", path, nil)
 	if err != nil {
 		return ProjectList{}, resp, errors.Wrap(err, "unable to list projects")
@@ -174,7 +174,7 @@ func (o *Organization) listProjects(path string) (ProjectList, *Response, error)
 }
 
 // GetProject fetches a project by UUID
-func (o *Organization) GetProject(projectUUID string) (Project, *Response, error) {
+func (o *Organization) GetProject(projectUUID string) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
 	body, resp, err := o.client.request("GET", path, nil)
@@ -191,7 +191,7 @@ func (o *Organization) GetProject(projectUUID string) (Project, *Response, error
 }
 
 // CreateProject creates a new project
-func (o *Organization) CreateProject(p ProjectCreateRequest) (Project, *Response, error) {
+func (o *Organization) CreateProject(p ProjectCreateRequest) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
 	body, resp, err := o.client.request("POST", path, p)
@@ -208,7 +208,7 @@ func (o *Organization) CreateProject(p ProjectCreateRequest) (Project, *Response
 }
 
 // UpdateProject updates an existing project
-func (o *Organization) UpdateProject(projectUUID string, p ProjectUpdateRequest) (Project, *Response, error) {
+func (o *Organization) UpdateProject(projectUUID string, p ProjectUpdateRequest) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
 	body, resp, err := o.client.request("PUT", path, p)

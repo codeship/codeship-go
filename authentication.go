@@ -26,7 +26,7 @@ type Authentication struct {
 }
 
 // Authenticate swaps username/password for an authentication token
-func (c *Client) Authenticate() (*Response, error) {
+func (c *Client) Authenticate() (Response, error) {
 	path := "/auth"
 	req, _ := http.NewRequest("POST", c.baseURL+path, nil)
 	req.SetBasicAuth(c.Username, c.Password)

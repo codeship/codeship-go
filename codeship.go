@@ -33,7 +33,9 @@ type Response struct {
 	Links
 }
 
-func (r *Response) parseLinks() {
+func newResponse(r *http.Response) Response {
+	response := Response{Response: r}
+
 	urlRegex := regexp.MustCompile(`\s*<(.+)>`)
 	relRegex := regexp.MustCompile(`\s*rel="(\w+)"`)
 
@@ -52,11 +54,13 @@ func (r *Response) parseLinks() {
 			}
 		}
 
-		r.Links.First = linkMap["first"]
-		r.Links.Last = linkMap["last"]
-		r.Links.Next = linkMap["next"]
-		r.Links.Previous = linkMap["prev"]
+		response.Links.First = linkMap["first"]
+		response.Links.Last = linkMap["last"]
+		response.Links.Next = linkMap["next"]
+		response.Links.Previous = linkMap["prev"]
 	}
+
+	return response
 }
 
 const apiURL = "https://api.codeship.com/v2"
@@ -147,27 +151,27 @@ func (c *Client) AuthenticationRequired() bool {
 	return c.authentication.AccessToken == "" || c.authentication.ExpiresAt <= time.Now().Unix()
 }
 
-func (c *Client) request(method, path string, params interface{}) ([]byte, *Response, error) {
+func (c *Client) request(method, path string, params interface{}) ([]byte, Response, error) {
 	url := c.baseURL + path
 	// Replace nil with a JSON object if needed
 	var reqBody io.Reader
 	if params != nil {
 		buf := &bytes.Buffer{}
 		if err := json.NewEncoder(buf).Encode(params); err != nil {
-			return nil, nil, err
+			return nil, Response{}, err
 		}
 		reqBody = buf
 	}
 
 	if c.AuthenticationRequired() {
 		if _, err := c.Authenticate(); err != nil {
-			return nil, nil, err
+			return nil, Response{}, err
 		}
 	}
 
 	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "HTTP request creation failed")
+		return nil, Response{}, errors.Wrap(err, "HTTP request creation failed")
 	}
 
 	// Apply any user-defined headers first
@@ -179,7 +183,7 @@ func (c *Client) request(method, path string, params interface{}) ([]byte, *Resp
 	return c.do(req)
 }
 
-func (c *Client) do(req *http.Request) ([]byte, *Response, error) {
+func (c *Client) do(req *http.Request) ([]byte, Response, error) {
 	if c.verbose {
 		dumpReq, _ := httputil.DumpRequest(req, true)
 		c.logger.Println(string(dumpReq))
@@ -187,7 +191,7 @@ func (c *Client) do(req *http.Request) ([]byte, *Response, error) {
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "HTTP request failed")
+		return nil, Response{}, errors.Wrap(err, "HTTP request failed")
 	}
 
 	if c.verbose {
@@ -199,8 +203,7 @@ func (c *Client) do(req *http.Request) ([]byte, *Response, error) {
 		_ = resp.Body.Close()
 	}()
 
-	response := &Response{Response: resp}
-	response.parseLinks()
+	response := newResponse(resp)
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
