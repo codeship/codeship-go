@@ -143,8 +143,7 @@ func (c *Client) request(ctx context.Context, method, path string, params interf
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 
-	req = req.WithContext(ctx)
-	return c.do(req)
+	return c.do(req.WithContext(ctx))
 }
 
 func (c *Client) do(req *http.Request) ([]byte, error) {

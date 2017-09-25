@@ -32,11 +32,10 @@ func (c *Client) Authenticate(ctx context.Context) error {
 	req, _ := http.NewRequest("POST", c.baseURL+path, nil)
 	req.SetBasicAuth(c.Username, c.Password)
 	req.Header.Set("Content-Type", "application/json")
-	req = req.WithContext(ctx)
 
 	c.authentication = Authentication{}
 
-	resp, err := c.do(req)
+	resp, err := c.do(req.WithContext(ctx))
 	if err != nil {
 		return errors.Wrap(err, "authentication failed")
 	}
