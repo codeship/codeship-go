@@ -1,6 +1,7 @@
 package codeship_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -26,7 +27,7 @@ func TestCreateBuild(t *testing.T) {
 		fmt.Fprint(w)
 	})
 
-	_, resp, err := org.CreateBuild("28123f10-e33d-5533-b53f-111ef8d7b14f", "heads/master", "185ab4c7dc4eda2a027c284f7a669cac3f50a5ed")
+	_, resp, err := org.CreateBuild(context.Background(), "28123f10-e33d-5533-b53f-111ef8d7b14f", "heads/master", "185ab4c7dc4eda2a027c284f7a669cac3f50a5ed")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -49,7 +50,7 @@ func TestStopBuild(t *testing.T) {
 		fmt.Fprint(w)
 	})
 
-	success, resp, err := org.StopBuild("28123f10-e33d-5533-b53f-111ef8d7b14f", "25a3dd8c-eb3e-4e75-1298-8cbcbe621342")
+	success, resp, err := org.StopBuild(context.Background(), "28123f10-e33d-5533-b53f-111ef8d7b14f", "25a3dd8c-eb3e-4e75-1298-8cbcbe621342")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -72,7 +73,7 @@ func TestRestartBuild(t *testing.T) {
 		fmt.Fprint(w)
 	})
 
-	success, resp, err := org.RestartBuild("28123f10-e33d-5533-b53f-111ef8d7b14f", "25a3dd8c-eb3e-4e75-1298-8cbcbe621342")
+	success, resp, err := org.RestartBuild(context.Background(), "28123f10-e33d-5533-b53f-111ef8d7b14f", "25a3dd8c-eb3e-4e75-1298-8cbcbe621342")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -95,7 +96,7 @@ func TestGetBuild(t *testing.T) {
 		fmt.Fprint(w, fixture("builds/get.json"))
 	})
 
-	build, resp, err := org.GetBuild("28123f10-e33d-5533-b53f-111ef8d7b14f", "25a3dd8c-eb3e-4e75-1298-8cbcbe621342")
+	build, resp, err := org.GetBuild(context.Background(), "28123f10-e33d-5533-b53f-111ef8d7b14f", "25a3dd8c-eb3e-4e75-1298-8cbcbe621342")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -141,7 +142,7 @@ func TestListBuilds(t *testing.T) {
 		fmt.Fprint(w, fixture("builds/list.json"))
 	})
 
-	builds, resp, err := org.ListBuilds("28123f10-e33d-5533-b53f-111ef8d7b14f")
+	builds, resp, err := org.ListBuilds(context.Background(), "28123f10-e33d-5533-b53f-111ef8d7b14f")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -193,7 +194,7 @@ func TestListBuildPipelines(t *testing.T) {
 		fmt.Fprint(w, fixture("builds/pipelines.json"))
 	})
 
-	pipelines, resp, err := org.ListBuildPipelines("28123f10-e33d-5533-b53f-111ef8d7b14f", "9ec4b230-76f8-0135-86b9-2ee351ae25fe")
+	pipelines, resp, err := org.ListBuildPipelines(context.Background(), "28123f10-e33d-5533-b53f-111ef8d7b14f", "9ec4b230-76f8-0135-86b9-2ee351ae25fe")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -254,7 +255,7 @@ func TestListBuildServices(t *testing.T) {
 		fmt.Fprint(w, fixture("builds/services.json"))
 	})
 
-	buildServices, resp, err := org.ListBuildServices("28123f10-e33d-5533-b53f-111ef8d7b14f", "28123f10-e33d-5533-b53f-111ef8d7b14f")
+	buildServices, resp, err := org.ListBuildServices(context.Background(), "28123f10-e33d-5533-b53f-111ef8d7b14f", "28123f10-e33d-5533-b53f-111ef8d7b14f")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -296,7 +297,7 @@ func TestListBuildSteps(t *testing.T) {
 		fmt.Fprint(w, fixture("builds/steps.json"))
 	})
 
-	buildSteps, resp, err := org.ListBuildSteps("28123f10-e33d-5533-b53f-111ef8d7b14f", "28123f10-e33d-5533-b53f-111ef8d7b14f")
+	buildSteps, resp, err := org.ListBuildSteps(context.Background(), "28123f10-e33d-5533-b53f-111ef8d7b14f", "28123f10-e33d-5533-b53f-111ef8d7b14f")
 
 	assert := assert.New(t)
 	assert.NoError(err)

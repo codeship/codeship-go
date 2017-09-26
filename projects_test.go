@@ -1,6 +1,7 @@
 package codeship_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -25,7 +26,7 @@ func TestListProjects(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/list.json"))
 	})
 
-	projects, resp, err := org.ListProjects()
+	projects, resp, err := org.ListProjects(context.Background())
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -102,7 +103,7 @@ func TestGetProject(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/get.json"))
 	})
 
-	project, resp, err := org.GetProject("0059df30-7701-0135-8810-6e5f001a2e3c")
+	project, resp, err := org.GetProject(context.Background(), "0059df30-7701-0135-8810-6e5f001a2e3c")
 
 	assert := assert.New(t)
 	assert.NoError(err)
@@ -164,7 +165,7 @@ func TestCreateProject(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/create.json"))
 	})
 
-	project, resp, err := org.CreateProject(codeship.ProjectCreateRequest{
+	project, resp, err := org.CreateProject(context.Background(), codeship.ProjectCreateRequest{
 		RepositoryURL: "git@github.com/org/repo-name",
 		TestPipelines: []codeship.TestPipeline{
 			{
@@ -196,7 +197,7 @@ func TestUpdateProject(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/update.json"))
 	})
 
-	project, resp, err := org.UpdateProject("7de09100-7aeb-0135-b8e4-76a42f3a0b26", codeship.ProjectUpdateRequest{
+	project, resp, err := org.UpdateProject(context.Background(), "7de09100-7aeb-0135-b8e4-76a42f3a0b26", codeship.ProjectUpdateRequest{
 		Type: codeship.ProjectTypePro,
 		TeamIDs: []int{
 			61593, 70000,

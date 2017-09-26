@@ -29,13 +29,13 @@ client, err := codeship.New("username", "password")
 You must then scope the client to a single Organization that you have access to:
 
 ```go
-org, err := client.Scope("codeship")
+org, err := client.Scope(ctx, "codeship")
 ```
 
 You can then perform calls to the API on behalf of an Organization:
 
 ```go
-projects, err := org.ListProjects()
+projects, err := org.ListProjects(ctx)
 ```
 
 ## Authentication
@@ -45,7 +45,7 @@ Authentication is handled automatically via the API Client using the provided `u
 If you would like to manually re-authenticate, you may do this by calling the `Authenticate` method on the `client`:
 
 ```go
-err := client.Authenticate()
+err := client.Authenticate(ctx)
 ```
 
 ## Pagination

@@ -1,6 +1,7 @@
 package codeship
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -143,24 +144,24 @@ type projectResponse struct {
 }
 
 // ListProjectsWithPagination fetches a list of projects with a set of PaginationOptions
-func (o *Organization) ListProjectsWithPagination(opts ListOptions) (ProjectList, Response, error) {
+func (o *Organization) ListProjectsWithPagination(ctx context.Context, opts ListOptions) (ProjectList, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 	path, err := paginate(path, opts)
 	if err != nil {
 		return ProjectList{}, Response{}, errors.Wrap(err, "unable to list projects")
 	}
-	return o.listProjects(path)
+	return o.listProjects(ctx, path)
 }
 
 // ListProjects fetches a list of projects
-func (o *Organization) ListProjects() (ProjectList, Response, error) {
+func (o *Organization) ListProjects(ctx context.Context) (ProjectList, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
-	return o.listProjects(path)
+	return o.listProjects(ctx, path)
 }
 
 // ListProjects fetches a list of projects
-func (o *Organization) listProjects(path string) (ProjectList, Response, error) {
-	body, resp, err := o.client.request("GET", path, nil)
+func (o *Organization) listProjects(ctx context.Context, path string) (ProjectList, Response, error) {
+	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return ProjectList{}, resp, errors.Wrap(err, "unable to list projects")
 	}
@@ -174,10 +175,10 @@ func (o *Organization) listProjects(path string) (ProjectList, Response, error) 
 }
 
 // GetProject fetches a project by UUID
-func (o *Organization) GetProject(projectUUID string) (Project, Response, error) {
+func (o *Organization) GetProject(ctx context.Context, projectUUID string) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
-	body, resp, err := o.client.request("GET", path, nil)
+	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return Project{}, resp, errors.Wrap(err, "unable to get project")
 	}
@@ -191,10 +192,10 @@ func (o *Organization) GetProject(projectUUID string) (Project, Response, error)
 }
 
 // CreateProject creates a new project
-func (o *Organization) CreateProject(p ProjectCreateRequest) (Project, Response, error) {
+func (o *Organization) CreateProject(ctx context.Context, p ProjectCreateRequest) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
-	body, resp, err := o.client.request("POST", path, p)
+	body, resp, err := o.client.request(ctx, "POST", path, p)
 	if err != nil {
 		return Project{}, resp, errors.Wrap(err, "unable to create project")
 	}
@@ -208,10 +209,10 @@ func (o *Organization) CreateProject(p ProjectCreateRequest) (Project, Response,
 }
 
 // UpdateProject updates an existing project
-func (o *Organization) UpdateProject(projectUUID string, p ProjectUpdateRequest) (Project, Response, error) {
+func (o *Organization) UpdateProject(ctx context.Context, projectUUID string, p ProjectUpdateRequest) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
-	body, resp, err := o.client.request("PUT", path, p)
+	body, resp, err := o.client.request(ctx, "PUT", path, p)
 	if err != nil {
 		return Project{}, resp, errors.Wrap(err, "unable to update project")
 	}

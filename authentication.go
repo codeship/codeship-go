@@ -1,6 +1,7 @@
 package codeship
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -26,7 +27,7 @@ type Authentication struct {
 }
 
 // Authenticate swaps username/password for an authentication token
-func (c *Client) Authenticate() (Response, error) {
+func (c *Client) Authenticate(ctx context.Context) (Response, error) {
 	path := "/auth"
 	req, _ := http.NewRequest("POST", c.baseURL+path, nil)
 	req.SetBasicAuth(c.Username, c.Password)
@@ -34,7 +35,7 @@ func (c *Client) Authenticate() (Response, error) {
 
 	c.authentication = Authentication{}
 
-	body, resp, err := c.do(req)
+	body, resp, err := c.do(req.WithContext(ctx))
 	if err != nil {
 		return resp, errors.Wrap(err, "authentication failed")
 	}

@@ -1,6 +1,7 @@
 package codeship_test
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -99,7 +100,7 @@ func TestAuthenticate(t *testing.T) {
 			mux.HandleFunc("/auth", tt.handler)
 
 			client, _ = codeship.New("username", "password", codeship.BaseURL(server.URL))
-			org, _ = client.Scope("codeship")
+			org, _ = client.Scope(context.Background(), "codeship")
 
 			defer func() {
 				server.Close()
@@ -107,7 +108,7 @@ func TestAuthenticate(t *testing.T) {
 
 			assert := assert.New(t)
 
-			resp, err := client.Authenticate()
+			resp, err := client.Authenticate(context.Background())
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 

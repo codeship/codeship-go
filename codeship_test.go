@@ -1,6 +1,7 @@
 package codeship_test
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -41,7 +42,7 @@ func setup() func() {
 	})
 
 	client, _ = codeship.New("test", "pass", codeship.BaseURL(server.URL))
-	org, _ = client.Scope("codeship")
+	org, _ = client.Scope(context.Background(), "codeship")
 
 	return func() {
 		server.Close()
@@ -285,7 +286,7 @@ func TestScope(t *testing.T) {
 
 		t.Run(tt.name, func(t *testing.T) {
 			c, _ := codeship.New("username", "password", codeship.BaseURL(server.URL))
-			got, err := c.Scope(tt.args.name)
+			got, err := c.Scope(context.Background(), tt.args.name)
 
 			if err != nil {
 				if !tt.err.want {
