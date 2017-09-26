@@ -160,8 +160,8 @@ func (o *Organization) GetBuild(ctx context.Context, projectUUID, buildUUID stri
 	return build.Build, resp, nil
 }
 
-// ListBuildsWithPagination fetches a list of builds for the given organization with a set of PaginationOptions
-func (o *Organization) ListBuildsWithPagination(ctx context.Context, projectUUID string, opts ListOptions) (BuildList, Response, error) {
+// ListBuildsWithOptions fetches a list of builds for the given organization with a set of ListOptions
+func (o *Organization) ListBuildsWithOptions(ctx context.Context, projectUUID string, opts ListOptions) (BuildList, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 	path, err := paginate(path, opts)
 	if err != nil {
@@ -190,8 +190,8 @@ func (o *Organization) listBuilds(ctx context.Context, path string) (BuildList, 
 	return builds, resp, nil
 }
 
-// ListBuildPipelinesWithPagination lists Basic build pipelines with a set of PaginationOptions
-func (o *Organization) ListBuildPipelinesWithPagination(ctx context.Context, projectUUID, buildUUID string, opts ListOptions) (BuildPipelines, Response, error) {
+// ListBuildPipelinesWithOptions lists Basic build pipelines with a set of ListOptions
+func (o *Organization) ListBuildPipelinesWithOptions(ctx context.Context, projectUUID, buildUUID string, opts ListOptions) (BuildPipelines, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
 	path, err := paginate(path, opts)
 	if err != nil {
@@ -244,8 +244,8 @@ func (o *Organization) RestartBuild(ctx context.Context, projectUUID, buildUUID 
 	return true, resp, nil
 }
 
-// ListBuildServicesWithPagination lists Pro build services with a set of PaginationOptions
-func (o *Organization) ListBuildServicesWithPagination(ctx context.Context, projectUUID, buildUUID string, opts ListOptions) (BuildServices, Response, error) {
+// ListBuildServicesWithOptions lists Pro build services with a set of ListOptions
+func (o *Organization) ListBuildServicesWithOptions(ctx context.Context, projectUUID, buildUUID string, opts ListOptions) (BuildServices, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
 	path, err := paginate(path, opts)
 	if err != nil {
@@ -274,8 +274,8 @@ func (o *Organization) listBuildServices(ctx context.Context, path string) (Buil
 	return services, resp, nil
 }
 
-// ListBuildStepsWithPagination lists Pro build steps with a set of PaginationOptions
-func (o *Organization) ListBuildStepsWithPagination(ctx context.Context, projectUUID, buildUUID string, opts ListOptions) (BuildSteps, Response, error) {
+// ListBuildStepsWithOptions lists Pro build steps with a set of ListOptions
+func (o *Organization) ListBuildStepsWithOptions(ctx context.Context, projectUUID, buildUUID string, opts ListOptions) (BuildSteps, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
 	path, err := paginate(path, opts)
 	if err != nil {

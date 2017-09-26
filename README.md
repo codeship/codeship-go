@@ -50,11 +50,12 @@ err := client.Authenticate(ctx)
 
 ## Pagination
 
-Pagination is provided for all requests that can return multiple results. The methods that are able to be paginated all contain the `WithPagination(opts ListOptions)` signature.
+Pagination is provided for all requests that can return multiple results. The methods that are able to be paginated all contain the `WithOptions(opts ListOptions)` signature.
 
 Usage is as follows:
 
 ```go
+// defaults to first page with page_size of 30
 projects, resp, err := org.ListProjects()
 
 // paging forwards
@@ -65,7 +66,7 @@ for {
 
     next, _ := resp.NextPage()
 
-    projects, resp, _ = org.ListProjectsWithPagination(codeship.ListOptions{
+    projects, resp, _ = org.ListProjectsWithOptions(codeship.ListOptions{
         Page: next,
     })
 }
@@ -78,7 +79,7 @@ for {
 
     prev, _ := resp.PreviousPage()
 
-    projects, resp, _ = org.ListProjectsWithPagination(codeship.ListOptions{
+    projects, resp, _ = org.ListProjectsWithOptions(codeship.ListOptions{
         Page: prev,
     })
 }

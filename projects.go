@@ -143,8 +143,8 @@ type projectResponse struct {
 	Project Project `json:"project"`
 }
 
-// ListProjectsWithPagination fetches a list of projects with a set of PaginationOptions
-func (o *Organization) ListProjectsWithPagination(ctx context.Context, opts ListOptions) (ProjectList, Response, error) {
+// ListProjectsWithOptions fetches a list of projects with a set of ListOptions
+func (o *Organization) ListProjectsWithOptions(ctx context.Context, opts ListOptions) (ProjectList, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 	path, err := paginate(path, opts)
 	if err != nil {
