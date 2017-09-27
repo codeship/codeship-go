@@ -42,7 +42,7 @@ func TestAuthenticate(t *testing.T) {
 			err: optionalError{want: true, value: errors.New("authentication failed: invalid credentials")},
 		},
 		{
-			name: "rate limit reached",
+			name: "rate limit exceeded",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, "POST", r.Method)
 
