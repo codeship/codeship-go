@@ -17,8 +17,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// ErrRateLimitReached occurs when Codeship returns 403 Forbidden response
-var ErrRateLimitReached = errors.New("rate limit reached")
+// ErrRateLimitExceeded occurs when Codeship returns 403 Forbidden response
+var ErrRateLimitExceeded = errors.New("rate limit exceeded")
 
 // Organization holds the configuration for the current API client scoped to the Organization. Should not
 // be modified concurrently
@@ -180,7 +180,7 @@ func (c *Client) do(req *http.Request) ([]byte, error) {
 	case http.StatusUnauthorized:
 		return nil, ErrUnauthorized("invalid credentials")
 	case http.StatusForbidden, http.StatusTooManyRequests:
-		return nil, ErrRateLimitReached
+		return nil, ErrRateLimitExceeded
 	default:
 		if len(body) > 0 {
 			return nil, fmt.Errorf("HTTP status: %d; content %q", resp.StatusCode, string(body))
