@@ -99,10 +99,9 @@ func Test_paginate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := paginate(tt.args.path, tt.args.opts...)
+			got := paginate(tt.args.path, tt.args.opts...)
 
 			assert := assert.New(t)
-			assert.NoError(err)
 			assert.Equal(tt.want, got)
 		})
 	}

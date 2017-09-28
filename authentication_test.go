@@ -32,6 +32,19 @@ func TestAuthenticate(t *testing.T) {
 			status: http.StatusOK,
 		},
 		{
+			name: "invalid JSON",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+
+				fmt.Fprint(w, "{ \"foo\": }")
+			},
+			status: http.StatusOK,
+			err:    optionalError(errors.New("unable to unmarshal JSON into Authentication: invalid character '}' looking for beginning of value")),
+		},
+		{
 			name: "unauthorized auth",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, "POST", r.Method)
@@ -110,13 +123,11 @@ func TestAuthenticate(t *testing.T) {
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if err != nil {
-				if tt.err == nil {
-					assert.Fail("Unexpected error: %s", err.Error())
-				} else {
-					assert.Equal(tt.err.Error(), err.Error())
-				}
-				return
+			if tt.err == nil {
+				assert.NoError(err)
+			} else {
+				assert.Error(err)
+				assert.Equal(tt.err.Error(), err.Error())
 			}
 		})
 	}

@@ -59,7 +59,6 @@ func TestNew(t *testing.T) {
 	type args struct {
 		username string
 		password string
-		orgName  string
 		opts     []codeship.Option
 	}
 	type env struct {
@@ -78,7 +77,6 @@ func TestNew(t *testing.T) {
 			args: args{
 				username: "",
 				password: "foo",
-				orgName:  "codeship",
 			},
 			err: optionalError(errors.New("missing username or password")),
 		},
@@ -87,7 +85,6 @@ func TestNew(t *testing.T) {
 			args: args{
 				username: "foo",
 				password: "",
-				orgName:  "codeship",
 			},
 			err: optionalError(errors.New("missing username or password")),
 		},
@@ -96,7 +93,6 @@ func TestNew(t *testing.T) {
 			args: args{
 				username: "foo",
 				password: "bar",
-				orgName:  "codeship",
 			},
 			env: env{
 				username: newOptionalString("baz"),
@@ -107,7 +103,6 @@ func TestNew(t *testing.T) {
 			args: args{
 				username: "foo",
 				password: "bar",
-				orgName:  "codeship",
 			},
 			env: env{
 				password: newOptionalString("baz"),
@@ -118,7 +113,6 @@ func TestNew(t *testing.T) {
 			args: args{
 				username: "",
 				password: "bar",
-				orgName:  "codeship",
 			},
 			env: env{
 				username: newOptionalString("baz"),
@@ -129,27 +123,16 @@ func TestNew(t *testing.T) {
 			args: args{
 				username: "foo",
 				password: "",
-				orgName:  "codeship",
 			},
 			env: env{
 				password: newOptionalString("baz"),
 			},
 		},
 		{
-			name: "requires organization name",
-			args: args{
-				username: "foo",
-				password: "bar",
-				orgName:  "",
-			},
-			err: optionalError(errors.New("organization name is required")),
-		},
-		{
 			name: "handles error option func",
 			args: args{
 				username: "foo",
 				password: "bar",
-				orgName:  "codeship",
 				opts: []codeship.Option{
 					func(*codeship.Client) error {
 						return errors.New("boom")
@@ -178,12 +161,11 @@ func TestNew(t *testing.T) {
 
 			got, err := codeship.New(tt.args.username, tt.args.password, tt.args.opts...)
 
-			if err != nil {
-				if tt.err == nil {
-					assert.Fail("Unexpected error: %s", err.Error())
-				} else {
-					assert.Equal(tt.err.Error(), err.Error())
-				}
+			if tt.err == nil {
+				assert.NoError(err)
+			} else {
+				assert.Error(err)
+				assert.Equal(tt.err.Error(), err.Error())
 				return
 			}
 
@@ -281,12 +263,10 @@ func TestScope(t *testing.T) {
 			c, _ := codeship.New("username", "password", codeship.BaseURL(server.URL))
 			got, err := c.Scope(context.Background(), tt.args.name)
 
-			if err != nil {
-				if tt.err == nil {
-					assert.Fail("Unexpected error: %s", err.Error())
-				} else {
-					assert.Equal(tt.err.Error(), err.Error())
-				}
+			if tt.err == nil {
+				assert.NoError(err)
+			} else {
+				assert.Equal(tt.err.Error(), err.Error())
 				return
 			}
 
