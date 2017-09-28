@@ -12,7 +12,7 @@ type pagination struct {
 }
 
 // PaginationOption is a functional option for providing pagination options
-type PaginationOption func(o *paginationOption) error
+type PaginationOption func(o *paginationOption)
 
 type paginationOption struct {
 	perPage int
@@ -21,22 +21,20 @@ type paginationOption struct {
 
 // Page sets the page of results to be returned in the response
 func Page(page int) PaginationOption {
-	return func(o *paginationOption) error {
+	return func(o *paginationOption) {
 		o.page = page
-		return nil
 	}
 }
 
 // PerPage sets the number of results to be returned per page in the response
 func PerPage(perPage int) PaginationOption {
-	return func(o *paginationOption) error {
+	return func(o *paginationOption) {
 		o.perPage = perPage
-		return nil
 	}
 }
 
 func paginate(path string, opts ...PaginationOption) (string, error) {
-	if opts == nil || len(opts) == 0 {
+	if len(opts) == 0 {
 		return path, nil
 	}
 
