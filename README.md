@@ -48,9 +48,15 @@ If you would like to manually re-authenticate, you may do this by calling the `A
 err := client.Authenticate(ctx)
 ```
 
+## Response
+
+All API methods also return a `codeship.Response` type that contains the actual `*http.Response` embedded as well as a `Links` type that contains information to be used for pagination.
+
 ## Pagination
 
-Pagination is provided for all requests that can return multiple results. The methods that are able to be paginated all contain the `WithOptions(opts ListOptions)` signature.
+Pagination is provided for all requests that can return multiple results. The methods that are able to be paginated all take a variable argument of type `PaginationOption` such as: `ListProjects(opts ...PaginationOption)`.
+
+We have defined two helper functions, `Page` and `PerPage`, to make pagination easier.
 
 Usage is as follows:
 
@@ -58,7 +64,7 @@ Usage is as follows:
 // defaults to first page with page_size of 30
 projects, resp, err := org.ListProjects()
 
-// paging forwards
+// paging forwards with 50 results per page
 for {
     if resp.IsLastPage() || resp.Next == "" {
         break
@@ -66,12 +72,10 @@ for {
 
     next, _ := resp.NextPage()
 
-    projects, resp, _ = org.ListProjectsWithOptions(codeship.ListOptions{
-        Page: next,
-    })
+    projects, resp, _ = org.ListProjects(codeship.Page(next), codeship.PerPage(50))
 }
 
-// paging backwards
+// paging backwards with 50 results per page
 for {
     if current, _ := resp.CurrentPage(); current == 1 || resp.Previous == "" {
         break
@@ -79,9 +83,7 @@ for {
 
     prev, _ := resp.PreviousPage()
 
-    projects, resp, _ = org.ListProjectsWithOptions(codeship.ListOptions{
-        Page: prev,
-    })
+    projects, resp, _ = org.ListProjects(codeship.Page(prev), codeship.PerPage(50))
 }
 ```
 

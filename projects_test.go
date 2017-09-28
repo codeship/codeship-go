@@ -26,7 +26,7 @@ func TestListProjects(t *testing.T) {
 		fmt.Fprint(w, fixture("projects/list.json"))
 	})
 
-	projects, resp, err := org.ListProjects(context.Background())
+	projects, resp, err := org.ListProjects(context.Background(), codeship.Page(2), codeship.PerPage(30))
 
 	assert := assert.New(t)
 	assert.NoError(err)

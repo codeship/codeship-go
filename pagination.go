@@ -11,24 +11,52 @@ type pagination struct {
 	Page    int `json:"page,omitempty"`
 }
 
-// ListOptions structure for providing pagination options for list requests
-type ListOptions struct {
-	PerPage int
-	Page    int
+// PaginationOption is a functional option for providing pagination options
+type PaginationOption func(o *paginationOption) error
+
+type paginationOption struct {
+	perPage int
+	page    int
 }
 
-func paginate(path string, opts ListOptions) (string, error) {
+// Page sets the page of results to be returned in the response
+func Page(page int) PaginationOption {
+	return func(o *paginationOption) error {
+		o.page = page
+		return nil
+	}
+}
+
+// PerPage sets the number of results to be returned per page in the response
+func PerPage(perPage int) PaginationOption {
+	return func(o *paginationOption) error {
+		o.perPage = perPage
+		return nil
+	}
+}
+
+func paginate(path string, opts ...PaginationOption) (string, error) {
+	if opts == nil || len(opts) == 0 {
+		return path, nil
+	}
+
+	opt := &paginationOption{}
+
+	for _, f := range opts {
+		f(opt)
+	}
+
 	u, err := url.Parse(path)
 	if err != nil {
 		return path, err
 	}
 
 	q := u.Query()
-	if opts.Page > 0 {
-		q.Add("page", strconv.Itoa(opts.Page))
+	if opt.page > 0 {
+		q.Add("page", strconv.Itoa(opt.page))
 	}
-	if opts.PerPage > 0 {
-		q.Add("per_page", strconv.Itoa(opts.PerPage))
+	if opt.perPage > 0 {
+		q.Add("per_page", strconv.Itoa(opt.perPage))
 	}
 
 	u.RawQuery = q.Encode()

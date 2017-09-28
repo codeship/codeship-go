@@ -9,7 +9,7 @@ import (
 func Test_paginate(t *testing.T) {
 	type args struct {
 		path string
-		opts ListOptions
+		opts []PaginationOption
 	}
 	tests := []struct {
 		name string
@@ -20,8 +20,8 @@ func Test_paginate(t *testing.T) {
 			name: "paginates page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: ListOptions{
-					Page: 1,
+				opts: []PaginationOption{
+					Page(1),
 				},
 			},
 			want: "/organizations/123/projects?page=1",
@@ -30,8 +30,8 @@ func Test_paginate(t *testing.T) {
 			name: "paginates per_page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: ListOptions{
-					PerPage: 10,
+				opts: []PaginationOption{
+					PerPage(10),
 				},
 			},
 			want: "/organizations/123/projects?per_page=10",
@@ -40,12 +40,34 @@ func Test_paginate(t *testing.T) {
 			name: "paginates both page and per_page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: ListOptions{
-					PerPage: 15,
-					Page:    5,
+				opts: []PaginationOption{
+					PerPage(15),
+					Page(5),
 				},
 			},
 			want: "/organizations/123/projects?page=5&per_page=15",
+		},
+		{
+			name: "handles multiple calls to page",
+			args: args{
+				path: "/organizations/123/projects",
+				opts: []PaginationOption{
+					Page(1),
+					Page(5),
+				},
+			},
+			want: "/organizations/123/projects?page=5",
+		},
+		{
+			name: "handles multiple calls to per_page",
+			args: args{
+				path: "/organizations/123/projects",
+				opts: []PaginationOption{
+					PerPage(10),
+					PerPage(15),
+				},
+			},
+			want: "/organizations/123/projects?per_page=15",
 		},
 		{
 			name: "handles empty options",
@@ -58,8 +80,8 @@ func Test_paginate(t *testing.T) {
 			name: "handles negative page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: ListOptions{
-					Page: -1,
+				opts: []PaginationOption{
+					Page(-1),
 				},
 			},
 			want: "/organizations/123/projects",
@@ -68,8 +90,8 @@ func Test_paginate(t *testing.T) {
 			name: "handles negative per_page",
 			args: args{
 				path: "/organizations/123/projects",
-				opts: ListOptions{
-					PerPage: -1,
+				opts: []PaginationOption{
+					PerPage(-1),
 				},
 			},
 			want: "/organizations/123/projects",
@@ -77,7 +99,7 @@ func Test_paginate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := paginate(tt.args.path, tt.args.opts)
+			got, err := paginate(tt.args.path, tt.args.opts...)
 
 			assert := assert.New(t)
 			assert.NoError(err)

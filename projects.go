@@ -143,24 +143,14 @@ type projectResponse struct {
 	Project Project `json:"project"`
 }
 
-// ListProjectsWithOptions fetches a list of projects with a set of ListOptions
-func (o *Organization) ListProjectsWithOptions(ctx context.Context, opts ListOptions) (ProjectList, Response, error) {
+// ListProjects fetches a list of projects
+func (o *Organization) ListProjects(ctx context.Context, opts ...PaginationOption) (ProjectList, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
-	path, err := paginate(path, opts)
+	path, err := paginate(path, opts...)
 	if err != nil {
 		return ProjectList{}, Response{}, errors.Wrap(err, "unable to list projects")
 	}
-	return o.listProjects(ctx, path)
-}
 
-// ListProjects fetches a list of projects
-func (o *Organization) ListProjects(ctx context.Context) (ProjectList, Response, error) {
-	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
-	return o.listProjects(ctx, path)
-}
-
-// ListProjects fetches a list of projects
-func (o *Organization) listProjects(ctx context.Context, path string) (ProjectList, Response, error) {
 	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return ProjectList{}, resp, errors.Wrap(err, "unable to list projects")

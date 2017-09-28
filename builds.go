@@ -160,23 +160,14 @@ func (o *Organization) GetBuild(ctx context.Context, projectUUID, buildUUID stri
 	return build.Build, resp, nil
 }
 
-// ListBuildsWithOptions fetches a list of builds for the given organization with a set of ListOptions
-func (o *Organization) ListBuildsWithOptions(ctx context.Context, projectUUID string, opts ListOptions) (BuildList, Response, error) {
+// ListBuilds fetches a list of builds for the given organization
+func (o *Organization) ListBuilds(ctx context.Context, projectUUID string, opts ...PaginationOption) (BuildList, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
-	path, err := paginate(path, opts)
+	path, err := paginate(path, opts...)
 	if err != nil {
 		return BuildList{}, Response{}, errors.Wrap(err, "unable to list builds")
 	}
-	return o.listBuilds(ctx, path)
-}
 
-// ListBuilds fetches a list of builds for the given organization
-func (o *Organization) ListBuilds(ctx context.Context, projectUUID string) (BuildList, Response, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
-	return o.listBuilds(ctx, path)
-}
-
-func (o *Organization) listBuilds(ctx context.Context, path string) (BuildList, Response, error) {
 	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return BuildList{}, resp, errors.Wrap(err, "unable to list builds")
@@ -190,23 +181,14 @@ func (o *Organization) listBuilds(ctx context.Context, path string) (BuildList, 
 	return builds, resp, nil
 }
 
-// ListBuildPipelinesWithOptions lists Basic build pipelines with a set of ListOptions
-func (o *Organization) ListBuildPipelinesWithOptions(ctx context.Context, projectUUID, buildUUID string, opts ListOptions) (BuildPipelines, Response, error) {
+// ListBuildPipelines lists Basic build pipelines
+func (o *Organization) ListBuildPipelines(ctx context.Context, projectUUID, buildUUID string, opts ...PaginationOption) (BuildPipelines, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
-	path, err := paginate(path, opts)
+	path, err := paginate(path, opts...)
 	if err != nil {
 		return BuildPipelines{}, Response{}, errors.Wrap(err, "unable to get build pipelines")
 	}
-	return o.listBuildPipelines(ctx, path)
-}
 
-// ListBuildPipelines lists Basic build pipelines
-func (o *Organization) ListBuildPipelines(ctx context.Context, projectUUID, buildUUID string) (BuildPipelines, Response, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID)
-	return o.listBuildPipelines(ctx, path)
-}
-
-func (o *Organization) listBuildPipelines(ctx context.Context, path string) (BuildPipelines, Response, error) {
 	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return BuildPipelines{}, resp, errors.Wrap(err, "unable to get build pipelines")
@@ -244,23 +226,14 @@ func (o *Organization) RestartBuild(ctx context.Context, projectUUID, buildUUID 
 	return true, resp, nil
 }
 
-// ListBuildServicesWithOptions lists Pro build services with a set of ListOptions
-func (o *Organization) ListBuildServicesWithOptions(ctx context.Context, projectUUID, buildUUID string, opts ListOptions) (BuildServices, Response, error) {
+// ListBuildServices lists Pro build services
+func (o *Organization) ListBuildServices(ctx context.Context, projectUUID, buildUUID string, opts ...PaginationOption) (BuildServices, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
-	path, err := paginate(path, opts)
+	path, err := paginate(path, opts...)
 	if err != nil {
 		return BuildServices{}, Response{}, errors.Wrap(err, "unable to get build services")
 	}
-	return o.listBuildServices(ctx, path)
-}
 
-// ListBuildServices lists Pro build services
-func (o *Organization) ListBuildServices(ctx context.Context, projectUUID, buildUUID string) (BuildServices, Response, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID)
-	return o.listBuildServices(ctx, path)
-}
-
-func (o *Organization) listBuildServices(ctx context.Context, path string) (BuildServices, Response, error) {
 	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return BuildServices{}, resp, errors.Wrap(err, "unable to get build services")
@@ -274,23 +247,14 @@ func (o *Organization) listBuildServices(ctx context.Context, path string) (Buil
 	return services, resp, nil
 }
 
-// ListBuildStepsWithOptions lists Pro build steps with a set of ListOptions
-func (o *Organization) ListBuildStepsWithOptions(ctx context.Context, projectUUID, buildUUID string, opts ListOptions) (BuildSteps, Response, error) {
+// ListBuildSteps lists Pro build steps
+func (o *Organization) ListBuildSteps(ctx context.Context, projectUUID, buildUUID string, opts ...PaginationOption) (BuildSteps, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
-	path, err := paginate(path, opts)
+	path, err := paginate(path, opts...)
 	if err != nil {
 		return BuildSteps{}, Response{}, errors.Wrap(err, "unable to get build steps")
 	}
-	return o.listBuildSteps(ctx, path)
-}
 
-// ListBuildSteps lists Pro build steps
-func (o *Organization) ListBuildSteps(ctx context.Context, projectUUID, buildUUID string) (BuildSteps, Response, error) {
-	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID)
-	return o.listBuildSteps(ctx, path)
-}
-
-func (o *Organization) listBuildSteps(ctx context.Context, path string) (BuildSteps, Response, error) {
 	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
 		return BuildSteps{}, resp, errors.Wrap(err, "unable to get build steps")
