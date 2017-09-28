@@ -45,17 +45,14 @@ func TestAuthenticate(t *testing.T) {
 			err:    optionalError{want: true, value: errors.New("authentication failed: invalid credentials")},
 		},
 		{
-			name: "forbidden auth",
+			name: "rate limit exceeded",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, "POST", r.Method)
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusForbidden)
-
-				fmt.Fprint(w, fixture("auth/unauthorized.json"))
 			},
-			status: http.StatusForbidden,
-			err:    optionalError{want: true, value: errors.New("authentication failed: insufficient permissions")},
+			err: optionalError{want: true, value: errors.New("authentication failed: rate limit exceeded")},
 		},
 		{
 			name: "server error",

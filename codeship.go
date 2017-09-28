@@ -18,6 +18,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// ErrRateLimitExceeded occurs when Codeship returns 403 Forbidden response
+var ErrRateLimitExceeded = errors.New("rate limit exceeded")
+
 // Organization holds the configuration for the current API client scoped to the Organization. Should not
 // be modified concurrently
 type Organization struct {
@@ -215,9 +218,9 @@ func (c *Client) do(req *http.Request) ([]byte, Response, error) {
 	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
 		break
 	case http.StatusUnauthorized:
-		return nil, response, ErrUnauthorized("invalid credentials")
-	case http.StatusForbidden:
-		return nil, response, ErrUnauthorized("insufficient permissions")
+		return nil, ErrUnauthorized("invalid credentials")
+	case http.StatusForbidden, http.StatusTooManyRequests:
+		return nil, ErrRateLimitExceeded
 	default:
 		if len(body) > 0 {
 			return nil, response, fmt.Errorf("HTTP status: %d; content %q", resp.StatusCode, string(body))
