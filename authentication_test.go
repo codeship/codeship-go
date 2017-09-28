@@ -42,7 +42,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, fixture("auth/unauthorized.json"))
 			},
 			status: http.StatusUnauthorized,
-			err:    optionalError{want: true, value: errors.New("authentication failed: invalid credentials")},
+			err:    optionalError(errors.New("authentication failed: invalid credentials")),
 		},
 		{
 			name: "rate limit exceeded",
@@ -53,7 +53,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusForbidden)
 			},
 			status: http.StatusForbidden,
-			err:    optionalError{want: true, value: errors.New("authentication failed: rate limit exceeded")},
+			err:    optionalError(errors.New("authentication failed: rate limit exceeded")),
 		},
 		{
 			name: "server error",
@@ -64,7 +64,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 			},
 			status: http.StatusInternalServerError,
-			err:    optionalError{want: true, value: errors.New("authentication failed: HTTP status: 500")},
+			err:    optionalError(errors.New("authentication failed: HTTP status: 500")),
 		},
 		{
 			name: "other status code",
@@ -75,7 +75,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusTeapot)
 			},
 			status: http.StatusTeapot,
-			err:    optionalError{want: true, value: errors.New("authentication failed: HTTP status: 418")},
+			err:    optionalError(errors.New("authentication failed: HTTP status: 418")),
 		},
 		{
 			name: "other status code with body",
@@ -87,7 +87,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, "I'm a teapot")
 			},
 			status: http.StatusTeapot,
-			err:    optionalError{want: true, value: errors.New("authentication failed: HTTP status: 418; content \"I'm a teapot\"")},
+			err:    optionalError(errors.New("authentication failed: HTTP status: 418; content \"I'm a teapot\"")),
 		},
 	}
 	for _, tt := range tests {
@@ -111,10 +111,10 @@ func TestAuthenticate(t *testing.T) {
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if err != nil {
-				if !tt.err.want {
+				if tt.err == nil {
 					assert.Fail("Unexpected error: %s", err.Error())
 				} else {
-					assert.Equal(tt.err.value.Error(), err.Error())
+					assert.Equal(tt.err.Error(), err.Error())
 				}
 				return
 			}
