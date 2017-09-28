@@ -218,9 +218,9 @@ func (c *Client) do(req *http.Request) ([]byte, Response, error) {
 	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
 		break
 	case http.StatusUnauthorized:
-		return nil, ErrUnauthorized("invalid credentials")
+		return nil, response, ErrUnauthorized("invalid credentials")
 	case http.StatusForbidden, http.StatusTooManyRequests:
-		return nil, ErrRateLimitExceeded
+		return nil, response, ErrRateLimitExceeded
 	default:
 		if len(body) > 0 {
 			return nil, response, fmt.Errorf("HTTP status: %d; content %q", resp.StatusCode, string(body))

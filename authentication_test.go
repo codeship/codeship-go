@@ -52,7 +52,8 @@ func TestAuthenticate(t *testing.T) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusForbidden)
 			},
-			err: optionalError{want: true, value: errors.New("authentication failed: rate limit exceeded")},
+			status: http.StatusForbidden,
+			err:    optionalError{want: true, value: errors.New("authentication failed: rate limit exceeded")},
 		},
 		{
 			name: "server error",
