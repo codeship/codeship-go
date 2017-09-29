@@ -16,6 +16,7 @@ func TestAuthenticate(t *testing.T) {
 	tests := []struct {
 		name    string
 		handler http.HandlerFunc
+		status  int
 		err     optionalError
 	}{
 		{
@@ -28,6 +29,7 @@ func TestAuthenticate(t *testing.T) {
 
 				fmt.Fprint(w, fixture("auth/success.json"))
 			},
+			status: http.StatusOK,
 		},
 		{
 			name: "unauthorized auth",
@@ -39,7 +41,8 @@ func TestAuthenticate(t *testing.T) {
 
 				fmt.Fprint(w, fixture("auth/unauthorized.json"))
 			},
-			err: optionalError{want: true, value: errors.New("authentication failed: invalid credentials")},
+			status: http.StatusUnauthorized,
+			err:    optionalError(errors.New("authentication failed: invalid credentials")),
 		},
 		{
 			name: "rate limit exceeded",
@@ -49,7 +52,8 @@ func TestAuthenticate(t *testing.T) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusForbidden)
 			},
-			err: optionalError{want: true, value: errors.New("authentication failed: rate limit exceeded")},
+			status: http.StatusForbidden,
+			err:    optionalError(errors.New("authentication failed: rate limit exceeded")),
 		},
 		{
 			name: "server error",
@@ -59,7 +63,8 @@ func TestAuthenticate(t *testing.T) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusInternalServerError)
 			},
-			err: optionalError{want: true, value: errors.New("authentication failed: HTTP status: 500")},
+			status: http.StatusInternalServerError,
+			err:    optionalError(errors.New("authentication failed: HTTP status: 500")),
 		},
 		{
 			name: "other status code",
@@ -69,7 +74,8 @@ func TestAuthenticate(t *testing.T) {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusTeapot)
 			},
-			err: optionalError{want: true, value: errors.New("authentication failed: HTTP status: 418")},
+			status: http.StatusTeapot,
+			err:    optionalError(errors.New("authentication failed: HTTP status: 418")),
 		},
 		{
 			name: "other status code with body",
@@ -80,7 +86,8 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusTeapot)
 				fmt.Fprint(w, "I'm a teapot")
 			},
-			err: optionalError{want: true, value: errors.New("authentication failed: HTTP status: 418; content \"I'm a teapot\"")},
+			status: http.StatusTeapot,
+			err:    optionalError(errors.New("authentication failed: HTTP status: 418; content \"I'm a teapot\"")),
 		},
 	}
 	for _, tt := range tests {
@@ -99,12 +106,15 @@ func TestAuthenticate(t *testing.T) {
 
 			assert := assert.New(t)
 
-			err := client.Authenticate(context.Background())
+			resp, err := client.Authenticate(context.Background())
+			assert.NotNil(resp)
+			assert.Equal(tt.status, resp.StatusCode)
+
 			if err != nil {
-				if !tt.err.want {
+				if tt.err == nil {
 					assert.Fail("Unexpected error: %s", err.Error())
 				} else {
-					assert.Equal(tt.err.value.Error(), err.Error())
+					assert.Equal(tt.err.Error(), err.Error())
 				}
 				return
 			}

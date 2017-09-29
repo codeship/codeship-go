@@ -18,17 +18,27 @@ func TestListProjects(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("GET", r.Method)
-		assertHeaders(t, r.Header)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Link", "<https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2>; rel=\"last\", <https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2>; rel=\"next\"")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, fixture("projects/list.json"))
 	})
 
-	projects, err := org.ListProjects(context.Background())
+	projects, resp, err := org.ListProjects(context.Background(), codeship.Page(2), codeship.PerPage(30))
 
 	assert := assert.New(t)
 	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.Equal(http.StatusOK, resp.StatusCode)
+
+	current, _ := resp.Links.CurrentPage()
+	assert.Equal(1, current)
+	assert.Equal("https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2", resp.Links.Last)
+	assert.Equal("https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2", resp.Links.Next)
+
 	assert.Equal(2, len(projects.Projects))
 
 	project := projects.Projects[1]
@@ -87,17 +97,20 @@ func TestGetProject(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/0059df30-7701-0135-8810-6e5f001a2e3c", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("GET", r.Method)
-		assertHeaders(t, r.Header)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, fixture("projects/get.json"))
 	})
 
-	project, err := org.GetProject(context.Background(), "0059df30-7701-0135-8810-6e5f001a2e3c")
+	project, resp, err := org.GetProject(context.Background(), "0059df30-7701-0135-8810-6e5f001a2e3c")
 
 	assert := assert.New(t)
 	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.Equal(http.StatusOK, resp.StatusCode)
 
 	createdAt, _ := time.Parse(time.RFC3339, "2017-09-08T20:19:55.199Z")
 	updatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:36.336Z")
@@ -147,14 +160,15 @@ func TestCreateProject(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("POST", r.Method)
-		assertHeaders(t, r.Header)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, fixture("projects/create.json"))
 	})
 
-	project, err := org.CreateProject(context.Background(), codeship.ProjectCreateRequest{
+	project, resp, err := org.CreateProject(context.Background(), codeship.ProjectCreateRequest{
 		RepositoryURL: "git@github.com/org/repo-name",
 		TestPipelines: []codeship.TestPipeline{
 			{
@@ -167,6 +181,8 @@ func TestCreateProject(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.Equal(http.StatusCreated, resp.StatusCode)
 	assert.NotNil(project)
 }
 
@@ -177,14 +193,15 @@ func TestUpdateProject(t *testing.T) {
 	mux.HandleFunc("/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/7de09100-7aeb-0135-b8e4-76a42f3a0b26", func(w http.ResponseWriter, r *http.Request) {
 		assert := assert.New(t)
 		assert.Equal("PUT", r.Method)
-		assertHeaders(t, r.Header)
+		assert.Equal("application/json", r.Header.Get("Content-Type"))
+		assert.Equal("application/json", r.Header.Get("Accept"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, fixture("projects/update.json"))
 	})
 
-	project, err := org.UpdateProject(context.Background(), "7de09100-7aeb-0135-b8e4-76a42f3a0b26", codeship.ProjectUpdateRequest{
+	project, resp, err := org.UpdateProject(context.Background(), "7de09100-7aeb-0135-b8e4-76a42f3a0b26", codeship.ProjectUpdateRequest{
 		Type: codeship.ProjectTypePro,
 		TeamIDs: []int{
 			61593, 70000,
@@ -193,5 +210,7 @@ func TestUpdateProject(t *testing.T) {
 
 	assert := assert.New(t)
 	assert.NoError(err)
+	assert.NotNil(resp)
+	assert.Equal(http.StatusOK, resp.StatusCode)
 	assert.NotNil(project)
 }

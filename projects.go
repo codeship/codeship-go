@@ -144,69 +144,73 @@ type projectResponse struct {
 }
 
 // ListProjects fetches a list of projects
-func (o *Organization) ListProjects(ctx context.Context) (ProjectList, error) {
+func (o *Organization) ListProjects(ctx context.Context, opts ...PaginationOption) (ProjectList, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
-
-	resp, err := o.client.request(ctx, "GET", path, nil)
+	path, err := paginate(path, opts...)
 	if err != nil {
-		return ProjectList{}, errors.Wrap(err, "unable to list projects")
+		return ProjectList{}, Response{}, errors.Wrap(err, "unable to list projects")
+	}
+
+	body, resp, err := o.client.request(ctx, "GET", path, nil)
+	if err != nil {
+		return ProjectList{}, resp, errors.Wrap(err, "unable to list projects")
 	}
 
 	var projects ProjectList
-	if err = json.Unmarshal(resp, &projects); err != nil {
-		return ProjectList{}, errors.Wrap(err, "unable to unmarshal response into ProjectList")
+	if err = json.Unmarshal(body, &projects); err != nil {
+		return ProjectList{}, resp, errors.Wrap(err, "unable to unmarshal response into ProjectList")
 	}
 
-	return projects, nil
+	return projects, resp, nil
 }
 
 // GetProject fetches a project by UUID
-func (o *Organization) GetProject(ctx context.Context, projectUUID string) (Project, error) {
+func (o *Organization) GetProject(ctx context.Context, projectUUID string) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
-	resp, err := o.client.request(ctx, "GET", path, nil)
+	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
-		return Project{}, errors.Wrap(err, "unable to get project")
+		return Project{}, resp, errors.Wrap(err, "unable to get project")
 	}
 
 	var project projectResponse
-	if err = json.Unmarshal(resp, &project); err != nil {
-		return Project{}, errors.Wrap(err, "unable to unmarshal response into Project")
+	if err = json.Unmarshal(body, &project); err != nil {
+		return Project{}, resp, errors.Wrap(err, "unable to unmarshal response into Project")
 	}
 
-	return project.Project, nil
+	return project.Project, resp, nil
 }
 
 // CreateProject creates a new project
-func (o *Organization) CreateProject(ctx context.Context, p ProjectCreateRequest) (Project, error) {
+func (o *Organization) CreateProject(ctx context.Context, p ProjectCreateRequest) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
-	resp, err := o.client.request(ctx, "POST", path, p)
+	body, resp, err := o.client.request(ctx, "POST", path, p)
 	if err != nil {
-		return Project{}, errors.Wrap(err, "unable to create project")
+		return Project{}, resp, errors.Wrap(err, "unable to create project")
 	}
 
 	var project projectResponse
-	if err = json.Unmarshal(resp, &project); err != nil {
-		return Project{}, errors.Wrap(err, "unable to unmarshal response into Project")
+	if err = json.Unmarshal(body, &project); err != nil {
+		return Project{}, resp, errors.Wrap(err, "unable to unmarshal response into Project")
 	}
 
-	return project.Project, nil
+	return project.Project, resp, nil
 }
 
 // UpdateProject updates an existing project
-func (o *Organization) UpdateProject(ctx context.Context, projectUUID string, p ProjectUpdateRequest) (Project, error) {
+func (o *Organization) UpdateProject(ctx context.Context, projectUUID string, p ProjectUpdateRequest) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
-	resp, err := o.client.request(ctx, "PUT", path, p)
+	body, resp, err := o.client.request(ctx, "PUT", path, p)
 	if err != nil {
-		return Project{}, errors.Wrap(err, "unable to update project")
+		return Project{}, resp, errors.Wrap(err, "unable to update project")
 	}
 
 	var project projectResponse
-	if err = json.Unmarshal(resp, &project); err != nil {
-		return Project{}, errors.Wrap(err, "unable to unmarshal response into Project")
+	if err = json.Unmarshal(body, &project); err != nil {
+		return Project{}, resp, errors.Wrap(err, "unable to unmarshal response into Project")
 	}
 
-	return project.Project, nil
+	return project.Project, resp, nil
 }

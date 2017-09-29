@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -27,6 +28,43 @@ type Organization struct {
 	Name   string
 	Scopes []string
 	client *Client
+}
+
+// Response is a Codeship response. This wraps the standard http.Response returned from Codeship.
+type Response struct {
+	*http.Response
+	// Links that were returned with the response. These are parsed from the Link header.
+	Links
+}
+
+func newResponse(r *http.Response) Response {
+	response := Response{Response: r}
+
+	urlRegex := regexp.MustCompile(`\s*<(.+)>`)
+	relRegex := regexp.MustCompile(`\s*rel="(\w+)"`)
+
+	if linkText := r.Header.Get("Link"); linkText != "" {
+		linkMap := make(map[string]string)
+
+		// one chunk: <url>; rel="foo"
+		for _, chunk := range strings.Split(linkText, ",") {
+
+			pieces := strings.Split(chunk, ";")
+			urlMatch := urlRegex.FindStringSubmatch(pieces[0])
+			relMatch := relRegex.FindStringSubmatch(pieces[1])
+
+			if len(relMatch) > 1 && len(urlMatch) > 1 {
+				linkMap[relMatch[1]] = urlMatch[1]
+			}
+		}
+
+		response.Links.First = linkMap["first"]
+		response.Links.Last = linkMap["last"]
+		response.Links.Next = linkMap["next"]
+		response.Links.Previous = linkMap["prev"]
+	}
+
+	return response
 }
 
 const apiURL = "https://api.codeship.com/v2"
@@ -89,7 +127,7 @@ func New(username, password string, opts ...Option) (*Client, error) {
 // Scope scopes a client to a single Organization, allowing the user to make calls to the API
 func (c *Client) Scope(ctx context.Context, name string) (*Organization, error) {
 	if c.AuthenticationRequired() {
-		if err := c.Authenticate(ctx); err != nil {
+		if _, err := c.Authenticate(ctx); err != nil {
 			return nil, err
 		}
 	}
@@ -117,27 +155,27 @@ func (c *Client) AuthenticationRequired() bool {
 	return c.authentication.AccessToken == "" || c.authentication.ExpiresAt <= time.Now().Unix()
 }
 
-func (c *Client) request(ctx context.Context, method, path string, params interface{}) ([]byte, error) {
+func (c *Client) request(ctx context.Context, method, path string, params interface{}) ([]byte, Response, error) {
 	url := c.baseURL + path
 	// Replace nil with a JSON object if needed
 	var reqBody io.Reader
 	if params != nil {
 		buf := &bytes.Buffer{}
 		if err := json.NewEncoder(buf).Encode(params); err != nil {
-			return nil, err
+			return nil, Response{}, err
 		}
 		reqBody = buf
 	}
 
 	if c.AuthenticationRequired() {
-		if err := c.Authenticate(ctx); err != nil {
-			return nil, err
+		if _, err := c.Authenticate(ctx); err != nil {
+			return nil, Response{}, err
 		}
 	}
 
 	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
-		return nil, errors.Wrap(err, "HTTP request creation failed")
+		return nil, Response{}, errors.Wrap(err, "HTTP request creation failed")
 	}
 
 	// Apply any user-defined headers first
@@ -149,7 +187,7 @@ func (c *Client) request(ctx context.Context, method, path string, params interf
 	return c.do(req.WithContext(ctx))
 }
 
-func (c *Client) do(req *http.Request) ([]byte, error) {
+func (c *Client) do(req *http.Request) ([]byte, Response, error) {
 	if c.verbose {
 		dumpReq, _ := httputil.DumpRequest(req, true)
 		c.logger.Println(string(dumpReq))
@@ -157,7 +195,7 @@ func (c *Client) do(req *http.Request) ([]byte, error) {
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, errors.Wrap(err, "HTTP request failed")
+		return nil, Response{}, errors.Wrap(err, "HTTP request failed")
 	}
 
 	if c.verbose {
@@ -169,26 +207,28 @@ func (c *Client) do(req *http.Request) ([]byte, error) {
 		_ = resp.Body.Close()
 	}()
 
+	response := newResponse(resp)
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not read response body")
+		return nil, response, errors.Wrap(err, "could not read response body")
 	}
 
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
 		break
 	case http.StatusUnauthorized:
-		return nil, ErrUnauthorized("invalid credentials")
+		return nil, response, ErrUnauthorized("invalid credentials")
 	case http.StatusForbidden, http.StatusTooManyRequests:
-		return nil, ErrRateLimitExceeded
+		return nil, response, ErrRateLimitExceeded
 	default:
 		if len(body) > 0 {
-			return nil, fmt.Errorf("HTTP status: %d; content %q", resp.StatusCode, string(body))
+			return nil, response, fmt.Errorf("HTTP status: %d; content %q", resp.StatusCode, string(body))
 		}
-		return nil, fmt.Errorf("HTTP status: %d", resp.StatusCode)
+		return nil, response, fmt.Errorf("HTTP status: %d", resp.StatusCode)
 	}
 
-	return body, nil
+	return body, response, nil
 }
 
 // cloneHeader returns a shallow copy of the header.
