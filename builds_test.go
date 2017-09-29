@@ -62,6 +62,25 @@ func TestCreateBuild(t *testing.T) {
 			status: http.StatusNotFound,
 			err:    optionalError(errors.New("unable to create build: project not found")),
 		},
+		{
+			name: "bad request",
+			args: args{
+				organizationUUID: "28123f10-e33d-5533-b53f-111ef8d7b14f",
+				projectUUID:      "28123f10-e33d-5533-b53f-111ef8d7b14f",
+			},
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert := assert.New(t)
+				assert.Equal("POST", r.Method)
+				assert.Equal("application/json", r.Header.Get("Content-Type"))
+				assert.Equal("application/json", r.Header.Get("Accept"))
+
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprint(w, "{ \"errors\": [\"ref is required\"] }")
+			},
+			status: http.StatusBadRequest,
+			err:    optionalError(errors.New("unable to create build: ref is required")),
+		},
 	}
 
 	for _, tt := range tests {
@@ -74,14 +93,15 @@ func TestCreateBuild(t *testing.T) {
 				tt.args.projectUUID),
 				tt.handler)
 
-			_, resp, err := org.CreateBuild(context.Background(), tt.args.projectUUID, "heads/master", "12345")
+			success, resp, err := org.CreateBuild(context.Background(), tt.args.projectUUID, "heads/master", "12345")
 
 			assert := assert.New(t)
+			assert.NotNil(resp)
+			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err == nil {
 				assert.NoError(err)
-				assert.NotNil(resp)
-				assert.Equal(tt.status, resp.StatusCode)
+				assert.True(success)
 			} else {
 				assert.Error(err)
 				assert.Equal(tt.err.Error(), err.Error())
@@ -158,12 +178,12 @@ func TestStopBuild(t *testing.T) {
 			success, resp, err := org.StopBuild(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
 			assert := assert.New(t)
+			assert.NotNil(resp)
+			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err == nil {
 				assert.NoError(err)
 				assert.True(success)
-				assert.NotNil(resp)
-				assert.Equal(tt.status, resp.StatusCode)
 			} else {
 				assert.Error(err)
 				assert.Equal(tt.err.Error(), err.Error())
@@ -240,12 +260,12 @@ func TestRestartBuild(t *testing.T) {
 			success, resp, err := org.RestartBuild(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
 			assert := assert.New(t)
+			assert.NotNil(resp)
+			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err == nil {
 				assert.NoError(err)
 				assert.True(success)
-				assert.NotNil(resp)
-				assert.Equal(tt.status, resp.StatusCode)
 			} else {
 				assert.Error(err)
 				assert.Equal(tt.err.Error(), err.Error())
@@ -322,6 +342,8 @@ func TestGetBuild(t *testing.T) {
 			build, resp, err := org.GetBuild(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
 			assert := assert.New(t)
+			assert.NotNil(resp)
+			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
@@ -330,8 +352,6 @@ func TestGetBuild(t *testing.T) {
 			}
 
 			assert.NoError(err)
-			assert.NotNil(resp)
-			assert.Equal(http.StatusOK, resp.StatusCode)
 
 			finishedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:55.193+00:00")
 			allocatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:36.967+00:00")
@@ -424,6 +444,8 @@ func TestListBuilds(t *testing.T) {
 			builds, resp, err := org.ListBuilds(context.Background(), tt.args.projectUUID)
 
 			assert := assert.New(t)
+			assert.NotNil(resp)
+			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
@@ -432,8 +454,6 @@ func TestListBuilds(t *testing.T) {
 			}
 
 			assert.NoError(err)
-			assert.NotNil(resp)
-			assert.Equal(http.StatusOK, resp.StatusCode)
 			assert.Equal(2, len(builds.Builds))
 
 			build := builds.Builds[0]
@@ -536,6 +556,8 @@ func TestListBuildPipelines(t *testing.T) {
 			pipelines, resp, err := org.ListBuildPipelines(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
 			assert := assert.New(t)
+			assert.NotNil(resp)
+			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
@@ -544,8 +566,6 @@ func TestListBuildPipelines(t *testing.T) {
 			}
 
 			assert.NoError(err)
-			assert.NotNil(resp)
-			assert.Equal(http.StatusOK, resp.StatusCode)
 			assert.Equal(1, len(pipelines.Pipelines))
 
 			pipeline := pipelines.Pipelines[0]
@@ -657,6 +677,8 @@ func TestListBuildServices(t *testing.T) {
 			services, resp, err := org.ListBuildServices(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
 			assert := assert.New(t)
+			assert.NotNil(resp)
+			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
@@ -665,8 +687,6 @@ func TestListBuildServices(t *testing.T) {
 			}
 
 			assert.NoError(err)
-			assert.NotNil(resp)
-			assert.Equal(http.StatusOK, resp.StatusCode)
 			assert.Equal(1, len(services.Services))
 
 			service := services.Services[0]
@@ -759,6 +779,8 @@ func TestListBuildSteps(t *testing.T) {
 			steps, resp, err := org.ListBuildSteps(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
 			assert := assert.New(t)
+			assert.NotNil(resp)
+			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
@@ -767,8 +789,6 @@ func TestListBuildSteps(t *testing.T) {
 			}
 
 			assert.NoError(err)
-			assert.NotNil(resp)
-			assert.Equal(http.StatusOK, resp.StatusCode)
 			assert.Equal(1, len(steps.Steps))
 
 			step := steps.Steps[0]
