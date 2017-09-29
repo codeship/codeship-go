@@ -1,9 +1,11 @@
 package codeship_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -20,8 +22,6 @@ var (
 	client *codeship.Client
 	org    *codeship.Organization
 )
-
-type optionalError error
 
 type optionalString *string
 
@@ -70,7 +70,7 @@ func TestNew(t *testing.T) {
 		args args
 		env  env
 		want *codeship.Client
-		err  optionalError
+		err  error
 	}{
 		{
 			name: "requires username",
@@ -78,7 +78,7 @@ func TestNew(t *testing.T) {
 				username: "",
 				password: "foo",
 			},
-			err: optionalError(errors.New("missing username or password")),
+			err: errors.New("missing username or password"),
 		},
 		{
 			name: "requires password",
@@ -86,7 +86,7 @@ func TestNew(t *testing.T) {
 				username: "foo",
 				password: "",
 			},
-			err: optionalError(errors.New("missing username or password")),
+			err: errors.New("missing username or password"),
 		},
 		{
 			name: "prefers username param",
@@ -139,7 +139,7 @@ func TestNew(t *testing.T) {
 					},
 				},
 			},
-			err: optionalError(errors.New("options parsing failed: boom")),
+			err: errors.New("options parsing failed: boom"),
 		},
 	}
 
@@ -161,14 +161,13 @@ func TestNew(t *testing.T) {
 
 			got, err := codeship.New(tt.args.username, tt.args.password, tt.args.opts...)
 
-			if tt.err == nil {
-				assert.NoError(err)
-			} else {
+			if tt.err != nil {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
+			assert.NoError(err)
 			assert.NotNil(got)
 
 			if tt.env.username != nil && tt.args.username == "" {
@@ -195,7 +194,7 @@ func TestScope(t *testing.T) {
 		handler http.HandlerFunc
 		args    args
 		want    *codeship.Organization
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -230,7 +229,7 @@ func TestScope(t *testing.T) {
 			args: args{
 				name: "codeship",
 			},
-			err: optionalError(errors.New("authentication failed: invalid credentials")),
+			err: errors.New("authentication failed: invalid credentials"),
 		},
 		{
 			name: "wrong organization",
@@ -243,37 +242,70 @@ func TestScope(t *testing.T) {
 			args: args{
 				name: "foo",
 			},
-			err: optionalError(errors.New("organization 'foo' not authorized. Authorized organizations: [{codeship 28123f10-e33d-5533-b53f-111ef8d7b14f [project.read project.write build.read build.write]}]")),
+			err: errors.New("organization 'foo' not authorized. Authorized organizations: [{codeship 28123f10-e33d-5533-b53f-111ef8d7b14f [project.read project.write build.read build.write]}]"),
 		},
 	}
 
 	assert := assert.New(t)
 
 	for _, tt := range tests {
-		mux = http.NewServeMux()
-		server = httptest.NewServer(mux)
-
-		defer func() {
-			server.Close()
-		}()
-
-		mux.HandleFunc("/auth", tt.handler)
-
 		t.Run(tt.name, func(t *testing.T) {
+			mux = http.NewServeMux()
+			server = httptest.NewServer(mux)
+
+			defer func() {
+				server.Close()
+			}()
+
+			mux.HandleFunc("/auth", tt.handler)
+
 			c, _ := codeship.New("username", "password", codeship.BaseURL(server.URL))
 			got, err := c.Scope(context.Background(), tt.args.name)
 
-			if tt.err == nil {
-				assert.NoError(err)
-			} else {
+			if tt.err != nil {
+				assert.Error(err)
 				assert.Equal(tt.err.Error(), err.Error())
 				return
 			}
 
+			assert.NoError(err)
 			assert.NotNil(got)
 			assert.Equal(tt.want.UUID, got.UUID)
 			assert.Equal(tt.want.Name, got.Name)
 			assert.Equal(tt.want.Scopes, got.Scopes)
 		})
 	}
+}
+
+func TestVerboseLogger(t *testing.T) {
+	mux = http.NewServeMux()
+	server = httptest.NewServer(mux)
+
+	defer func() {
+		server.Close()
+	}()
+
+	mux.HandleFunc("/auth", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, fixture("auth/success.json"))
+	})
+
+	var buf bytes.Buffer
+	logger := log.New(&buf, "INFO: ", log.Lshortfile)
+
+	c, _ := codeship.New("username", "password",
+		codeship.BaseURL(server.URL),
+		codeship.Verbose(true),
+		codeship.Logger(logger),
+	)
+
+	org, err := c.Scope(context.Background(), "codeship")
+
+	assert := assert.New(t)
+
+	assert.NoError(err)
+	assert.NotNil(org)
+	assert.True(buf.Len() > 0)
 }

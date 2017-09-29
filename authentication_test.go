@@ -17,7 +17,7 @@ func TestAuthenticate(t *testing.T) {
 		name    string
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "successful auth",
@@ -42,7 +42,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, "{ \"foo\": }")
 			},
 			status: http.StatusOK,
-			err:    optionalError(errors.New("unable to unmarshal JSON into Authentication: invalid character '}' looking for beginning of value")),
+			err:    errors.New("unable to unmarshal JSON into Authentication: invalid character '}' looking for beginning of value"),
 		},
 		{
 			name: "unauthorized auth",
@@ -55,7 +55,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, fixture("auth/unauthorized.json"))
 			},
 			status: http.StatusUnauthorized,
-			err:    optionalError(errors.New("authentication failed: invalid credentials")),
+			err:    errors.New("authentication failed: invalid credentials"),
 		},
 		{
 			name: "rate limit exceeded",
@@ -66,7 +66,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusForbidden)
 			},
 			status: http.StatusForbidden,
-			err:    optionalError(errors.New("authentication failed: rate limit exceeded")),
+			err:    errors.New("authentication failed: rate limit exceeded"),
 		},
 		{
 			name: "server error",
@@ -77,7 +77,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 			},
 			status: http.StatusInternalServerError,
-			err:    optionalError(errors.New("authentication failed: HTTP status: 500")),
+			err:    errors.New("authentication failed: HTTP status: 500"),
 		},
 		{
 			name: "other status code",
@@ -88,7 +88,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusTeapot)
 			},
 			status: http.StatusTeapot,
-			err:    optionalError(errors.New("authentication failed: HTTP status: 418")),
+			err:    errors.New("authentication failed: HTTP status: 418"),
 		},
 		{
 			name: "other status code with body",
@@ -100,9 +100,12 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, "I'm a teapot")
 			},
 			status: http.StatusTeapot,
-			err:    optionalError(errors.New("authentication failed: HTTP status: 418; content \"I'm a teapot\"")),
+			err:    errors.New("authentication failed: HTTP status: 418; content \"I'm a teapot\""),
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mux = http.NewServeMux()
@@ -117,8 +120,6 @@ func TestAuthenticate(t *testing.T) {
 				server.Close()
 			}()
 
-			assert := assert.New(t)
-
 			resp, err := client.Authenticate(context.Background())
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
@@ -127,7 +128,7 @@ func TestAuthenticate(t *testing.T) {
 				assert.NoError(err)
 			} else {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 			}
 		})
 	}

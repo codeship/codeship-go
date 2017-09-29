@@ -97,11 +97,13 @@ func Test_paginate(t *testing.T) {
 			want: "/organizations/123/projects",
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := paginate(tt.args.path, tt.args.opts...)
 
-			assert := assert.New(t)
 			assert.Equal(tt.want, got)
 		})
 	}
@@ -134,6 +136,9 @@ func TestLinks_NextPage(t *testing.T) {
 			want: 0,
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := Links{
@@ -142,9 +147,9 @@ func TestLinks_NextPage(t *testing.T) {
 				Last:     tt.fields.Last,
 				First:    tt.fields.First,
 			}
+
 			got, err := l.NextPage()
 
-			assert := assert.New(t)
 			assert.NoError(err)
 			assert.Equal(tt.want, got)
 		})
@@ -178,6 +183,9 @@ func TestLinks_PreviousPage(t *testing.T) {
 			want: 0,
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := Links{
@@ -186,9 +194,9 @@ func TestLinks_PreviousPage(t *testing.T) {
 				Last:     tt.fields.Last,
 				First:    tt.fields.First,
 			}
+
 			got, err := l.PreviousPage()
 
-			assert := assert.New(t)
 			assert.NoError(err)
 			assert.Equal(tt.want, got)
 		})
@@ -223,6 +231,9 @@ func TestLinks_CurrentPage(t *testing.T) {
 			want: 2,
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := Links{
@@ -233,7 +244,6 @@ func TestLinks_CurrentPage(t *testing.T) {
 			}
 			got, err := l.CurrentPage()
 
-			assert := assert.New(t)
 			assert.NoError(err)
 			assert.Equal(tt.want, got)
 		})
@@ -267,6 +277,9 @@ func TestLinks_LastPage(t *testing.T) {
 			want: 11,
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := Links{
@@ -277,7 +290,6 @@ func TestLinks_LastPage(t *testing.T) {
 			}
 			got, err := l.LastPage()
 
-			assert := assert.New(t)
 			assert.NoError(err)
 			assert.Equal(tt.want, got)
 		})
@@ -313,6 +325,9 @@ func TestLinks_IsLastPage(t *testing.T) {
 			want: false,
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := Links{
@@ -323,7 +338,6 @@ func TestLinks_IsLastPage(t *testing.T) {
 			}
 			got := l.IsLastPage()
 
-			assert := assert.New(t)
 			assert.Equal(tt.want, got)
 		})
 	}

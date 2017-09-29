@@ -23,7 +23,7 @@ func TestCreateBuild(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -60,7 +60,7 @@ func TestCreateBuild(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "project"))
 			},
 			status: http.StatusNotFound,
-			err:    optionalError(errors.New("unable to create build: project not found")),
+			err:    errors.New("unable to create build: project not found"),
 		},
 		{
 			name: "bad request",
@@ -76,12 +76,14 @@ func TestCreateBuild(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
-				fmt.Fprint(w, "{ \"errors\": [\"ref is required\"] }")
+				fmt.Fprint(w, fmt.Sprintf(fixture("errors.json"), "ref is required"))
 			},
 			status: http.StatusBadRequest,
-			err:    optionalError(errors.New("unable to create build: ref is required")),
+			err:    errors.New("unable to create build: ref is required"),
 		},
 	}
+
+	assert := assert.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -95,7 +97,6 @@ func TestCreateBuild(t *testing.T) {
 
 			success, resp, err := org.CreateBuild(context.Background(), tt.args.projectUUID, "heads/master", "12345")
 
-			assert := assert.New(t)
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
@@ -104,7 +105,7 @@ func TestCreateBuild(t *testing.T) {
 				assert.True(success)
 			} else {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 			}
 		})
 	}
@@ -121,7 +122,7 @@ func TestStopBuild(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -160,9 +161,11 @@ func TestStopBuild(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    optionalError(errors.New("unable to stop build: build not found")),
+			err:    errors.New("unable to stop build: build not found"),
 		},
 	}
+
+	assert := assert.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -177,7 +180,6 @@ func TestStopBuild(t *testing.T) {
 
 			success, resp, err := org.StopBuild(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert := assert.New(t)
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
@@ -186,7 +188,7 @@ func TestStopBuild(t *testing.T) {
 				assert.True(success)
 			} else {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 			}
 		})
 	}
@@ -203,7 +205,7 @@ func TestRestartBuild(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -242,9 +244,11 @@ func TestRestartBuild(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    optionalError(errors.New("unable to restart build: build not found")),
+			err:    errors.New("unable to restart build: build not found"),
 		},
 	}
+
+	assert := assert.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -259,7 +263,6 @@ func TestRestartBuild(t *testing.T) {
 
 			success, resp, err := org.RestartBuild(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert := assert.New(t)
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
@@ -268,7 +271,7 @@ func TestRestartBuild(t *testing.T) {
 				assert.True(success)
 			} else {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 			}
 		})
 	}
@@ -285,7 +288,7 @@ func TestGetBuild(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -324,9 +327,11 @@ func TestGetBuild(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    optionalError(errors.New("unable to get build: build not found")),
+			err:    errors.New("unable to get build: build not found"),
 		},
 	}
+
+	assert := assert.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -341,13 +346,12 @@ func TestGetBuild(t *testing.T) {
 
 			build, resp, err := org.GetBuild(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert := assert.New(t)
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
@@ -390,7 +394,7 @@ func TestListBuilds(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -427,9 +431,11 @@ func TestListBuilds(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "project"))
 			},
 			status: http.StatusNotFound,
-			err:    optionalError(errors.New("unable to list builds: project not found")),
+			err:    errors.New("unable to list builds: project not found"),
 		},
 	}
+
+	assert := assert.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -443,13 +449,12 @@ func TestListBuilds(t *testing.T) {
 
 			builds, resp, err := org.ListBuilds(context.Background(), tt.args.projectUUID)
 
-			assert := assert.New(t)
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
@@ -499,7 +504,7 @@ func TestListBuildPipelines(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -538,9 +543,11 @@ func TestListBuildPipelines(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    optionalError(errors.New("unable to get build pipelines: build not found")),
+			err:    errors.New("unable to get build pipelines: build not found"),
 		},
 	}
+
+	assert := assert.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -555,13 +562,12 @@ func TestListBuildPipelines(t *testing.T) {
 
 			pipelines, resp, err := org.ListBuildPipelines(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert := assert.New(t)
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
@@ -620,7 +626,7 @@ func TestListBuildServices(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -659,9 +665,11 @@ func TestListBuildServices(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    optionalError(errors.New("unable to get build services: build not found")),
+			err:    errors.New("unable to get build services: build not found"),
 		},
 	}
+
+	assert := assert.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -676,13 +684,12 @@ func TestListBuildServices(t *testing.T) {
 
 			services, resp, err := org.ListBuildServices(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert := assert.New(t)
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
@@ -722,7 +729,7 @@ func TestListBuildSteps(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -761,9 +768,11 @@ func TestListBuildSteps(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    optionalError(errors.New("unable to get build steps: build not found")),
+			err:    errors.New("unable to get build steps: build not found"),
 		},
 	}
+
+	assert := assert.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -778,13 +787,12 @@ func TestListBuildSteps(t *testing.T) {
 
 			steps, resp, err := org.ListBuildSteps(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert := assert.New(t)
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
 				assert.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(tt.err, err.Error())
 				return
 			}
 

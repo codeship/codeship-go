@@ -31,11 +31,13 @@ func TestHTTPClient(t *testing.T) {
 			},
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", HTTPClient(tt.args.client))
 
-			assert := assert.New(t)
 			assert.NoError(err)
 			assert.Equal(codeship.httpClient, tt.want)
 		})
@@ -65,11 +67,13 @@ func TestHeaders(t *testing.T) {
 			},
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", Headers(tt.args.headers))
 
-			assert := assert.New(t)
 			assert.NoError(err)
 			assert.Equal(codeship.headers, tt.want)
 		})
@@ -93,11 +97,13 @@ func TestBaseURL(t *testing.T) {
 			want: "http://localhost:8080/api/v2",
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", BaseURL(tt.args.baseURL))
 
-			assert := assert.New(t)
 			assert.NoError(err)
 			assert.Equal(codeship.baseURL, tt.want)
 		})
@@ -121,11 +127,13 @@ func TestLogger(t *testing.T) {
 			want: log.New(os.Stderr, "DEBUG: ", log.LUTC),
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", Logger(tt.args.logger))
 
-			assert := assert.New(t)
 			assert.NoError(err)
 			assert.Equal(codeship.logger, tt.want)
 		})
@@ -156,11 +164,13 @@ func TestVerbose(t *testing.T) {
 			want: false,
 		},
 	}
+
+	assert := assert.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", Verbose(tt.args.verbose))
 
-			assert := assert.New(t)
 			assert.NoError(err)
 			assert.Equal(codeship.verbose, tt.want)
 		})

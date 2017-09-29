@@ -21,20 +21,22 @@ import (
 // ErrRateLimitExceeded occurs when Codeship returns 403 Forbidden response
 var ErrRateLimitExceeded = errors.New("rate limit exceeded")
 
+// ErrNotFound occurs when Codeship returns a 404 Not Found response
+type ErrNotFound struct {
+	apiErrors
+}
+
+// ErrBadRequest occurs when Codeship returns a 400 Bad Request response
+type ErrBadRequest struct {
+	apiErrors
+}
+
 type apiErrors struct {
 	Errors []string `json:"errors"`
 }
 
 func (e apiErrors) Error() string {
 	return strings.Join(e.Errors, ",")
-}
-
-type ErrNotFound struct {
-	apiErrors
-}
-
-type ErrBadRequest struct {
-	apiErrors
 }
 
 // Organization holds the configuration for the current API client scoped to the Organization. Should not

@@ -39,11 +39,11 @@ func (t *ProjectType) MarshalJSON() ([]byte, error) {
 func (t *ProjectType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf("ProjectType should be a string, got %s", data)
+		return fmt.Errorf("ProjectType should be a string, got %T", data)
 	}
 	v, ok := _projectTypeNameToValue[s]
 	if !ok {
-		return fmt.Errorf("invalid ProjectType %q", s)
+		return fmt.Errorf("invalid ProjectType: %s", s)
 	}
 	*t = v
 	return nil
