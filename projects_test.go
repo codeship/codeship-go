@@ -10,6 +10,7 @@ import (
 	codeship "github.com/codeship/codeship-go"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestListProjects(t *testing.T) {
@@ -62,6 +63,7 @@ func TestListProjects(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -74,23 +76,23 @@ func TestListProjects(t *testing.T) {
 
 			projects, resp, err := org.ListProjects(context.Background())
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
+			require.NoError(err)
 
 			current, _ := resp.CurrentPage()
 			assert.Equal(1, current)
 			assert.Equal("https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2", resp.Links.Last)
 			assert.Equal("https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/?page=2", resp.Links.Next)
 
-			assert.Equal(2, len(projects.Projects))
+			require.Equal(2, len(projects.Projects))
 
 			project := projects.Projects[1]
 
@@ -195,6 +197,7 @@ func TestGetProject(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -212,12 +215,12 @@ func TestGetProject(t *testing.T) {
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
+			require.NoError(err)
 
 			createdAt, _ := time.Parse(time.RFC3339, "2017-09-08T20:19:55.199Z")
 			updatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:36.336Z")
@@ -311,6 +314,7 @@ func TestCreateProject(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -332,16 +336,16 @@ func TestCreateProject(t *testing.T) {
 				Type: codeship.ProjectTypeBasic,
 			})
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.NotNil(project)
 		})
 	}
@@ -399,6 +403,7 @@ func TestUpdateProject(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -417,16 +422,16 @@ func TestUpdateProject(t *testing.T) {
 				},
 			})
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.NotNil(project)
 		})
 	}
@@ -498,18 +503,19 @@ func TestProjectType_UnmarshalJSON(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.projectType.UnmarshalJSON(tt.args.data)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(tt.want, tt.projectType)
 		})
 	}

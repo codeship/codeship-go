@@ -33,9 +33,9 @@ func PerPage(perPage int) PaginationOption {
 	}
 }
 
-func paginate(path string, opts ...PaginationOption) string {
+func paginate(path string, opts ...PaginationOption) (string, error) {
 	if len(opts) == 0 {
-		return path
+		return path, nil
 	}
 
 	opt := &paginationOption{}
@@ -46,7 +46,7 @@ func paginate(path string, opts ...PaginationOption) string {
 
 	u, err := url.Parse(path)
 	if err != nil {
-		return path
+		return path, err
 	}
 
 	q := u.Query()
@@ -58,7 +58,7 @@ func paginate(path string, opts ...PaginationOption) string {
 	}
 
 	u.RawQuery = q.Encode()
-	return u.String()
+	return u.String(), nil
 }
 
 // Links contain links for pagination purposes

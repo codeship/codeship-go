@@ -145,7 +145,10 @@ type projectResponse struct {
 
 // ListProjects fetches a list of projects
 func (o *Organization) ListProjects(ctx context.Context, opts ...PaginationOption) (ProjectList, Response, error) {
-	path := paginate(fmt.Sprintf("/organizations/%s/projects", o.UUID), opts...)
+	path, err := paginate(fmt.Sprintf("/organizations/%s/projects", o.UUID), opts...)
+	if err != nil {
+		return ProjectList{}, Response{}, errors.Wrap(err, "unable to list projects")
+	}
 
 	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {

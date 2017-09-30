@@ -11,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateBuild(t *testing.T) {
@@ -84,6 +85,7 @@ func TestCreateBuild(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -97,16 +99,17 @@ func TestCreateBuild(t *testing.T) {
 
 			success, resp, err := org.CreateBuild(context.Background(), tt.args.projectUUID, "heads/master", "12345")
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err == nil {
-				assert.NoError(err)
-				assert.True(success)
-			} else {
-				assert.Error(err)
+			if tt.err != nil {
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
+				return
 			}
+
+			require.NoError(err)
+			assert.True(success)
 		})
 	}
 }
@@ -166,6 +169,7 @@ func TestStopBuild(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -180,16 +184,17 @@ func TestStopBuild(t *testing.T) {
 
 			success, resp, err := org.StopBuild(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err == nil {
-				assert.NoError(err)
-				assert.True(success)
-			} else {
-				assert.Error(err)
+			if tt.err != nil {
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
+				return
 			}
+
+			require.NoError(err)
+			assert.True(success)
 		})
 	}
 }
@@ -249,6 +254,7 @@ func TestRestartBuild(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -266,13 +272,14 @@ func TestRestartBuild(t *testing.T) {
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err == nil {
-				assert.NoError(err)
-				assert.True(success)
-			} else {
-				assert.Error(err)
+			if tt.err != nil {
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
+				return
 			}
+
+			assert.NoError(err)
+			assert.True(success)
 		})
 	}
 }
@@ -332,6 +339,7 @@ func TestGetBuild(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -346,16 +354,16 @@ func TestGetBuild(t *testing.T) {
 
 			build, resp, err := org.GetBuild(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
+			require.NoError(err)
 
 			finishedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:55.193+00:00")
 			allocatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:36.967+00:00")
@@ -436,6 +444,7 @@ func TestListBuilds(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -449,17 +458,17 @@ func TestListBuilds(t *testing.T) {
 
 			builds, resp, err := org.ListBuilds(context.Background(), tt.args.projectUUID)
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
-			assert.Equal(2, len(builds.Builds))
+			require.NoError(err)
+			require.Equal(2, len(builds.Builds))
 
 			build := builds.Builds[0]
 
@@ -543,11 +552,12 @@ func TestListBuildPipelines(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to get build pipelines: build not found"),
+			err:    errors.New("unable to get list pipelines: build not found"),
 		},
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -562,17 +572,17 @@ func TestListBuildPipelines(t *testing.T) {
 
 			pipelines, resp, err := org.ListBuildPipelines(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
-			assert.Equal(1, len(pipelines.Pipelines))
+			require.NoError(err)
+			require.Equal(1, len(pipelines.Pipelines))
 
 			pipeline := pipelines.Pipelines[0]
 
@@ -665,11 +675,12 @@ func TestListBuildServices(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to get build services: build not found"),
+			err:    errors.New("unable to list build services: build not found"),
 		},
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -684,17 +695,17 @@ func TestListBuildServices(t *testing.T) {
 
 			services, resp, err := org.ListBuildServices(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
-			assert.Equal(1, len(services.Services))
+			require.NoError(err)
+			require.Equal(1, len(services.Services))
 
 			service := services.Services[0]
 
@@ -768,11 +779,12 @@ func TestListBuildSteps(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to get build steps: build not found"),
+			err:    errors.New("unable to list build steps: build not found"),
 		},
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -787,17 +799,17 @@ func TestListBuildSteps(t *testing.T) {
 
 			steps, resp, err := org.ListBuildSteps(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
-			assert.Equal(1, len(steps.Steps))
+			require.NoError(err)
+			require.Equal(1, len(steps.Steps))
 
 			step := steps.Steps[0]
 

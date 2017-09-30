@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_paginate(t *testing.T) {
@@ -99,11 +100,12 @@ func Test_paginate(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := paginate(tt.args.path, tt.args.opts...)
-
+			got, err := paginate(tt.args.path, tt.args.opts...)
+			require.NoError(err)
 			assert.Equal(tt.want, got)
 		})
 	}
@@ -138,6 +140,7 @@ func TestLinks_NextPage(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -150,7 +153,7 @@ func TestLinks_NextPage(t *testing.T) {
 
 			got, err := l.NextPage()
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(tt.want, got)
 		})
 	}
@@ -185,6 +188,7 @@ func TestLinks_PreviousPage(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -197,7 +201,7 @@ func TestLinks_PreviousPage(t *testing.T) {
 
 			got, err := l.PreviousPage()
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(tt.want, got)
 		})
 	}
@@ -233,6 +237,7 @@ func TestLinks_CurrentPage(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -244,7 +249,7 @@ func TestLinks_CurrentPage(t *testing.T) {
 			}
 			got, err := l.CurrentPage()
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(tt.want, got)
 		})
 	}
@@ -279,6 +284,7 @@ func TestLinks_LastPage(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -290,7 +296,7 @@ func TestLinks_LastPage(t *testing.T) {
 			}
 			got, err := l.LastPage()
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(tt.want, got)
 		})
 	}
