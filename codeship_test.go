@@ -14,6 +14,7 @@ import (
 	codeship "github.com/codeship/codeship-go"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -144,6 +145,7 @@ func TestNew(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -162,12 +164,12 @@ func TestNew(t *testing.T) {
 			got, err := codeship.New(tt.args.username, tt.args.password, tt.args.opts...)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.NotNil(got)
 
 			if tt.env.username != nil && tt.args.username == "" {

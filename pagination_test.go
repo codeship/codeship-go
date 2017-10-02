@@ -342,8 +342,8 @@ func TestLinks_IsLastPage(t *testing.T) {
 				Last:     tt.fields.Last,
 				First:    tt.fields.First,
 			}
-			got := l.IsLastPage()
 
+			got := l.IsLastPage()
 			assert.Equal(tt.want, got)
 		})
 	}

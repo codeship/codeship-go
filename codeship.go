@@ -36,7 +36,7 @@ type apiErrors struct {
 }
 
 func (e apiErrors) Error() string {
-	return strings.Join(e.Errors, ",")
+	return strings.Join(e.Errors, ", ")
 }
 
 // Organization holds the configuration for the current API client scoped to the Organization. Should not

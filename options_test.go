@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHTTPClient(t *testing.T) {
@@ -33,12 +34,13 @@ func TestHTTPClient(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", HTTPClient(tt.args.client))
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(codeship.httpClient, tt.want)
 		})
 	}
@@ -69,12 +71,13 @@ func TestHeaders(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", Headers(tt.args.headers))
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(codeship.headers, tt.want)
 		})
 	}
@@ -99,12 +102,13 @@ func TestBaseURL(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", BaseURL(tt.args.baseURL))
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(codeship.baseURL, tt.want)
 		})
 	}
@@ -129,12 +133,13 @@ func TestLogger(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", Logger(tt.args.logger))
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(codeship.logger, tt.want)
 		})
 	}
@@ -166,12 +171,13 @@ func TestVerbose(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			codeship, err := New("username", "password", Verbose(tt.args.verbose))
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.Equal(codeship.verbose, tt.want)
 		})
 	}
