@@ -10,6 +10,7 @@ import (
 	codeship "github.com/codeship/codeship-go"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAuthenticate(t *testing.T) {
@@ -17,7 +18,7 @@ func TestAuthenticate(t *testing.T) {
 		name    string
 		handler http.HandlerFunc
 		status  int
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "successful auth",
@@ -32,6 +33,19 @@ func TestAuthenticate(t *testing.T) {
 			status: http.StatusOK,
 		},
 		{
+			name: "invalid JSON",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+
+				fmt.Fprint(w, "{ \"foo\": }")
+			},
+			status: http.StatusOK,
+			err:    errors.New("unable to unmarshal JSON into Authentication: invalid character '}' looking for beginning of value"),
+		},
+		{
 			name: "unauthorized auth",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, "POST", r.Method)
@@ -42,7 +56,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, fixture("auth/unauthorized.json"))
 			},
 			status: http.StatusUnauthorized,
-			err:    optionalError(errors.New("authentication failed: invalid credentials")),
+			err:    errors.New("authentication failed: invalid credentials"),
 		},
 		{
 			name: "rate limit exceeded",
@@ -53,7 +67,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusForbidden)
 			},
 			status: http.StatusForbidden,
-			err:    optionalError(errors.New("authentication failed: rate limit exceeded")),
+			err:    errors.New("authentication failed: rate limit exceeded"),
 		},
 		{
 			name: "server error",
@@ -64,7 +78,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 			},
 			status: http.StatusInternalServerError,
-			err:    optionalError(errors.New("authentication failed: HTTP status: 500")),
+			err:    errors.New("authentication failed: HTTP status: 500"),
 		},
 		{
 			name: "other status code",
@@ -75,7 +89,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusTeapot)
 			},
 			status: http.StatusTeapot,
-			err:    optionalError(errors.New("authentication failed: HTTP status: 418")),
+			err:    errors.New("authentication failed: HTTP status: 418"),
 		},
 		{
 			name: "other status code with body",
@@ -87,9 +101,13 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, "I'm a teapot")
 			},
 			status: http.StatusTeapot,
-			err:    optionalError(errors.New("authentication failed: HTTP status: 418; content \"I'm a teapot\"")),
+			err:    errors.New("authentication failed: HTTP status: 418; content \"I'm a teapot\""),
 		},
 	}
+
+	assert := assert.New(t)
+	require := require.New(t)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mux = http.NewServeMux()
@@ -104,19 +122,15 @@ func TestAuthenticate(t *testing.T) {
 				server.Close()
 			}()
 
-			assert := assert.New(t)
-
 			resp, err := client.Authenticate(context.Background())
 			assert.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if err != nil {
-				if tt.err == nil {
-					assert.Fail("Unexpected error: %s", err.Error())
-				} else {
-					assert.Equal(tt.err.Error(), err.Error())
-				}
-				return
+			if tt.err == nil {
+				require.NoError(err)
+			} else {
+				require.Error(err)
+				assert.EqualError(tt.err, err.Error())
 			}
 		})
 	}

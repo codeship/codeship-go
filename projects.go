@@ -39,11 +39,11 @@ func (t *ProjectType) MarshalJSON() ([]byte, error) {
 func (t *ProjectType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
-		return fmt.Errorf("ProjectType should be a string, got %s", data)
+		return fmt.Errorf("ProjectType should be a string, got %T", data)
 	}
 	v, ok := _projectTypeNameToValue[s]
 	if !ok {
-		return fmt.Errorf("invalid ProjectType %q", s)
+		return fmt.Errorf("invalid ProjectType: %s", s)
 	}
 	*t = v
 	return nil
@@ -145,8 +145,7 @@ type projectResponse struct {
 
 // ListProjects fetches a list of projects
 func (o *Organization) ListProjects(ctx context.Context, opts ...PaginationOption) (ProjectList, Response, error) {
-	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
-	path, err := paginate(path, opts...)
+	path, err := paginate(fmt.Sprintf("/organizations/%s/projects", o.UUID), opts...)
 	if err != nil {
 		return ProjectList{}, Response{}, errors.Wrap(err, "unable to list projects")
 	}

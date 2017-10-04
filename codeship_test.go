@@ -1,9 +1,11 @@
 package codeship_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -12,6 +14,7 @@ import (
 	codeship "github.com/codeship/codeship-go"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -20,8 +23,6 @@ var (
 	client *codeship.Client
 	org    *codeship.Organization
 )
-
-type optionalError error
 
 type optionalString *string
 
@@ -59,7 +60,6 @@ func TestNew(t *testing.T) {
 	type args struct {
 		username string
 		password string
-		orgName  string
 		opts     []codeship.Option
 	}
 	type env struct {
@@ -71,32 +71,29 @@ func TestNew(t *testing.T) {
 		args args
 		env  env
 		want *codeship.Client
-		err  optionalError
+		err  error
 	}{
 		{
 			name: "requires username",
 			args: args{
 				username: "",
 				password: "foo",
-				orgName:  "codeship",
 			},
-			err: optionalError(errors.New("missing username or password")),
+			err: errors.New("missing username or password"),
 		},
 		{
 			name: "requires password",
 			args: args{
 				username: "foo",
 				password: "",
-				orgName:  "codeship",
 			},
-			err: optionalError(errors.New("missing username or password")),
+			err: errors.New("missing username or password"),
 		},
 		{
 			name: "prefers username param",
 			args: args{
 				username: "foo",
 				password: "bar",
-				orgName:  "codeship",
 			},
 			env: env{
 				username: newOptionalString("baz"),
@@ -107,7 +104,6 @@ func TestNew(t *testing.T) {
 			args: args{
 				username: "foo",
 				password: "bar",
-				orgName:  "codeship",
 			},
 			env: env{
 				password: newOptionalString("baz"),
@@ -118,7 +114,6 @@ func TestNew(t *testing.T) {
 			args: args{
 				username: "",
 				password: "bar",
-				orgName:  "codeship",
 			},
 			env: env{
 				username: newOptionalString("baz"),
@@ -129,38 +124,28 @@ func TestNew(t *testing.T) {
 			args: args{
 				username: "foo",
 				password: "",
-				orgName:  "codeship",
 			},
 			env: env{
 				password: newOptionalString("baz"),
 			},
 		},
 		{
-			name: "requires organization name",
-			args: args{
-				username: "foo",
-				password: "bar",
-				orgName:  "",
-			},
-			err: optionalError(errors.New("organization name is required")),
-		},
-		{
 			name: "handles error option func",
 			args: args{
 				username: "foo",
 				password: "bar",
-				orgName:  "codeship",
 				opts: []codeship.Option{
 					func(*codeship.Client) error {
 						return errors.New("boom")
 					},
 				},
 			},
-			err: optionalError(errors.New("options parsing failed: boom")),
+			err: errors.New("options parsing failed: boom"),
 		},
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -178,15 +163,13 @@ func TestNew(t *testing.T) {
 
 			got, err := codeship.New(tt.args.username, tt.args.password, tt.args.opts...)
 
-			if err != nil {
-				if tt.err == nil {
-					assert.Fail("Unexpected error: %s", err.Error())
-				} else {
-					assert.Equal(tt.err.Error(), err.Error())
-				}
+			if tt.err != nil {
+				require.Error(err)
+				assert.EqualError(tt.err, err.Error())
 				return
 			}
 
+			require.NoError(err)
 			assert.NotNil(got)
 
 			if tt.env.username != nil && tt.args.username == "" {
@@ -213,7 +196,7 @@ func TestScope(t *testing.T) {
 		handler http.HandlerFunc
 		args    args
 		want    *codeship.Organization
-		err     optionalError
+		err     error
 	}{
 		{
 			name: "success",
@@ -248,7 +231,7 @@ func TestScope(t *testing.T) {
 			args: args{
 				name: "codeship",
 			},
-			err: optionalError(errors.New("authentication failed: invalid credentials")),
+			err: errors.New("authentication failed: invalid credentials"),
 		},
 		{
 			name: "wrong organization",
@@ -261,39 +244,70 @@ func TestScope(t *testing.T) {
 			args: args{
 				name: "foo",
 			},
-			err: optionalError(errors.New("organization 'foo' not authorized. Authorized organizations: [{codeship 28123f10-e33d-5533-b53f-111ef8d7b14f [project.read project.write build.read build.write]}]")),
+			err: errors.New("organization 'foo' not authorized. Authorized organizations: [{codeship 28123f10-e33d-5533-b53f-111ef8d7b14f [project.read project.write build.read build.write]}]"),
 		},
 	}
 
 	assert := assert.New(t)
 
 	for _, tt := range tests {
-		mux = http.NewServeMux()
-		server = httptest.NewServer(mux)
-
-		defer func() {
-			server.Close()
-		}()
-
-		mux.HandleFunc("/auth", tt.handler)
-
 		t.Run(tt.name, func(t *testing.T) {
+			mux = http.NewServeMux()
+			server = httptest.NewServer(mux)
+
+			defer func() {
+				server.Close()
+			}()
+
+			mux.HandleFunc("/auth", tt.handler)
+
 			c, _ := codeship.New("username", "password", codeship.BaseURL(server.URL))
 			got, err := c.Scope(context.Background(), tt.args.name)
 
-			if err != nil {
-				if tt.err == nil {
-					assert.Fail("Unexpected error: %s", err.Error())
-				} else {
-					assert.Equal(tt.err.Error(), err.Error())
-				}
+			if tt.err != nil {
+				assert.Error(err)
+				assert.Equal(tt.err.Error(), err.Error())
 				return
 			}
 
+			assert.NoError(err)
 			assert.NotNil(got)
 			assert.Equal(tt.want.UUID, got.UUID)
 			assert.Equal(tt.want.Name, got.Name)
 			assert.Equal(tt.want.Scopes, got.Scopes)
 		})
 	}
+}
+
+func TestVerboseLogger(t *testing.T) {
+	mux = http.NewServeMux()
+	server = httptest.NewServer(mux)
+
+	defer func() {
+		server.Close()
+	}()
+
+	mux.HandleFunc("/auth", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		fmt.Fprint(w, fixture("auth/success.json"))
+	})
+
+	var buf bytes.Buffer
+	logger := log.New(&buf, "INFO: ", log.Lshortfile)
+
+	c, _ := codeship.New("username", "password",
+		codeship.BaseURL(server.URL),
+		codeship.Verbose(true),
+		codeship.Logger(logger),
+	)
+
+	org, err := c.Scope(context.Background(), "codeship")
+
+	assert := assert.New(t)
+
+	assert.NoError(err)
+	assert.NotNil(org)
+	assert.True(buf.Len() > 0)
 }

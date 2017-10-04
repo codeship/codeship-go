@@ -21,6 +21,24 @@ import (
 // ErrRateLimitExceeded occurs when Codeship returns 403 Forbidden response
 var ErrRateLimitExceeded = errors.New("rate limit exceeded")
 
+// ErrNotFound occurs when Codeship returns a 404 Not Found response
+type ErrNotFound struct {
+	apiErrors
+}
+
+// ErrBadRequest occurs when Codeship returns a 400 Bad Request response
+type ErrBadRequest struct {
+	apiErrors
+}
+
+type apiErrors struct {
+	Errors []string `json:"errors"`
+}
+
+func (e apiErrors) Error() string {
+	return strings.Join(e.Errors, ", ")
+}
+
 // Organization holds the configuration for the current API client scoped to the Organization. Should not
 // be modified concurrently
 type Organization struct {
@@ -217,6 +235,18 @@ func (c *Client) do(req *http.Request) ([]byte, Response, error) {
 	switch resp.StatusCode {
 	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
 		break
+	case http.StatusBadRequest:
+		var e ErrBadRequest
+		if err = json.Unmarshal(body, &e); err != nil {
+			return nil, response, ErrBadRequest{}
+		}
+		return nil, response, e
+	case http.StatusNotFound:
+		var e ErrNotFound
+		if err = json.Unmarshal(body, &e); err != nil {
+			return nil, response, ErrNotFound{}
+		}
+		return nil, response, e
 	case http.StatusUnauthorized:
 		return nil, response, ErrUnauthorized("invalid credentials")
 	case http.StatusForbidden, http.StatusTooManyRequests:
