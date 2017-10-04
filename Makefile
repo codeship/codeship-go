@@ -1,8 +1,11 @@
+GOTOOLS = \
+	github.com/alecthomas/gometalinter \
+	golang.org/x/tools/cmd/cover \
+	github.com/golang/dep/cmd/dep \
+
 .PHONY: setup
 setup: ## Install all the build and lint dependencies
-	go get -u github.com/alecthomas/gometalinter
-	go get -u golang.org/x/tools/cmd/cover
-	go get -u github.com/golang/dep/cmd/dep
+	go get -u $(GOTOOLS)
 	gometalinter --install --update
 	@$(MAKE) dep
 
