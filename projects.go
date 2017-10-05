@@ -52,7 +52,7 @@ func (t *ProjectType) UnmarshalJSON(data []byte) error {
 // DeploymentBranch structure for DeploymentBranch object for a Basic Project
 type DeploymentBranch struct {
 	BranchName string `json:"branch_name,omitempty"`
-	MatchNode  string `json:"match_node,omitempty"`
+	MatchMode  string `json:"match_mode,omitempty"`
 }
 
 // DeploymentPipeline structure for DeploymentPipeline object for a Basic Project
