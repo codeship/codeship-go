@@ -114,6 +114,8 @@ TODO: link to GoDoc
 
 This project follows Codeship's [Go best practices](https://github.com/codeship/go-best-practices). Please review them and make sure your PR follows the guidelines laid out before submitting.
 
+Everyone interacting in the project and its sub-projects' codebases, issue trackers, chat rooms, and mailing lists is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ### Setup
 
 This project uses [dep](https://github.com/golang/dep) for dependency management.
