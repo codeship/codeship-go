@@ -70,7 +70,6 @@ func TestNew(t *testing.T) {
 		name string
 		args args
 		env  env
-		want *codeship.Client
 		err  error
 	}{
 		{

@@ -9,7 +9,6 @@ GOPACKAGES := $(go list ./... | grep -v /vendor/)
 setup: ## Install all the build and lint dependencies
 	go get -u $(GOTOOLS)
 	gometalinter --install --update
-	@$(MAKE) dep
 
 .PHONY: dep
 dep: ## Run dep ensure and prune
