@@ -1,0 +1,12 @@
+go1.9:
+  build: ./
+
+go1.8:
+  build:
+    context: .
+    dockerfile: ./docker/go-1.8/Dockerfile
+
+go1.10rc:
+  build:
+    context: .
+    dockerfile: ./docker/go-1.10rc/Dockerfile

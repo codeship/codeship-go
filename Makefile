@@ -3,6 +3,8 @@ GOTOOLS = \
 	golang.org/x/tools/cmd/cover \
 	github.com/golang/dep/cmd/dep \
 
+GOPACKAGES := $(go list ./... | grep -v /vendor/)
+
 .PHONY: setup
 setup: ## Install all the build and lint dependencies
 	go get -u $(GOTOOLS)
@@ -16,7 +18,7 @@ dep: ## Run dep ensure and prune
 
 .PHONY: test
 test: ## Run all the tests
-	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -race -timeout=30s ./...
+	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -timeout=30s ./...
 
 .PHONY: cover
 cover: test ## Run all the tests and opens the coverage report
@@ -28,7 +30,7 @@ fmt: ## goimports all go files
 
 .PHONY: lint
 lint: ## Run all the linters
-	gometalinter --vendor --disable-all \
+	gometalinter --exclude=vendor --exclude=/go/src --disable-all \
 		--enable=deadcode \
 		--enable=ineffassign \
 		--enable=gofmt \
@@ -36,17 +38,16 @@ lint: ## Run all the linters
 		--enable=misspell \
 		--enable=errcheck \
 		--enable=vet \
-		--enable=vetshadow \
 		--enable=megacheck \
 		--deadline=10m \
-		./...
+		$(GOPACKAGES)
 
 .PHONY: ci
 ci: lint test ## Run all the tests and code checks
 
 .PHONY: build
 build: ## Build a version
-	go build -v ./...
+	CGO_ENABLED=0 go build -v $(GOPACKAGES)
 
 .PHONY: clean
 clean: ## Remove temporary files
