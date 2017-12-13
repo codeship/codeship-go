@@ -170,7 +170,7 @@ func TestNew(t *testing.T) {
 			}
 
 			require.NoError(err)
-			assert.NotNil(got)
+			require.NotNil(got)
 
 			if tt.env.username != nil && tt.args.username == "" {
 				assert.Equal(*tt.env.username, got.Username)
@@ -249,6 +249,7 @@ func TestScope(t *testing.T) {
 	}
 
 	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -265,13 +266,13 @@ func TestScope(t *testing.T) {
 			got, err := c.Scope(context.Background(), tt.args.name)
 
 			if tt.err != nil {
-				assert.Error(err)
+				require.Error(err)
 				assert.Equal(tt.err.Error(), err.Error())
 				return
 			}
 
-			assert.NoError(err)
-			assert.NotNil(got)
+			require.NoError(err)
+			require.NotNil(got)
 			assert.Equal(tt.want.UUID, got.UUID)
 			assert.Equal(tt.want.Name, got.Name)
 			assert.Equal(tt.want.Scopes, got.Scopes)
@@ -294,7 +295,11 @@ func TestVerboseLogger(t *testing.T) {
 		fmt.Fprint(w, fixture("auth/success.json"))
 	})
 
-	var buf bytes.Buffer
+	var (
+		buf bytes.Buffer
+		err error
+	)
+
 	logger := log.New(&buf, "INFO: ", log.Lshortfile)
 
 	c, _ := codeship.New("username", "password",
@@ -303,11 +308,12 @@ func TestVerboseLogger(t *testing.T) {
 		codeship.Logger(logger),
 	)
 
-	org, err := c.Scope(context.Background(), "codeship")
+	org, err = c.Scope(context.Background(), "codeship")
 
 	assert := assert.New(t)
+	require := require.New(t)
 
-	assert.NoError(err)
-	assert.NotNil(org)
+	require.NoError(err)
+	require.NotNil(org)
 	assert.True(buf.Len() > 0)
 }

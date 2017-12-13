@@ -123,7 +123,7 @@ func TestAuthenticate(t *testing.T) {
 			}()
 
 			resp, err := client.Authenticate(context.Background())
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err == nil {

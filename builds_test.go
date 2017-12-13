@@ -269,7 +269,7 @@ func TestRestartBuild(t *testing.T) {
 
 			success, resp, err := org.RestartBuild(context.Background(), tt.args.projectUUID, tt.args.buildUUID)
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
@@ -278,7 +278,7 @@ func TestRestartBuild(t *testing.T) {
 				return
 			}
 
-			assert.NoError(err)
+			require.NoError(err)
 			assert.True(success)
 		})
 	}

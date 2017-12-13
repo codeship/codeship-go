@@ -211,7 +211,7 @@ func TestGetProject(t *testing.T) {
 
 			project, resp, err := org.GetProject(context.Background(), tt.args.projectUUID)
 
-			assert.NotNil(resp)
+			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
 			if tt.err != nil {
