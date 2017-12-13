@@ -6,4 +6,4 @@ RUN apk update && apk add make && apk add git
 
 ADD . /go/src/github.com/codeship/codeship-go/
 WORKDIR /go/src/github.com/codeship/codeship-go
-RUN make setup build
+RUN make setup
