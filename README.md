@@ -123,7 +123,8 @@ This project uses [dep](https://github.com/golang/dep) for dependency management
 To install/update dep and all dependencies, run:
 
 ```bash
-make setup
+$ make setup
+$ make dep
 ```
 
 ### Testing
