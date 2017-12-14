@@ -2,6 +2,8 @@
 
 [![Codeship Status for codeship/codeship-go](https://app.codeship.com/projects/c38f3280-792b-0135-21bb-4e0cf8ff365b/status?branch=master)](https://app.codeship.com/projects/244943)
 
+Codeship [API v2](https://apidocs.codeship.com/v2) client for Golang
+
 ## Usage
 
 `go get -u github.com/codeship/codeship-go`
