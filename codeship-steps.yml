@@ -5,7 +5,7 @@
     command: make ci
   - service: go1.8
     name: "1.8 build"
-    command: make build
+    command: make ci
   - service: go1.10rc
     name: "1.10rc build"
-    command: make build
+    command: make ci

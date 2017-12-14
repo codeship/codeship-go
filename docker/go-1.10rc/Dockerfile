@@ -5,3 +5,4 @@ RUN mkdir -p /go/src/github.com/codeship/codeship-go
 
 ADD . /go/src/github.com/codeship/codeship-go/
 WORKDIR /go/src/github.com/codeship/codeship-go
+RUN make setup
