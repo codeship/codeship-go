@@ -57,9 +57,9 @@ type DeploymentBranch struct {
 
 // DeploymentPipeline structure for DeploymentPipeline object for a Basic Project
 type DeploymentPipeline struct {
-	Branch   DeploymentBranch `json:"branch,omitempty"`
-	Config   []string         `json:"config,omitempty"`
-	Position int              `json:"position,omitempty"`
+	Branch   DeploymentBranch       `json:"branch,omitempty"`
+	Config   map[string]interface{} `json:"config,omitempty"`
+	Position int                    `json:"position,omitempty"`
 }
 
 // EnvironmentVariable structure for EnvironmentVariable object for a Basic Project
