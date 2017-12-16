@@ -65,7 +65,7 @@ Usage is as follows:
 
 ```go
 // defaults to first page with page_size of 30
-projects, resp, err := org.ListProjects()
+projects, resp, err := org.ListProjects(ctx)
 
 // paging forwards with 50 results per page
 for {
@@ -75,7 +75,7 @@ for {
 
     next, _ := resp.NextPage()
 
-    projects, resp, _ = org.ListProjects(codeship.Page(next), codeship.PerPage(50))
+    projects, resp, _ = org.ListProjects(ctx, codeship.Page(next), codeship.PerPage(50))
 }
 
 // paging backwards with 50 results per page
@@ -86,7 +86,7 @@ for {
 
     prev, _ := resp.PreviousPage()
 
-    projects, resp, _ = org.ListProjects(codeship.Page(prev), codeship.PerPage(50))
+    projects, resp, _ = org.ListProjects(ctx, codeship.Page(prev), codeship.PerPage(50))
 }
 ```
 
