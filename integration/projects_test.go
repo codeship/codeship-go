@@ -11,6 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	projectName = "codeship/codeship-go"
+	projectUUID = "c38f3280-792b-0135-21bb-4e0cf8ff365b"
+)
+
 func TestListProjects(t *testing.T) {
 	setup()
 
