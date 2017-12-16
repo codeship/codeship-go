@@ -15,4 +15,5 @@
 
 - service: integration
   name: "integration tests"
+  tag: master
   command: go test -tags integration -v ./integration/...
