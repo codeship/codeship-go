@@ -1,6 +1,7 @@
 # Codeship API (v2) Client for Go
 
 [![Codeship Status for codeship/codeship-go](https://app.codeship.com/projects/c38f3280-792b-0135-21bb-4e0cf8ff365b/status?branch=master)](https://app.codeship.com/projects/244943)
+[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
 Codeship [API v2](https://apidocs.codeship.com/v2) client for Golang
 
