@@ -116,7 +116,7 @@ func TestAuthenticate(t *testing.T) {
 			mux.HandleFunc("/auth", tt.handler)
 
 			client, _ = codeship.New("username", "password", codeship.BaseURL(server.URL))
-			org, _ = client.Scope(context.Background(), "codeship")
+			org, _ = client.Organization(context.Background(), "codeship")
 
 			defer func() {
 				server.Close()

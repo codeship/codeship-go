@@ -142,8 +142,8 @@ func New(username, password string, opts ...Option) (*Client, error) {
 	return client, nil
 }
 
-// Scope scopes a client to a single Organization, allowing the user to make calls to the API
-func (c *Client) Scope(ctx context.Context, name string) (*Organization, error) {
+// Organization scopes a client to a single Organization, allowing the user to make calls to the API
+func (c *Client) Organization(ctx context.Context, name string) (*Organization, error) {
 	if c.AuthenticationRequired() {
 		if _, err := c.Authenticate(ctx); err != nil {
 			return nil, err

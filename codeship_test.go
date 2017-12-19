@@ -41,7 +41,7 @@ func setup() func() {
 	})
 
 	client, _ = codeship.New("test", "pass", codeship.BaseURL(server.URL))
-	org, _ = client.Scope(context.Background(), "codeship")
+	org, _ = client.Organization(context.Background(), "codeship")
 
 	return func() {
 		server.Close()
@@ -262,7 +262,7 @@ func TestScope(t *testing.T) {
 			mux.HandleFunc("/auth", tt.handler)
 
 			c, _ := codeship.New("username", "password", codeship.BaseURL(server.URL))
-			got, err := c.Scope(context.Background(), tt.args.name)
+			got, err := c.Organization(context.Background(), tt.args.name)
 
 			if tt.err != nil {
 				require.Error(err)
@@ -307,7 +307,7 @@ func TestVerboseLogger(t *testing.T) {
 		codeship.Logger(logger),
 	)
 
-	org, err = c.Scope(context.Background(), "codeship")
+	org, err = c.Organization(context.Background(), "codeship")
 
 	assert := assert.New(t)
 	require := require.New(t)
