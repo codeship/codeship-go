@@ -18,13 +18,14 @@ func TestListBuilds(t *testing.T) {
 	require.NotZero(t, resp)
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
-	build := builds.Builds[0]
-	assert.Equal(t, organizationUUID, build.OrganizationUUID)
-	assert.Equal(t, proProjectUUID, build.ProjectUUID)
-	assert.NotEmpty(t, build.UUID)
-	assert.NotZero(t, build.AllocatedAt)
-	assert.NotZero(t, build.QueuedAt)
-	assert.NotZero(t, build.FinishedAt)
+	for _, build := range builds.Builds {
+		assert.Equal(t, organizationUUID, build.OrganizationUUID)
+		assert.Equal(t, proProjectUUID, build.ProjectUUID)
+		assert.NotEmpty(t, build.UUID)
+		assert.NotZero(t, build.AllocatedAt)
+		assert.NotZero(t, build.QueuedAt)
+		assert.NotZero(t, build.FinishedAt)
+	}
 }
 
 func TestGetBuild(t *testing.T) {
@@ -66,10 +67,11 @@ func TestListBuildPipelines(t *testing.T) {
 	require.NotZero(t, resp)
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
-	pipeline := pipelines.Pipelines[0]
-	assert.NotEmpty(t, pipeline)
-	assert.Equal(t, build.UUID, pipeline.BuildUUID)
-	assert.NotEmpty(t, pipeline.UUID)
+	for _, pipeline := range pipelines.Pipelines {
+		assert.NotEmpty(t, pipeline)
+		assert.Equal(t, build.UUID, pipeline.BuildUUID)
+		assert.NotEmpty(t, pipeline.UUID)
+	}
 }
 
 func TestListBuildServices(t *testing.T) {
@@ -90,11 +92,12 @@ func TestListBuildServices(t *testing.T) {
 	require.NotZero(t, resp)
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
-	service := services.Services[0]
-	assert.NotEmpty(t, service)
-	assert.Equal(t, build.UUID, service.BuildUUID)
-	assert.NotEmpty(t, service.UUID)
-	assert.NotEmpty(t, service.Name)
+	for _, service := range services.Services {
+		assert.NotEmpty(t, service)
+		assert.Equal(t, build.UUID, service.BuildUUID)
+		assert.NotEmpty(t, service.UUID)
+		assert.NotEmpty(t, service.Name)
+	}
 }
 
 func TestListBuildSteps(t *testing.T) {
@@ -115,9 +118,10 @@ func TestListBuildSteps(t *testing.T) {
 	require.NotZero(t, resp)
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
-	step := steps.Steps[0]
-	assert.NotEmpty(t, step)
-	assert.Equal(t, build.UUID, step.BuildUUID)
-	assert.NotEmpty(t, step.UUID)
-	assert.NotEmpty(t, step.Name)
+	for _, step := range steps.Steps {
+		assert.NotEmpty(t, step)
+		assert.Equal(t, build.UUID, step.BuildUUID)
+		assert.NotEmpty(t, step.UUID)
+		assert.NotEmpty(t, step.Name)
+	}
 }
