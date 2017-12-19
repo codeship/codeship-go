@@ -11,27 +11,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	projectName = "codeship/codeship-go"
-	projectUUID = "c38f3280-792b-0135-21bb-4e0cf8ff365b"
-)
-
 func TestListProjects(t *testing.T) {
 	setup()
 
-	projects, resp, err := org.ListProjects(context.Background())
+	p, resp, err := org.ListProjects(context.Background())
 	require.NoError(t, err)
-	require.NotZero(t, projects)
+	require.NotZero(t, p)
 	require.NotZero(t, resp)
+	require.Equal(t, http.StatusOK, resp.StatusCode)
 
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.NotEmpty(t, projects.Projects)
+	assert.NotEmpty(t, p.Projects)
+	projects := p.Projects
 
 	for {
-		for _, p := range projects.Projects {
+		for _, project := range projects {
 			// found our project
-			if p.Name == projectName {
-				assert.Equal(t, p.UUID, projectUUID)
+			if project.UUID == proProjectUUID {
 				return
 			}
 		}
@@ -46,21 +41,23 @@ func TestListProjects(t *testing.T) {
 
 		// so we don't hit our rate limit as fast
 		time.Sleep(1 * time.Second)
-		projects, resp, _ = org.ListProjects(context.Background(), codeship.Page(next))
+		p, resp, _ = org.ListProjects(context.Background(), codeship.Page(next))
+		projects = p.Projects
 	}
 }
 
 func TestGetProject(t *testing.T) {
 	setup()
 
-	project, resp, err := org.GetProject(context.Background(), projectUUID)
+	project, resp, err := org.GetProject(context.Background(), proProjectUUID)
 	require.NoError(t, err)
 	require.NotZero(t, project)
 	require.NotZero(t, resp)
+	require.Equal(t, http.StatusOK, resp.StatusCode)
 
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
-	assert.Equal(t, project.UUID, projectUUID)
-	assert.Equal(t, project.Name, projectName)
+	assert.Equal(t, organizationUUID, project.OrganizationUUID)
+	assert.Equal(t, proProjectUUID, project.UUID)
+	assert.Equal(t, proProjectName, project.Name)
 	assert.NotZero(t, project.CreatedAt)
 	assert.NotZero(t, project.UpdatedAt)
 }
