@@ -22,9 +22,6 @@ func TestListBuilds(t *testing.T) {
 		assert.Equal(t, organizationUUID, build.OrganizationUUID)
 		assert.Equal(t, proProjectUUID, build.ProjectUUID)
 		assert.NotEmpty(t, build.UUID)
-		assert.NotZero(t, build.AllocatedAt)
-		assert.NotZero(t, build.QueuedAt)
-		assert.NotZero(t, build.FinishedAt)
 	}
 }
 
