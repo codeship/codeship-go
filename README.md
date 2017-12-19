@@ -31,7 +31,7 @@ client, err := codeship.New("username", "password")
 You must then scope the client to a single Organization that you have access to:
 
 ```go
-org, err := client.Scope(ctx, "codeship")
+org, err := client.Organization(ctx, "codeship")
 ```
 
 You can then perform calls to the API on behalf of an Organization:
