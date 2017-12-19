@@ -46,7 +46,7 @@ ci: lint test ## Run all the tests and code checks
 
 .PHONY: build
 build: ## Build a version
-	CGO_ENABLED=0 go build -v $(GOPACKAGES)
+	CGO_ENABLED=0 go build $(GOPACKAGES)
 
 .PHONY: clean
 clean: ## Remove temporary files

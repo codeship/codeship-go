@@ -1,11 +1,19 @@
 - type: parallel
   steps:
   - service: go1.9
+    name: "lint"
+    command: make setup lint
+  - service: go1.9
     name: "1.9 test"
-    command: make ci
+    command: make test
   - service: go1.8
-    name: "1.8 build"
-    command: make ci
+    name: "1.8 test"
+    command: make test
   - service: go1.10rc
-    name: "1.10rc build"
-    command: make ci
+    name: "1.10rc test"
+    command: make test
+
+- service: integration
+  name: "integration tests"
+  tag: master
+  command: go test -tags integration -v ./integration/...

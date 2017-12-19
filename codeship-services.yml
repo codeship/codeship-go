@@ -1,3 +1,7 @@
+integration:
+  build: ./
+  encrypted_env_file: integration.env.encrypted
+
 go1.9:
   build: ./
 
