@@ -8,8 +8,8 @@ import (
 // Option is a functional option for configuring the API client
 type Option func(*Client) error
 
-// HTTPClient accepts a custom *http.Client for making API calls
-func HTTPClient(client *http.Client) Option {
+// HttpClient accepts a custom HTTPClient for making API calls
+func HttpClient(client HTTPClient) Option {
 	return func(c *Client) error {
 		c.httpClient = client
 		return nil

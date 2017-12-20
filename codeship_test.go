@@ -233,3 +233,23 @@ func TestVerboseLogger(t *testing.T) {
 	require.NotNil(org)
 	assert.True(buf.Len() > 0)
 }
+
+type mockHttpClient func(*http.Request) (*http.Response, error)
+
+func (m mockHttpClient) Do(r *http.Request) (*http.Response, error) {
+	return m(r)
+}
+
+func TestNilResponse(t *testing.T) {
+	c, _ := codeship.New("username", "password",
+		codeship.HttpClient(mockHttpClient(func(*http.Request) (*http.Response, error) {
+			return nil, nil
+		})),
+	)
+
+	_, err := c.Organization(context.Background(), "codeship")
+
+	assert := assert.New(t)
+
+	assert.EqualError(err, "authentication failed: nil response")
+}
