@@ -23,12 +23,6 @@ var (
 	org    *codeship.Organization
 )
 
-type optionalString *string
-
-func newOptionalString(value string) optionalString {
-	return &value
-}
-
 func setup() func() {
 	mux = http.NewServeMux()
 	server = httptest.NewServer(mux)
