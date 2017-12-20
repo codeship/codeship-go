@@ -26,7 +26,8 @@ This library exposes the package `codeship`.
 Getting a new API Client from it is done by calling `codeship.New()`:
 
 ```go
-client, err := codeship.New("username", "password")
+auth := codeship.NewBasicAuth("username", "password")
+client, err := codeship.New(auth)
 ```
 
 You must then scope the client to a single Organization that you have access to:
@@ -95,7 +96,8 @@ for {
 You can enable verbose logging of all HTTP requests/responses by configuring the `client` via the functional option `Verbose(verbose bool)` when instantiating the client:
 
 ```go
-client, err := codeship.New("username", "password", codeship.Verbose(true))
+auth := codeship.NewBasicAuth("username", "password")
+client, err := codeship.New(auth, codeship.Verbose(true))
 ```
 
 The default logger logs to STDOUT but can be replaced by any instance of `*log.Logger`:
@@ -104,9 +106,10 @@ The default logger logs to STDOUT but can be replaced by any instance of `*log.L
 var (
     buf    bytes.Buffer
     logger = log.New(&buf, "INFO: ", log.Lshortfile)
+    auth   = codeship.NewBasicAuth("username", "password")
 )
 
-client, err := codeship.New("username", "password", codeship.Verbose(true), codeship.Logger(logger))
+client, err := codeship.New(auth, codeship.Verbose(true), codeship.Logger(logger))
 ```
 
 ## Documentation

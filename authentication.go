@@ -30,7 +30,7 @@ type Authentication struct {
 func (c *Client) Authenticate(ctx context.Context) (Response, error) {
 	path := "/auth"
 	req, _ := http.NewRequest("POST", c.baseURL+path, nil)
-	req.SetBasicAuth(c.Username, c.Password)
+	c.authenticator.SetAuth(req)
 	req.Header.Set("Content-Type", "application/json")
 
 	c.authentication = Authentication{}
