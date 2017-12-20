@@ -129,6 +129,8 @@ type buildRequest struct {
 }
 
 // CreateBuild creates a new build
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/builds/create-build
 func (o *Organization) CreateBuild(ctx context.Context, projectUUID, ref, commitSha string) (bool, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID)
 
@@ -144,6 +146,8 @@ func (o *Organization) CreateBuild(ctx context.Context, projectUUID, ref, commit
 }
 
 // GetBuild fetches a build by UUID
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/builds/get-build
 func (o *Organization) GetBuild(ctx context.Context, projectUUID, buildUUID string) (Build, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s", o.UUID, projectUUID, buildUUID)
 
@@ -160,7 +164,9 @@ func (o *Organization) GetBuild(ctx context.Context, projectUUID, buildUUID stri
 	return build.Build, resp, nil
 }
 
-// ListBuilds fetches a list of builds for the given organization
+// ListBuilds fetches a list of builds
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/builds/list-builds
 func (o *Organization) ListBuilds(ctx context.Context, projectUUID string, opts ...PaginationOption) (BuildList, Response, error) {
 	path, err := paginate(fmt.Sprintf("/organizations/%s/projects/%s/builds", o.UUID, projectUUID), opts...)
 	if err != nil {
@@ -181,6 +187,8 @@ func (o *Organization) ListBuilds(ctx context.Context, projectUUID string, opts 
 }
 
 // ListBuildPipelines lists Basic build pipelines
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/builds/get-build-pipelines
 func (o *Organization) ListBuildPipelines(ctx context.Context, projectUUID, buildUUID string, opts ...PaginationOption) (BuildPipelines, Response, error) {
 	path, err := paginate(fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID), opts...)
 	if err != nil {
@@ -201,6 +209,8 @@ func (o *Organization) ListBuildPipelines(ctx context.Context, projectUUID, buil
 }
 
 // StopBuild stops a running build
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/builds/stop-build
 func (o *Organization) StopBuild(ctx context.Context, projectUUID, buildUUID string) (bool, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/stop", o.UUID, projectUUID, buildUUID)
 
@@ -213,6 +223,8 @@ func (o *Organization) StopBuild(ctx context.Context, projectUUID, buildUUID str
 }
 
 // RestartBuild restarts a previous build
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/builds/restart-build
 func (o *Organization) RestartBuild(ctx context.Context, projectUUID, buildUUID string) (bool, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/restart", o.UUID, projectUUID, buildUUID)
 
@@ -225,6 +237,8 @@ func (o *Organization) RestartBuild(ctx context.Context, projectUUID, buildUUID 
 }
 
 // ListBuildServices lists Pro build services
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/builds/get-build-services
 func (o *Organization) ListBuildServices(ctx context.Context, projectUUID, buildUUID string, opts ...PaginationOption) (BuildServices, Response, error) {
 	path, err := paginate(fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/services", o.UUID, projectUUID, buildUUID), opts...)
 	if err != nil {
@@ -245,6 +259,8 @@ func (o *Organization) ListBuildServices(ctx context.Context, projectUUID, build
 }
 
 // ListBuildSteps lists Pro build steps
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/builds/get-build-steps
 func (o *Organization) ListBuildSteps(ctx context.Context, projectUUID, buildUUID string, opts ...PaginationOption) (BuildSteps, Response, error) {
 	path, err := paginate(fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/steps", o.UUID, projectUUID, buildUUID), opts...)
 	if err != nil {

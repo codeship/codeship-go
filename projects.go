@@ -13,7 +13,9 @@ import (
 type ProjectType int
 
 const (
+	// ProjectTypeBasic respresents a Codeship Basic project type
 	ProjectTypeBasic ProjectType = iota
+	// ProjectTypePro represents a Codeship Pro project type
 	ProjectTypePro
 )
 
@@ -144,6 +146,8 @@ type projectResponse struct {
 }
 
 // ListProjects fetches a list of projects
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/projects/list-projects
 func (o *Organization) ListProjects(ctx context.Context, opts ...PaginationOption) (ProjectList, Response, error) {
 	path, err := paginate(fmt.Sprintf("/organizations/%s/projects", o.UUID), opts...)
 	if err != nil {
@@ -164,6 +168,8 @@ func (o *Organization) ListProjects(ctx context.Context, opts ...PaginationOptio
 }
 
 // GetProject fetches a project by UUID
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/projects/get-project
 func (o *Organization) GetProject(ctx context.Context, projectUUID string) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
@@ -181,6 +187,8 @@ func (o *Organization) GetProject(ctx context.Context, projectUUID string) (Proj
 }
 
 // CreateProject creates a new project
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/projects/create-project
 func (o *Organization) CreateProject(ctx context.Context, p ProjectCreateRequest) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects", o.UUID)
 
@@ -198,6 +206,8 @@ func (o *Organization) CreateProject(ctx context.Context, p ProjectCreateRequest
 }
 
 // UpdateProject updates an existing project
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/projects/update-project
 func (o *Organization) UpdateProject(ctx context.Context, projectUUID string, p ProjectUpdateRequest) (Project, Response, error) {
 	path := fmt.Sprintf("/organizations/%s/projects/%s", o.UUID, projectUUID)
 
