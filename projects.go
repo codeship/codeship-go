@@ -13,7 +13,7 @@ import (
 type ProjectType int
 
 const (
-	// ProjectTypeBasic respresents a Codeship Basic project type
+	// ProjectTypeBasic represents a Codeship Basic project type
 	ProjectTypeBasic ProjectType = iota
 	// ProjectTypePro represents a Codeship Pro project type
 	ProjectTypePro
