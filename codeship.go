@@ -89,9 +89,8 @@ const apiURL = "https://api.codeship.com/v2"
 
 // Client holds information necessary to make a request to the Codeship API
 type Client struct {
-	Username       string
-	Password       string
 	baseURL        string
+	authenticator  Authenticator
 	authentication Authentication
 	headers        http.Header
 	httpClient     *http.Client
@@ -100,24 +99,15 @@ type Client struct {
 }
 
 // New creates a new Codeship API client
-func New(username, password string, opts ...Option) (*Client, error) {
-	if username == "" {
-		username = os.Getenv("CODESHIP_USERNAME")
-	}
-
-	if password == "" {
-		password = os.Getenv("CODESHIP_PASSWORD")
-	}
-
-	if username == "" || password == "" {
-		return nil, errors.New("missing username or password")
+func New(auth Authenticator, opts ...Option) (*Client, error) {
+	if auth == nil {
+		return nil, errors.New("no authenticator provided")
 	}
 
 	client := &Client{
-		Username: username,
-		Password: password,
-		baseURL:  apiURL,
-		headers:  make(http.Header),
+		authenticator: auth,
+		baseURL:       apiURL,
+		headers:       make(http.Header),
 	}
 
 	if err := client.parseOptions(opts...); err != nil {

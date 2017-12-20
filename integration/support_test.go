@@ -37,7 +37,7 @@ func setup() {
 		panic("CODESHIP_PASSWORD required")
 	}
 
-	client, err := codeship.New(user, password)
+	client, err := codeship.New(codeship.NewBasicAuth(user, password))
 	if err != nil {
 		panic(err)
 	}

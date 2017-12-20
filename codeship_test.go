@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	codeship "github.com/codeship/codeship-go"
@@ -24,12 +23,6 @@ var (
 	org    *codeship.Organization
 )
 
-type optionalString *string
-
-func newOptionalString(value string) optionalString {
-	return &value
-}
-
 func setup() func() {
 	mux = http.NewServeMux()
 	server = httptest.NewServer(mux)
@@ -40,7 +33,7 @@ func setup() func() {
 		fmt.Fprint(w, fixture("auth/success.json"))
 	})
 
-	client, _ = codeship.New("test", "pass", codeship.BaseURL(server.URL))
+	client, _ = codeship.New(codeship.NewBasicAuth("test", "pass"), codeship.BaseURL(server.URL))
 	org, _ = client.Organization(context.Background(), "codeship")
 
 	return func() {
@@ -58,81 +51,31 @@ func fixture(path string) string {
 
 func TestNew(t *testing.T) {
 	type args struct {
-		username string
-		password string
-		opts     []codeship.Option
-	}
-	type env struct {
-		username optionalString
-		password optionalString
+		auth codeship.Authenticator
+		opts []codeship.Option
 	}
 	tests := []struct {
 		name string
 		args args
-		env  env
 		err  error
 	}{
 		{
-			name: "requires username",
+			name: "basic auth happy path",
 			args: args{
-				username: "",
-				password: "foo",
-			},
-			err: errors.New("missing username or password"),
-		},
-		{
-			name: "requires password",
-			args: args{
-				username: "foo",
-				password: "",
-			},
-			err: errors.New("missing username or password"),
-		},
-		{
-			name: "prefers username param",
-			args: args{
-				username: "foo",
-				password: "bar",
-			},
-			env: env{
-				username: newOptionalString("baz"),
+				auth: codeship.NewBasicAuth("foo", "bar"),
 			},
 		},
 		{
-			name: "prefers password param",
+			name: "requires authenticator",
 			args: args{
-				username: "foo",
-				password: "bar",
+				auth: nil,
 			},
-			env: env{
-				password: newOptionalString("baz"),
-			},
-		},
-		{
-			name: "uses env username if not passed in",
-			args: args{
-				username: "",
-				password: "bar",
-			},
-			env: env{
-				username: newOptionalString("baz"),
-			},
-		},
-		{
-			name: "uses env password if not passed in",
-			args: args{
-				username: "foo",
-				password: "",
-			},
-			env: env{
-				password: newOptionalString("baz"),
-			},
+			err: errors.New("no authenticator provided"),
 		},
 		{
 			name: "handles error option func",
 			args: args{
-				username: "foo",
-				password: "bar",
+				auth: codeship.NewBasicAuth("foo", "bar"),
 				opts: []codeship.Option{
 					func(*codeship.Client) error {
 						return errors.New("boom")
@@ -143,45 +86,18 @@ func TestNew(t *testing.T) {
 		},
 	}
 
-	assert := assert.New(t)
-	require := require.New(t)
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			defer func() {
-				_ = os.Unsetenv("CODESHIP_USERNAME")
-				_ = os.Unsetenv("CODESHIP_PASSWORD")
-			}()
-
-			if tt.env.username != nil {
-				_ = os.Setenv("CODESHIP_USERNAME", *tt.env.username)
-			}
-			if tt.env.password != nil {
-				_ = os.Setenv("CODESHIP_PASSWORD", *tt.env.password)
-			}
-
-			got, err := codeship.New(tt.args.username, tt.args.password, tt.args.opts...)
+			got, err := codeship.New(tt.args.auth, tt.args.opts...)
 
 			if tt.err != nil {
-				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				require.Error(t, err)
+				assert.EqualError(t, tt.err, err.Error())
 				return
 			}
 
-			require.NoError(err)
-			require.NotNil(got)
-
-			if tt.env.username != nil && tt.args.username == "" {
-				assert.Equal(*tt.env.username, got.Username)
-			} else {
-				assert.Equal(tt.args.username, got.Username)
-			}
-
-			if tt.env.password != nil && tt.args.password == "" {
-				assert.Equal(*tt.env.password, got.Password)
-			} else {
-				assert.Equal(tt.args.password, got.Password)
-			}
+			require.NoError(t, err)
+			require.NotNil(t, got)
 		})
 	}
 }
@@ -261,7 +177,7 @@ func TestScope(t *testing.T) {
 
 			mux.HandleFunc("/auth", tt.handler)
 
-			c, _ := codeship.New("username", "password", codeship.BaseURL(server.URL))
+			c, _ := codeship.New(codeship.NewBasicAuth("username", "password"), codeship.BaseURL(server.URL))
 			got, err := c.Organization(context.Background(), tt.args.name)
 
 			if tt.err != nil {
@@ -301,7 +217,8 @@ func TestVerboseLogger(t *testing.T) {
 
 	logger := log.New(&buf, "INFO: ", log.Lshortfile)
 
-	c, _ := codeship.New("username", "password",
+	c, _ := codeship.New(
+		codeship.NewBasicAuth("username", "password"),
 		codeship.BaseURL(server.URL),
 		codeship.Verbose(true),
 		codeship.Logger(logger),

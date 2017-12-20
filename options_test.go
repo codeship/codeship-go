@@ -38,7 +38,7 @@ func TestHTTPClient(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			codeship, err := New("username", "password", HTTPClient(tt.args.client))
+			codeship, err := New(NewBasicAuth("username", "password"), HTTPClient(tt.args.client))
 
 			require.NoError(err)
 			assert.Equal(codeship.httpClient, tt.want)
@@ -75,7 +75,7 @@ func TestHeaders(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			codeship, err := New("username", "password", Headers(tt.args.headers))
+			codeship, err := New(NewBasicAuth("username", "password"), Headers(tt.args.headers))
 
 			require.NoError(err)
 			assert.Equal(codeship.headers, tt.want)
@@ -106,7 +106,7 @@ func TestBaseURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			codeship, err := New("username", "password", BaseURL(tt.args.baseURL))
+			codeship, err := New(NewBasicAuth("username", "password"), BaseURL(tt.args.baseURL))
 
 			require.NoError(err)
 			assert.Equal(codeship.baseURL, tt.want)
@@ -137,7 +137,7 @@ func TestLogger(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			codeship, err := New("username", "password", Logger(tt.args.logger))
+			codeship, err := New(NewBasicAuth("username", "password"), Logger(tt.args.logger))
 
 			require.NoError(err)
 			assert.Equal(codeship.logger, tt.want)
@@ -175,7 +175,7 @@ func TestVerbose(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			codeship, err := New("username", "password", Verbose(tt.args.verbose))
+			codeship, err := New(NewBasicAuth("username", "password"), Verbose(tt.args.verbose))
 
 			require.NoError(err)
 			assert.Equal(codeship.verbose, tt.want)
