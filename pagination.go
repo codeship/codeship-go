@@ -62,6 +62,8 @@ func paginate(path string, opts ...PaginationOption) (string, error) {
 }
 
 // Links contain links for pagination purposes
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/introduction/pagination
 type Links struct {
 	Next     string
 	Previous string

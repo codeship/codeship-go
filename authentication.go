@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// ErrUnauthorized represents an unauthorized request to the API
+// ErrUnauthorized occurs when Codeship returns a 401 Unauthorized response
 type ErrUnauthorized string
 
 func (e ErrUnauthorized) Error() string {
@@ -27,6 +27,8 @@ type Authentication struct {
 }
 
 // Authenticate swaps username/password for an authentication token
+//
+// Codeship API docs: https://apidocs.codeship.com/v2/authentication/authentication-endpoint
 func (c *Client) Authenticate(ctx context.Context) (Response, error) {
 	path := "/auth"
 	req, _ := http.NewRequest("POST", c.baseURL+path, nil)

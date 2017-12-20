@@ -9,21 +9,13 @@ Codeship [API v2](https://apidocs.codeship.com/v2) client for Golang
 
 `go get -u github.com/codeship/codeship-go`
 
-This library is intended to make integrating with Codeship fairly simple.
-
-To start, you need to import the package:
+Package `codeship` provides a client for using the Codeship API v2.
 
 ```go
-package main
-
-import (
-    codeship "github.com/codeship/codeship-go"
-)
+import codeship "github.com/codeship/codeship-go"
 ```
 
-This library exposes the package `codeship`.
-
-Getting a new API Client from it is done by calling `codeship.New()`:
+Create a new API Client:
 
 ```go
 client, err := codeship.New("username", "password")
@@ -126,8 +118,8 @@ This project uses [dep](https://github.com/golang/dep) for dependency management
 To install/update dep and all dependencies, run:
 
 ```bash
-$ make setup
-$ make dep
+make setup
+make dep
 ```
 
 ### Testing
