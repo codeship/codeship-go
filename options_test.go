@@ -11,14 +11,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHTTPClient(t *testing.T) {
+func TestHttpClient(t *testing.T) {
 	type args struct {
-		client *http.Client
+		client HTTPClient
 	}
 	tests := []struct {
 		name string
 		args args
-		want *http.Client
+		want HTTPClient
 	}{
 		{
 			name: "sets client successfully",
@@ -38,7 +38,7 @@ func TestHTTPClient(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			codeship, err := New(NewBasicAuth("username", "password"), HTTPClient(tt.args.client))
+			codeship, err := New(NewBasicAuth("username", "password"), HttpClient(tt.args.client))
 
 			require.NoError(err)
 			assert.Equal(codeship.httpClient, tt.want)

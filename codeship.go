@@ -87,13 +87,18 @@ func newResponse(r *http.Response) Response {
 
 const apiURL = "https://api.codeship.com/v2"
 
+// HTTPClient is an interface allowing custom implementations of http clients
+type HTTPClient interface {
+	Do(*http.Request) (*http.Response, error)
+}
+
 // Client holds information necessary to make a request to the Codeship API
 type Client struct {
 	baseURL        string
 	authenticator  Authenticator
 	authentication Authentication
 	headers        http.Header
-	httpClient     *http.Client
+	httpClient     HTTPClient
 	logger         *log.Logger
 	verbose        bool
 }
@@ -206,13 +211,19 @@ func (c *Client) do(req *http.Request) ([]byte, Response, error) {
 		return nil, Response{}, errors.Wrap(err, "HTTP request failed")
 	}
 
+	if resp == nil {
+		return nil, Response{}, errors.New("nil response")
+	}
+
 	if c.verbose {
 		dumpResp, _ := httputil.DumpResponse(resp, true)
 		c.logger.Println(string(dumpResp))
 	}
 
 	defer func() {
-		_ = resp.Body.Close()
+		if resp != nil {
+			_ = resp.Body.Close()
+		}
 	}()
 
 	response := newResponse(resp)
