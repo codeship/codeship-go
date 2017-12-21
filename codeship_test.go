@@ -234,23 +234,18 @@ func TestVerboseLogger(t *testing.T) {
 	assert.True(buf.Len() > 0)
 }
 
-type mockHttpClient func(*http.Request) (*http.Response, error)
+type nilResponder func(*http.Request) (*http.Response, error)
 
-func (m mockHttpClient) Do(r *http.Request) (*http.Response, error) {
-	return m(r)
+func (n nilResponder) Do(r *http.Request) (*http.Response, error) {
+	return nil, nil
 }
 
 func TestNilResponse(t *testing.T) {
 	auth := codeship.NewBasicAuth("username", "password")
-	c, _ := codeship.New(auth,
-		codeship.HttpClient(mockHttpClient(func(*http.Request) (*http.Response, error) {
-			return nil, nil
-		})),
-	)
+	c, _ := codeship.New(auth, codeship.HttpClient(new(nilResponder)))
 
 	_, err := c.Organization(context.Background(), "codeship")
 
 	assert := assert.New(t)
-
 	assert.EqualError(err, "authentication failed: nil response")
 }
