@@ -241,7 +241,8 @@ func (m mockHttpClient) Do(r *http.Request) (*http.Response, error) {
 }
 
 func TestNilResponse(t *testing.T) {
-	c, _ := codeship.New("username", "password",
+	auth := codeship.NewBasicAuth("username", "password")
+	c, _ := codeship.New(auth,
 		codeship.HttpClient(mockHttpClient(func(*http.Request) (*http.Response, error) {
 			return nil, nil
 		})),
