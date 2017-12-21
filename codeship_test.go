@@ -57,7 +57,7 @@ func TestNew(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		err  error
+		err  string
 	}{
 		{
 			name: "basic auth happy path",
@@ -70,7 +70,7 @@ func TestNew(t *testing.T) {
 			args: args{
 				auth: nil,
 			},
-			err: errors.New("no authenticator provided"),
+			err: "no authenticator provided",
 		},
 		{
 			name: "handles error option func",
@@ -82,27 +82,30 @@ func TestNew(t *testing.T) {
 					},
 				},
 			},
-			err: errors.New("options parsing failed: boom"),
+			err: "options parsing failed: boom",
 		},
 	}
+
+	assert := assert.New(t)
+	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := codeship.New(tt.args.auth, tt.args.opts...)
 
-			if tt.err != nil {
-				require.Error(t, err)
-				assert.EqualError(t, tt.err, err.Error())
+			if tt.err != "" {
+				require.Error(err)
+				assert.EqualError(err, tt.err)
 				return
 			}
 
-			require.NoError(t, err)
-			require.NotNil(t, got)
+			require.NoError(err)
+			require.NotNil(got)
 		})
 	}
 }
 
-func TestScope(t *testing.T) {
+func TestOrganization(t *testing.T) {
 	type args struct {
 		name string
 	}
@@ -111,7 +114,7 @@ func TestScope(t *testing.T) {
 		handler http.HandlerFunc
 		args    args
 		want    *codeship.Organization
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -146,7 +149,7 @@ func TestScope(t *testing.T) {
 			args: args{
 				name: "codeship",
 			},
-			err: errors.New("authentication failed: invalid credentials"),
+			err: "authentication failed: invalid credentials",
 		},
 		{
 			name: "wrong organization",
@@ -159,7 +162,16 @@ func TestScope(t *testing.T) {
 			args: args{
 				name: "foo",
 			},
-			err: errors.New("organization 'foo' not authorized. Authorized organizations: [{codeship 28123f10-e33d-5533-b53f-111ef8d7b14f [project.read project.write build.read build.write]}]"),
+			err: "organization 'foo' not authorized. Authorized organizations: [{codeship 28123f10-e33d-5533-b53f-111ef8d7b14f [project.read project.write build.read build.write]}]",
+		},
+		{
+			name: "empty organization",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+			},
+			args: args{
+				name: "",
+			},
+			err: "no organization provided",
 		},
 	}
 
@@ -180,9 +192,9 @@ func TestScope(t *testing.T) {
 			c, _ := codeship.New(codeship.NewBasicAuth("username", "password"), codeship.BaseURL(server.URL))
 			got, err := c.Organization(context.Background(), tt.args.name)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.Equal(tt.err.Error(), err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
