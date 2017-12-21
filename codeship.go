@@ -135,7 +135,7 @@ func New(auth Authenticator, opts ...Option) (*Client, error) {
 // Organization scopes a client to a single Organization, allowing the user to make calls to the API
 func (c *Client) Organization(ctx context.Context, name string) (*Organization, error) {
 	if name == "" {
-		return nil, errors.New("no organization provided")
+		return nil, errors.New("no organization name provided")
 	}
 
 	if c.AuthenticationRequired() {

@@ -171,7 +171,7 @@ func TestOrganization(t *testing.T) {
 			args: args{
 				name: "",
 			},
-			err: "no organization provided",
+			err: "no organization name provided",
 		},
 	}
 
