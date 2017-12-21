@@ -13,7 +13,8 @@ Usage:
 
 Create a new API Client:
 
-    client, err := codeship.New("username", "password")
+    auth := codeship.NewBasicAuth("username", "password")
+    client, err := codeship.New(auth)
 
 You must then scope the client to a single Organization that you have access to:
 
