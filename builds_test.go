@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/codeship/codeship-go"
-	"github.com/pkg/errors"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +23,7 @@ func TestCreateBuild(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -61,7 +60,7 @@ func TestCreateBuild(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "project"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to create build: project not found"),
+			err:    "unable to create build: project not found",
 		},
 		{
 			name: "bad request",
@@ -80,7 +79,7 @@ func TestCreateBuild(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("errors.json"), "ref is required"))
 			},
 			status: http.StatusBadRequest,
-			err:    errors.New("unable to create build: ref is required"),
+			err:    "unable to create build: ref is required",
 		},
 	}
 
@@ -102,9 +101,9 @@ func TestCreateBuild(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -125,7 +124,7 @@ func TestStopBuild(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -164,7 +163,7 @@ func TestStopBuild(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to stop build: build not found"),
+			err:    "unable to stop build: build not found",
 		},
 	}
 
@@ -187,9 +186,9 @@ func TestStopBuild(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -210,7 +209,7 @@ func TestRestartBuild(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -249,7 +248,7 @@ func TestRestartBuild(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to restart build: build not found"),
+			err:    "unable to restart build: build not found",
 		},
 	}
 
@@ -272,9 +271,9 @@ func TestRestartBuild(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -295,7 +294,7 @@ func TestGetBuild(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -334,7 +333,7 @@ func TestGetBuild(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to get build: build not found"),
+			err:    "unable to get build: build not found",
 		},
 	}
 
@@ -357,9 +356,9 @@ func TestGetBuild(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -402,7 +401,7 @@ func TestListBuilds(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -439,7 +438,7 @@ func TestListBuilds(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "project"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to list builds: project not found"),
+			err:    "unable to list builds: project not found",
 		},
 	}
 
@@ -461,9 +460,9 @@ func TestListBuilds(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -513,7 +512,7 @@ func TestListBuildPipelines(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -552,7 +551,7 @@ func TestListBuildPipelines(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to get list pipelines: build not found"),
+			err:    "unable to get list pipelines: build not found",
 		},
 	}
 
@@ -575,9 +574,9 @@ func TestListBuildPipelines(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -636,7 +635,7 @@ func TestListBuildServices(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -675,7 +674,7 @@ func TestListBuildServices(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to list build services: build not found"),
+			err:    "unable to list build services: build not found",
 		},
 	}
 
@@ -698,9 +697,9 @@ func TestListBuildServices(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -740,7 +739,7 @@ func TestListBuildSteps(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -779,7 +778,7 @@ func TestListBuildSteps(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to list build steps: build not found"),
+			err:    "unable to list build steps: build not found",
 		},
 	}
 
@@ -802,9 +801,9 @@ func TestListBuildSteps(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 

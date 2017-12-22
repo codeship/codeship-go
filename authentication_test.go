@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	codeship "github.com/codeship/codeship-go"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +17,7 @@ func TestAuthenticate(t *testing.T) {
 		name    string
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "successful auth",
@@ -43,7 +42,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, "{ \"foo\": }")
 			},
 			status: http.StatusOK,
-			err:    errors.New("unable to unmarshal JSON into Authentication: invalid character '}' looking for beginning of value"),
+			err:    "unable to unmarshal JSON into Authentication: invalid character '}' looking for beginning of value",
 		},
 		{
 			name: "unauthorized auth",
@@ -56,7 +55,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, fixture("auth/unauthorized.json"))
 			},
 			status: http.StatusUnauthorized,
-			err:    errors.New("authentication failed: invalid credentials"),
+			err:    "authentication failed: invalid credentials",
 		},
 		{
 			name: "rate limit exceeded",
@@ -67,7 +66,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusForbidden)
 			},
 			status: http.StatusForbidden,
-			err:    errors.New("authentication failed: rate limit exceeded"),
+			err:    "authentication failed: rate limit exceeded",
 		},
 		{
 			name: "server error",
@@ -78,7 +77,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 			},
 			status: http.StatusInternalServerError,
-			err:    errors.New("authentication failed: HTTP status: 500"),
+			err:    "authentication failed: HTTP status: 500",
 		},
 		{
 			name: "other status code",
@@ -89,7 +88,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusTeapot)
 			},
 			status: http.StatusTeapot,
-			err:    errors.New("authentication failed: HTTP status: 418"),
+			err:    "authentication failed: HTTP status: 418",
 		},
 		{
 			name: "other status code with body",
@@ -101,7 +100,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, "I'm a teapot")
 			},
 			status: http.StatusTeapot,
-			err:    errors.New("authentication failed: HTTP status: 418; content \"I'm a teapot\""),
+			err:    "authentication failed: HTTP status: 418; content \"I'm a teapot\"",
 		},
 	}
 
@@ -126,11 +125,11 @@ func TestAuthenticate(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err == nil {
+			if tt.err == "" {
 				require.NoError(err)
 			} else {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 			}
 		})
 	}

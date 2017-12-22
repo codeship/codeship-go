@@ -8,7 +8,6 @@ import (
 	"time"
 
 	codeship "github.com/codeship/codeship-go"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +21,7 @@ func TestListProjects(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -58,7 +57,7 @@ func TestListProjects(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "organization"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to list projects: organization not found"),
+			err:    "unable to list projects: organization not found",
 		},
 	}
 
@@ -79,9 +78,9 @@ func TestListProjects(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -155,7 +154,7 @@ func TestGetProject(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -192,7 +191,7 @@ func TestGetProject(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "project"))
 			},
 			status: http.StatusNotFound,
-			err:    errors.New("unable to get project: project not found"),
+			err:    "unable to get project: project not found",
 		},
 	}
 
@@ -214,9 +213,9 @@ func TestGetProject(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -274,7 +273,7 @@ func TestCreateProject(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -309,7 +308,7 @@ func TestCreateProject(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("errors.json"), "repository_url is required"))
 			},
 			status: http.StatusBadRequest,
-			err:    errors.New("unable to create project: repository_url is required"),
+			err:    "unable to create project: repository_url is required",
 		},
 	}
 
@@ -339,9 +338,9 @@ func TestCreateProject(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -361,7 +360,7 @@ func TestUpdateProject(t *testing.T) {
 		args    args
 		handler http.HandlerFunc
 		status  int
-		err     error
+		err     string
 	}{
 		{
 			name: "success",
@@ -398,7 +397,7 @@ func TestUpdateProject(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("errors.json"), "repository_url is required"))
 			},
 			status: http.StatusBadRequest,
-			err:    errors.New("unable to update project: repository_url is required"),
+			err:    "unable to update project: repository_url is required",
 		},
 	}
 
@@ -425,9 +424,9 @@ func TestUpdateProject(t *testing.T) {
 			require.NotNil(resp)
 			assert.Equal(tt.status, resp.StatusCode)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
@@ -470,7 +469,7 @@ func TestProjectType_UnmarshalJSON(t *testing.T) {
 		projectType codeship.ProjectType
 		args        args
 		want        codeship.ProjectType
-		err         error
+		err         string
 	}{
 		{
 			name: "basic",
@@ -491,14 +490,14 @@ func TestProjectType_UnmarshalJSON(t *testing.T) {
 			args: args{
 				data: []byte("\"invalid\""),
 			},
-			err: errors.New("invalid ProjectType: invalid"),
+			err: "invalid ProjectType: invalid",
 		},
 		{
 			name: "not string",
 			args: args{
 				data: []byte{},
 			},
-			err: errors.New("ProjectType should be a string, got []uint8"),
+			err: "ProjectType should be a string, got []uint8",
 		},
 	}
 
@@ -509,9 +508,9 @@ func TestProjectType_UnmarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.projectType.UnmarshalJSON(tt.args.data)
 
-			if tt.err != nil {
+			if tt.err != "" {
 				require.Error(err)
-				assert.EqualError(tt.err, err.Error())
+				assert.EqualError(err, tt.err)
 				return
 			}
 
