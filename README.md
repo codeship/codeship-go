@@ -9,7 +9,7 @@ Codeship [API v2](https://apidocs.codeship.com/v2) client for Golang
 
 ## Documentation
 
-https://godoc.org/github.com/codeship/codeship-go
+[https://godoc.org/github.com/codeship/codeship-go](https://godoc.org/github.com/codeship/codeship-go)
 
 ## Usage
 
