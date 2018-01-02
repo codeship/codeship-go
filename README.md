@@ -2,8 +2,14 @@
 
 [![Codeship Status for codeship/codeship-go](https://app.codeship.com/projects/c38f3280-792b-0135-21bb-4e0cf8ff365b/status?branch=master)](https://app.codeship.com/projects/244943)
 [![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/codeship/codeship-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/codeship/codeship-go?style=flat-square)](https://goreportcard.com/report/github.com/codeship/codeship-go)
 
 Codeship [API v2](https://apidocs.codeship.com/v2) client for Golang
+
+## Documentation
+
+[https://godoc.org/github.com/codeship/codeship-go](https://godoc.org/github.com/codeship/codeship-go)
 
 ## Usage
 
@@ -103,10 +109,6 @@ var (
 
 client, err := codeship.New(auth, codeship.Verbose(true), codeship.Logger(logger))
 ```
-
-## Documentation
-
-TODO: link to GoDoc
 
 ## Contributing
 
