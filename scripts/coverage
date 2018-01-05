@@ -3,4 +3,4 @@
 set -e
 
 go test -v -covermode=count -coverprofile=coverage.out
-$GOPATH/bin/goveralls -coverprofile=coverage.out -service=codeship
+$GOPATH/bin/goveralls -coverprofile=coverage.out -service=codeship -repotoken=$COVERALLS_TOKEN
