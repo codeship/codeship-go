@@ -1,6 +1,7 @@
 # Codeship API (v2) Client for Go
 
 [![Codeship Status for codeship/codeship-go](https://app.codeship.com/projects/c38f3280-792b-0135-21bb-4e0cf8ff365b/status?branch=master)](https://app.codeship.com/projects/244943)
+[![Coverage Status](https://coveralls.io/repos/github/codeship/codeship-go/badge.svg?branch=master)](https://coveralls.io/github/codeship/codeship-go?branch=master)
 [![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/codeship/codeship-go)
 [![Go Report Card](https://goreportcard.com/badge/github.com/codeship/codeship-go?style=flat-square)](https://goreportcard.com/report/github.com/codeship/codeship-go)
