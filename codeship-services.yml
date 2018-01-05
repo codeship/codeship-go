@@ -2,6 +2,11 @@ integration:
   build: ./
   encrypted_env_file: integration.env.encrypted
 
+goveralls:
+  build:
+    context: .
+    dockerfile: ./docker/goveralls/Dockerfile
+
 go1.9:
   build: ./
 
