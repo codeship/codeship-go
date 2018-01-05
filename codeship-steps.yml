@@ -14,7 +14,7 @@
     command: make test
   - service: goveralls
     name: "coveralls"
-    command: go test -v -covermode=count -coverprofile=coverage.out && $GOPATH/bin/goveralls -coverprofile=coverage.out -service=codeship
+    command: ./scripts/coverage
 
 - service: integration
   name: "integration tests"
