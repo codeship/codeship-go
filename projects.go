@@ -34,10 +34,12 @@ func (t *ProjectType) String() string {
 	return _projectTypeValueToName[*t]
 }
 
+// MarshalJSON marshals a ProjectType to JSON
 func (t *ProjectType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.String())
 }
 
+// UnmarshalJSON unmarshals JSON to a ProjectType
 func (t *ProjectType) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
