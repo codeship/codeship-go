@@ -2,7 +2,9 @@ package integration
 
 import (
 	"context"
+	"log"
 	"os"
+	"testing"
 
 	codeship "github.com/codeship/codeship-go"
 )
@@ -22,28 +24,33 @@ var (
 	org *codeship.Organization
 )
 
-func setup() {
+func TestMain(m *testing.M) {
+	log.SetFlags(0)
+
 	if org != nil {
+		os.Exit(m.Run())
 		return
 	}
 
 	user := os.Getenv("CODESHIP_USER")
 	if user == "" {
-		panic("CODESHIP_USER required")
+		log.Fatal("CODESHIP_USER env var required")
 	}
 
 	password := os.Getenv("CODESHIP_PASSWORD")
 	if password == "" {
-		panic("CODESHIP_PASSWORD required")
+		log.Fatal("CODESHIP_PASSWORD env var required")
 	}
 
 	client, err := codeship.New(codeship.NewBasicAuth(user, password))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	org, err = client.Organization(context.Background(), organizationName)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
+
+	os.Exit(m.Run())
 }

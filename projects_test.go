@@ -99,6 +99,7 @@ func TestListProjects(t *testing.T) {
 			updatedAt, _ := time.Parse(time.RFC3339, "2017-09-08T19:19:55.252Z")
 
 			expected := codeship.Project{
+				ID:                 2,
 				UUID:               "83605ef0-76f8-0135-8810-6e5f001a2e3c",
 				OrganizationUUID:   "28123f10-e33d-5533-b53f-111ef8d7b14f",
 				Name:               "org/another-project",
@@ -225,6 +226,7 @@ func TestGetProject(t *testing.T) {
 			updatedAt, _ := time.Parse(time.RFC3339, "2017-09-13T17:13:36.336Z")
 
 			expected := codeship.Project{
+				ID:                 1,
 				UUID:               "0059df30-7701-0135-8810-6e5f001a2e3c",
 				OrganizationUUID:   "28123f10-e33d-5533-b53f-111ef8d7b14f",
 				Name:               "org/test-project",

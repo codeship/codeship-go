@@ -1,6 +1,7 @@
 {
   "projects": [
     {
+      "id": 1,
       "uuid": "0059df30-7701-0135-8810-6e5f001a2e3c",
       "name": "org/test-project",
       "type": "pro",
@@ -42,6 +43,7 @@
       ]
     },
     {
+      "id": 2,
       "uuid": "83605ef0-76f8-0135-8810-6e5f001a2e3c",
       "name": "org/another-project",
       "type": "basic",

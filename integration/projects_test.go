@@ -10,8 +10,6 @@ import (
 )
 
 func TestListProjects(t *testing.T) {
-	setup()
-
 	projects, resp, err := org.ListProjects(context.Background())
 	require.NoError(t, err)
 	require.NotEmpty(t, projects)
@@ -20,6 +18,7 @@ func TestListProjects(t *testing.T) {
 
 	for _, project := range projects.Projects {
 		assert.Equal(t, organizationUUID, project.OrganizationUUID)
+		assert.NotZero(t, project.ID)
 		assert.NotEmpty(t, project.UUID)
 		assert.NotEmpty(t, project.Name)
 		assert.NotZero(t, project.CreatedAt)
@@ -28,8 +27,6 @@ func TestListProjects(t *testing.T) {
 }
 
 func TestGetProject(t *testing.T) {
-	setup()
-
 	tests := []struct {
 		name, projectName, projectUUID string
 	}{
@@ -54,6 +51,7 @@ func TestGetProject(t *testing.T) {
 			require.Equal(t, http.StatusOK, resp.StatusCode)
 
 			assert.Equal(t, organizationUUID, project.OrganizationUUID)
+			assert.NotZero(t, project.ID)
 			assert.Equal(t, tc.projectUUID, project.UUID)
 			assert.Equal(t, tc.projectName, project.Name)
 			assert.NotZero(t, project.CreatedAt)

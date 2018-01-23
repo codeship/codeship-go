@@ -24,6 +24,7 @@ type Build struct {
 	FinishedAt       time.Time  `json:"finished_at,omitempty"`
 	Links            BuildLinks `json:"links,omitempty"`
 	OrganizationUUID string     `json:"organization_uuid,omitempty"`
+	ProjectID        uint       `json:"project_id,omitempty"`
 	ProjectUUID      string     `json:"project_uuid,omitempty"`
 	QueuedAt         time.Time  `json:"queued_at,omitempty"`
 	Ref              string     `json:"ref,omitempty"`

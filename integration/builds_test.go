@@ -10,8 +10,6 @@ import (
 )
 
 func TestListBuilds(t *testing.T) {
-	setup()
-
 	builds, resp, err := org.ListBuilds(context.Background(), proProjectUUID)
 	require.NoError(t, err)
 	require.NotEmpty(t, builds)
@@ -21,13 +19,12 @@ func TestListBuilds(t *testing.T) {
 	for _, build := range builds.Builds {
 		assert.Equal(t, organizationUUID, build.OrganizationUUID)
 		assert.Equal(t, proProjectUUID, build.ProjectUUID)
+		assert.NotZero(t, build.ProjectID)
 		assert.NotEmpty(t, build.UUID)
 	}
 }
 
 func TestGetBuild(t *testing.T) {
-	setup()
-
 	builds, resp, err := org.ListBuilds(context.Background(), proProjectUUID)
 	require.NoError(t, err)
 	require.NotEmpty(t, builds)
@@ -47,8 +44,6 @@ func TestGetBuild(t *testing.T) {
 }
 
 func TestListBuildPipelines(t *testing.T) {
-	setup()
-
 	builds, resp, err := org.ListBuilds(context.Background(), basicProjectUUID)
 	require.NoError(t, err)
 	require.NotEmpty(t, builds)
@@ -72,8 +67,6 @@ func TestListBuildPipelines(t *testing.T) {
 }
 
 func TestListBuildServices(t *testing.T) {
-	setup()
-
 	builds, resp, err := org.ListBuilds(context.Background(), proProjectUUID)
 	require.NoError(t, err)
 	require.NotEmpty(t, builds)
@@ -98,8 +91,6 @@ func TestListBuildServices(t *testing.T) {
 }
 
 func TestListBuildSteps(t *testing.T) {
-	setup()
-
 	builds, resp, err := org.ListBuilds(context.Background(), proProjectUUID)
 	require.NoError(t, err)
 	require.NotEmpty(t, builds)

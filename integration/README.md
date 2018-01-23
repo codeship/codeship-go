@@ -29,4 +29,4 @@ Run these tests with exported environment variables:
 
 or without exporting environment variables:
 
-`CODESHIP_USERNAME=XXX CODESHIP_PASSWORD=XXX go test -v -tags=integration ./integration/...`
+`CODESHIP_USER=XXX CODESHIP_PASSWORD=XXX go test -v -tags=integration ./integration/...`
