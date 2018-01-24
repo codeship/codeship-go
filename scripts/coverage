@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -ex
 
-go test -v -covermode=count -coverprofile=coverage.out
-$GOPATH/bin/goveralls -coverprofile=coverage.out -service=codeship -repotoken=$COVERALLS_TOKEN
+go test -covermode=count -coverprofile=coverage.out
+CI_NAME=$CI_NAME CI_BUILD_NUMBER=$CI_BUILD_ID CI_BRANCH=$CI_BRANCH $GOPATH/bin/goveralls -coverprofile=coverage.out -service=codeship
