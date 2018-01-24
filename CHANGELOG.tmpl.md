@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Added `id` to `Project`
-- Added `project_id` to `Build`
+### Changed
 
-## [0.1.0] - 2018-01-05
+### Deprecated
 
-- Initial Release
+### Fixed
+
+### Removed

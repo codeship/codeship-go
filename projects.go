@@ -102,6 +102,7 @@ type Project struct {
 	CreatedAt            time.Time             `json:"created_at,omitempty"`
 	DeploymentPipelines  []DeploymentPipeline  `json:"deployment_pipelines,omitempty"`
 	EnvironmentVariables []EnvironmentVariable `json:"environment_variables,omitempty"`
+	ID                   uint                  `json:"id,omitempty"`
 	Name                 string                `json:"name,omitempty"`
 	NotificationRules    []NotificationRule    `json:"notification_rules,omitempty"`
 	OrganizationUUID     string                `json:"organization_uuid,omitempty"`

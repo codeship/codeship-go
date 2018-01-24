@@ -370,6 +370,7 @@ func TestGetBuild(t *testing.T) {
 
 			expected := codeship.Build{
 				UUID:             "25a3dd8c-eb3e-4e75-1298-8cbcbe621342",
+				ProjectID:        1,
 				ProjectUUID:      "28123f10-e33d-5533-b53f-111ef8d7b14f",
 				OrganizationUUID: "28123g10-e33d-5533-b57f-111ef8d7b14f",
 				Ref:              "heads/master",
@@ -477,6 +478,7 @@ func TestListBuilds(t *testing.T) {
 
 			expected := codeship.Build{
 				UUID:             "25a3dd8c-eb3e-4e75-1298-8cbcbe621342",
+				ProjectID:        1,
 				ProjectUUID:      "28123f10-e33d-5533-b53f-111ef8d7b14f",
 				OrganizationUUID: "28123f10-e33d-5533-b53f-111ef8d7b14f",
 				Ref:              "heads/master",
