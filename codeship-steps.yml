@@ -12,9 +12,10 @@
   - service: go1.10rc
     name: "1.10rc test"
     command: make test
-  - service: goveralls
-    name: "coveralls"
-    command: ./scripts/coverage
+
+- service: go1.9
+  name: coverage
+  command: ./scripts/cover
 
 - service: integration
   name: "integration tests"

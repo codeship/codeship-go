@@ -5,6 +5,7 @@
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/codeship/codeship-go)
 [![Go Report Card](https://goreportcard.com/badge/github.com/codeship/codeship-go?style=flat-square)](https://goreportcard.com/report/github.com/codeship/codeship-go)
 [![Release](https://img.shields.io/github/release/codeship/codeship-go.svg?style=flat-square)](https://github.com/codeship/codeship-go/releases/latest)
+[![codecov](https://codecov.io/gh/codeship/codeship-go/branch/master/graph/badge.svg)](https://codecov.io/gh/codeship/codeship-go)
 
 Codeship [API v2](https://apidocs.codeship.com/v2) client for Golang
 
