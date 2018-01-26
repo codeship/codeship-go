@@ -3,13 +3,6 @@ integration:
   encrypted_env_file: integration.env.encrypted
   cached: true
 
-goveralls:
-  build:
-    context: .
-    dockerfile: ./docker/goveralls/Dockerfile
-  encrypted_env_file: goveralls.env.encrypted
-  cached: true
-
 go1.9:
   build: ./
   cached: true

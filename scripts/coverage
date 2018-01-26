@@ -1,6 +1,0 @@
-#!/bin/sh
-
-set -ex
-
-go test -covermode=count -coverprofile=coverage.out
-CI_NAME=$CI_NAME CI_BUILD_NUMBER=$CI_BUILD_ID CI_BRANCH=$CI_BRANCH $GOPATH/bin/goveralls -coverprofile=coverage.out -service=codeship
