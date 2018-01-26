@@ -5,6 +5,7 @@ integration:
 
 go1.9:
   build: ./
+  encrypted_env_file: env.encrypted
   cached: true
 
 go1.8:
