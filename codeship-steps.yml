@@ -15,7 +15,7 @@
 
 - service: go1.9
   name: coverage
-  command: go test -coverprofile=coverage.txt -covermode=atomic && bash <(curl -s https://codecov.io/bash)
+  command: "go test -coverprofile=coverage.txt -covermode=atomic && bash <(curl -s https://codecov.io/bash)"
 
 - service: integration
   name: "integration tests"
