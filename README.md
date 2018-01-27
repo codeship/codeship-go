@@ -7,6 +7,8 @@
 [![Release](https://img.shields.io/github/release/codeship/codeship-go.svg?style=flat-square)](https://github.com/codeship/codeship-go/releases/latest)
 [![codecov](https://codecov.io/gh/codeship/codeship-go/branch/master/graph/badge.svg)](https://codecov.io/gh/codeship/codeship-go)
 
+![Codeship](logo.png)
+
 Codeship [API v2](https://apidocs.codeship.com/v2) client for Golang
 
 ## Documentation
