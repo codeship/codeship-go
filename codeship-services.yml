@@ -8,14 +8,8 @@ go1.9:
   encrypted_env_file: env.encrypted
   cached: true
 
-go1.8:
+gov:
   build:
     context: .
-    dockerfile: ./docker/go-1.8/Dockerfile
-  cached: true
-
-go1.10rc:
-  build:
-    context: .
-    dockerfile: ./docker/go-1.10rc/Dockerfile
+    dockerfile: ./docker/gov/Dockerfile
   cached: true
