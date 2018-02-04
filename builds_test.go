@@ -553,7 +553,7 @@ func TestListBuildPipelines(t *testing.T) {
 				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
 			},
 			status: http.StatusNotFound,
-			err:    "unable to get list pipelines: build not found",
+			err:    "unable to list pipelines: build not found",
 		},
 	}
 
