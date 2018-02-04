@@ -193,12 +193,12 @@ func (o *Organization) ListBuilds(ctx context.Context, projectUUID string, opts 
 func (o *Organization) ListBuildPipelines(ctx context.Context, projectUUID, buildUUID string, opts ...PaginationOption) (BuildPipelines, Response, error) {
 	path, err := paginate(fmt.Sprintf("/organizations/%s/projects/%s/builds/%s/pipelines", o.UUID, projectUUID, buildUUID), opts...)
 	if err != nil {
-		return BuildPipelines{}, Response{}, errors.Wrap(err, "unable to get list pipelines")
+		return BuildPipelines{}, Response{}, errors.Wrap(err, "unable to list pipelines")
 	}
 
 	body, resp, err := o.client.request(ctx, "GET", path, nil)
 	if err != nil {
-		return BuildPipelines{}, resp, errors.Wrap(err, "unable to get list pipelines")
+		return BuildPipelines{}, resp, errors.Wrap(err, "unable to list pipelines")
 	}
 
 	var pipelines BuildPipelines
