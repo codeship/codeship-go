@@ -1,4 +1,5 @@
 - type: parallel
+  name: "multi-version tests"
   steps:
   - service: gov
     name: "1.8.6 test"
@@ -9,6 +10,7 @@
     command: gov 1.10rc1 test -v
 
 - type: parallel
+  name: "tests"
   steps:
   - service: go1.9
     name: "lint"
