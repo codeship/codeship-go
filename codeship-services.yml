@@ -3,7 +3,7 @@ integration:
   encrypted_env_file: integration.env.encrypted
   cached: true
 
-go1.9:
+test:
   build: ./
   encrypted_env_file: env.encrypted
   cached: true
