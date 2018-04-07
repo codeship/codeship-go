@@ -154,7 +154,7 @@ func (c *Client) Organization(ctx context.Context, name string) (*Organization, 
 			}, nil
 		}
 	}
-	return nil, ErrUnauthorized(fmt.Sprintf("organization '%s' not authorized. Authorized organizations: %v", name, c.authentication.Organizations))
+	return nil, ErrUnauthorized(fmt.Sprintf("organization %q not authorized. Authorized organizations: %v", name, c.authentication.Organizations))
 }
 
 // Authentication returns the client's current Authentication object

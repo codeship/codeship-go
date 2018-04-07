@@ -3,4 +3,7 @@
 set -e
 
 go test -v -coverprofile=coverage.txt -covermode=atomic
-curl -s https://codecov.io/bash | bash -s -
+
+if [ "$CI" = "true" ]; then
+    curl -s https://codecov.io/bash | bash -s -
+fi

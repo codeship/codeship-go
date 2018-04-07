@@ -9,17 +9,11 @@
     name: "1.9.4 test"
     command: gov 1.9.4 test -v
 
-- type: parallel
-  name: "tests"
-  steps:
-  - service: test
-    name: "lint"
-    command: make lint
-  - service: test
-    name: "coverage"
-    command: ./scripts/cover
+- name: "tests"
+  service: test
+  command: make ci
 
 - service: integration
   name: "integration tests"
   tag: master
-  command: go test -tags integration -v
+  command: make integration

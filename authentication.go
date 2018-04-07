@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"unicode"
 
 	"github.com/pkg/errors"
 )
@@ -41,9 +42,27 @@ func (c *Client) Authenticate(ctx context.Context) (Response, error) {
 	if err != nil {
 		return resp, errors.Wrap(err, "authentication failed")
 	}
-	if err = json.Unmarshal(body, &c.authentication); err != nil {
-		return resp, errors.Wrap(err, "unable to unmarshal JSON into Authentication")
+
+	var auth = &struct {
+		Authentication
+		Error string `json:"error,omitempty"`
+	}{}
+
+	if err = json.Unmarshal(body, auth); err != nil {
+		return resp, errors.Wrap(err, "unable to unmarshal JSON")
 	}
 
+	if auth.Error != "" {
+		err = toError(auth.Error)
+		return resp, errors.Wrap(err, "authentication failed")
+	}
+
+	c.authentication = auth.Authentication
 	return resp, err
+}
+
+func toError(msg string) error {
+	s := []rune(msg)
+	s[0] = unicode.ToLower(s[0])
+	return errors.New(string(s))
 }
