@@ -140,7 +140,7 @@ func (c *Client) Organization(ctx context.Context, name string) (*Organization, 
 
 	if c.AuthenticationRequired() {
 		if _, err := c.Authenticate(ctx); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "authentication failed")
 		}
 	}
 

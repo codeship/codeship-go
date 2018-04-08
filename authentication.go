@@ -40,7 +40,7 @@ func (c *Client) Authenticate(ctx context.Context) (Response, error) {
 
 	body, resp, err := c.do(req.WithContext(ctx))
 	if err != nil {
-		return resp, errors.Wrap(err, "authentication failed")
+		return resp, err
 	}
 
 	var auth = &struct {
@@ -53,8 +53,7 @@ func (c *Client) Authenticate(ctx context.Context) (Response, error) {
 	}
 
 	if auth.Error != "" {
-		err = toError(auth.Error)
-		return resp, errors.Wrap(err, "authentication failed")
+		return resp, toError(auth.Error)
 	}
 
 	c.authentication = auth.Authentication
