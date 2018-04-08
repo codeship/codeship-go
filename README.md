@@ -9,7 +9,7 @@
 
 ![Codeship](logo.png)
 
-Codeship [API v2](https://apidocs.codeship.com/v2) client for Golang
+Codeship [API v2](https://apidocs.codeship.com/v2) client for Go.
 
 ## Documentation
 
@@ -53,6 +53,16 @@ If you would like to manually re-authenticate, you may do this by calling the `A
 ```go
 err := client.Authenticate(ctx)
 ```
+
+### Two-Factor Authentication
+
+Codeship now supports [Two-Factor Authentication](https://documentation.codeship.com/general/about/2fa/)(2FA).
+
+However, it is currently [not possible](https://documentation.codeship.com/general/about/2fa/#2fa-and-the-codeship-api) to use 2FA with the API. If you try to authenticate via this client with a user that has 2FA enabled you will get the following error:
+
+> authentication failed: your account has two-factor authentication enabled, which is not possible to support with the API. Disable two factor authentication or create a dedicated API user without it enabled.
+
+You must disable 2FA for the user you wish to authenticate with using this client. We hope to support Personal Access Tokens in a future version of the API to mitigate this issue.
 
 ## Response
 
