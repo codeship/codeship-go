@@ -25,8 +25,8 @@ The following environment variables are **required** to be set before running th
 
 Run these tests with exported environment variables:
 
-`go test -v -tags=integration ./integration/...`
+`make integration`
 
 or without exporting environment variables:
 
-`CODESHIP_USER=XXX CODESHIP_PASSWORD=XXX go test -v -tags=integration ./integration/...`
+`CODESHIP_USER=XXX CODESHIP_PASSWORD=XXX make integration`

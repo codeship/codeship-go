@@ -162,7 +162,7 @@ func TestOrganization(t *testing.T) {
 			args: args{
 				name: "foo",
 			},
-			err: "organization 'foo' not authorized. Authorized organizations: [{codeship 28123f10-e33d-5533-b53f-111ef8d7b14f [project.read project.write build.read build.write]}]",
+			err: "organization \"foo\" not authorized. Authorized organizations: [{codeship 28123f10-e33d-5533-b53f-111ef8d7b14f [project.read project.write build.read build.write]}]",
 		},
 		{
 			name: "empty organization",

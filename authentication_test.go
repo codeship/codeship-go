@@ -42,7 +42,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, "{ \"foo\": }")
 			},
 			status: http.StatusOK,
-			err:    "unable to unmarshal JSON into Authentication: invalid character '}' looking for beginning of value",
+			err:    "unable to unmarshal JSON: invalid character '}' looking for beginning of value",
 		},
 		{
 			name: "unauthorized auth",
@@ -55,7 +55,20 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, fixture("auth/unauthorized.json"))
 			},
 			status: http.StatusUnauthorized,
-			err:    "authentication failed: invalid credentials",
+			err:    "invalid credentials",
+		},
+		{
+			name: "two-factor enabled auth",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "POST", r.Method)
+
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+
+				fmt.Fprint(w, fixture("auth/two_factor.json"))
+			},
+			status: http.StatusOK,
+			err:    "your account has two-factor authentication enabled, which is not possible to support with the API.",
 		},
 		{
 			name: "rate limit exceeded",
@@ -66,7 +79,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusForbidden)
 			},
 			status: http.StatusForbidden,
-			err:    "authentication failed: rate limit exceeded",
+			err:    "rate limit exceeded",
 		},
 		{
 			name: "server error",
@@ -77,7 +90,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusInternalServerError)
 			},
 			status: http.StatusInternalServerError,
-			err:    "authentication failed: HTTP status: 500",
+			err:    "HTTP status: 500",
 		},
 		{
 			name: "other status code",
@@ -88,7 +101,7 @@ func TestAuthenticate(t *testing.T) {
 				w.WriteHeader(http.StatusTeapot)
 			},
 			status: http.StatusTeapot,
-			err:    "authentication failed: HTTP status: 418",
+			err:    "HTTP status: 418",
 		},
 		{
 			name: "other status code with body",
@@ -100,7 +113,7 @@ func TestAuthenticate(t *testing.T) {
 				fmt.Fprint(w, "I'm a teapot")
 			},
 			status: http.StatusTeapot,
-			err:    "authentication failed: HTTP status: 418; content \"I'm a teapot\"",
+			err:    "HTTP status: 418; content \"I'm a teapot\"",
 		},
 	}
 

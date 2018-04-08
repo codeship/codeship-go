@@ -18,6 +18,10 @@ dep: ## Run dep ensure and prune
 test: ## Run all the tests
 	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -timeout=30s $(GOPACKAGES)
 
+.PHONY: integration
+integration: ## Run integration tests
+	go test -v -tags=integration ./integration/...
+
 .PHONY: cover
 cover: test ## Run all the tests and opens the coverage report
 	go tool cover -html=coverage.txt
@@ -41,7 +45,8 @@ lint: ## Run all the linters
 		$(GOPACKAGES)
 
 .PHONY: ci
-ci: lint test ## Run all the tests and code checks
+ci: lint ## Run all code checks and tests with coverage reporting
+	./scripts/cover
 
 .PHONY: build
 build: ## Build a version
