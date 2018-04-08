@@ -56,7 +56,7 @@ err := client.Authenticate(ctx)
 
 ### Two-Factor Authentication
 
-Codeship now supports [Two-Factor Authentication](https://documentation.codeship.com/general/about/2fa/)(2FA).
+Codeship now supports [Two-Factor Authentication](https://documentation.codeship.com/general/about/2fa/) (2FA).
 
 However, it is currently [not possible](https://documentation.codeship.com/general/about/2fa/#2fa-and-the-codeship-api) to use 2FA with the API. If you try to authenticate via this client with a user that has 2FA enabled you will get the following error:
 
