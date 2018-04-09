@@ -1,4 +1,4 @@
-FROM golang:1.10
+FROM golang:1.10.1
 LABEL maintainer=dev@codeship.com
 RUN go get -v github.com/alecthomas/gometalinter && \
     go get -v golang.org/x/tools/cmd/cover && \
