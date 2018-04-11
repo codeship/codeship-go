@@ -30,12 +30,12 @@ var (
 	}
 )
 
-func (t *ProjectType) String() string {
-	return _projectTypeValueToName[*t]
+func (t ProjectType) String() string {
+	return _projectTypeValueToName[t]
 }
 
 // MarshalJSON marshals a ProjectType to JSON
-func (t *ProjectType) MarshalJSON() ([]byte, error) {
+func (t ProjectType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.String())
 }
 

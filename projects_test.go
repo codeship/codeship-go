@@ -3,6 +3,7 @@ package codeship_test
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"testing"
 	"time"
@@ -269,6 +270,7 @@ func TestGetProject(t *testing.T) {
 func TestCreateProject(t *testing.T) {
 	type args struct {
 		organizationUUID string
+		projectType      codeship.ProjectType
 	}
 	tests := []struct {
 		name    string
@@ -278,9 +280,10 @@ func TestCreateProject(t *testing.T) {
 		err     string
 	}{
 		{
-			name: "success",
+			name: "success (basic)",
 			args: args{
 				organizationUUID: "28123f10-e33d-5533-b53f-111ef8d7b14f",
+				projectType:      codeship.ProjectTypeBasic,
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				assert := assert.New(t)
@@ -288,9 +291,37 @@ func TestCreateProject(t *testing.T) {
 				assert.Equal("application/json", r.Header.Get("Content-Type"))
 				assert.Equal("application/json", r.Header.Get("Accept"))
 
+				b, err := ioutil.ReadAll(r.Body)
+				assert.NoError(err)
+				defer r.Body.Close()
+				assert.Equal(fixture("projects/create_basic_request.json"), string(b))
+
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusCreated)
-				fmt.Fprint(w, fixture("projects/create.json"))
+				fmt.Fprint(w, fixture("projects/create_basic.json"))
+			},
+			status: http.StatusCreated,
+		},
+		{
+			name: "success (pro)",
+			args: args{
+				organizationUUID: "28123f10-e33d-5533-b53f-111ef8d7b14f",
+				projectType:      codeship.ProjectTypePro,
+			},
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert := assert.New(t)
+				assert.Equal("POST", r.Method)
+				assert.Equal("application/json", r.Header.Get("Content-Type"))
+				assert.Equal("application/json", r.Header.Get("Accept"))
+
+				b, err := ioutil.ReadAll(r.Body)
+				assert.NoError(err)
+				defer r.Body.Close()
+				assert.Equal(fixture("projects/create_pro_request.json"), string(b))
+
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusCreated)
+				fmt.Fprint(w, fixture("projects/create_pro.json"))
 			},
 			status: http.StatusCreated,
 		},
@@ -298,6 +329,7 @@ func TestCreateProject(t *testing.T) {
 			name: "bad request",
 			args: args{
 				organizationUUID: "28123f10-e33d-5533-b53f-111ef8d7b14f",
+				projectType:      codeship.ProjectTypeBasic,
 			},
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				assert := assert.New(t)
@@ -334,7 +366,7 @@ func TestCreateProject(t *testing.T) {
 						Name:     "run tests",
 					},
 				},
-				Type: codeship.ProjectTypeBasic,
+				Type: tt.args.projectType,
 			})
 
 			require.NotNil(resp)
@@ -518,6 +550,41 @@ func TestProjectType_UnmarshalJSON(t *testing.T) {
 
 			require.NoError(err)
 			assert.Equal(tt.want, tt.projectType)
+		})
+	}
+}
+
+func TestProjectType_MarshalJSON(t *testing.T) {
+	tests := []struct {
+		name        string
+		projectType codeship.ProjectType
+		want        string
+	}{
+		{
+			name:        "basic",
+			projectType: codeship.ProjectTypeBasic,
+			want:        `"basic"`,
+		},
+		{
+			name:        "pro",
+			projectType: codeship.ProjectTypePro,
+			want:        `"pro"`,
+		},
+		{
+			name:        "invalid",
+			projectType: 2,
+			want:        `""`,
+		},
+	}
+
+	assert := assert.New(t)
+	require := require.New(t)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b, err := tt.projectType.MarshalJSON()
+			require.NoError(err)
+			assert.Equal(tt.want, string(b))
 		})
 	}
 }
