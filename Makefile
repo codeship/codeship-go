@@ -32,17 +32,7 @@ fmt: ## goimports all go files
 
 .PHONY: lint
 lint: ## Run all the linters
-	gometalinter --exclude=vendor --exclude=/go/src --disable-all \
-		--enable=deadcode \
-		--enable=ineffassign \
-		--enable=gofmt \
-		--enable=goimports \
-		--enable=misspell \
-		--enable=errcheck \
-		--enable=vet \
-		--enable=megacheck \
-		--deadline=10m \
-		$(GOPACKAGES)
+	gometalinter
 
 .PHONY: ci
 ci: lint ## Run all code checks and tests with coverage reporting
