@@ -1,19 +1,24 @@
 - type: parallel
   name: "multi-version tests"
   steps:
-  - service: gov
-    name: "1.8.6 test"
+  - name: "1.8.6 test"
+    service: gov
     command: gov 1.8.6 test -v
 
-  - service: gov
-    name: "1.9.4 test"
+  - name: "1.9.4 test"
+    service: gov
     command: gov 1.9.4 test -v
 
 - name: "tests"
   service: test
   command: make ci
 
-- service: integration
-  name: "integration tests"
+- name: "integration tests"
+  service: integration
   tag: master
   command: make integration
+
+- name: "verify release"
+  service: test
+  tag: (\d+(\.\d+)+)
+  command: make verify

@@ -4,6 +4,8 @@ GOTOOLS = \
 	github.com/golang/dep/cmd/dep \
 
 GOPACKAGES := $(go list ./... | grep -v /vendor/)
+VERSION ?= $(shell git describe --abbrev=0 --tags)
+CHANGELOG_VERSION = $(shell perl -ne '/^\#\# (\d+(\.\d+)+) / && print "$$1\n"' CHANGELOG.md | head -n1)
 
 .PHONY: setup
 setup: ## Install all the build and lint dependencies
@@ -45,6 +47,17 @@ build: ## Build a version
 .PHONY: clean
 clean: ## Remove temporary files
 	go clean
+
+.PHONY: verify
+verify: ## Verify the version is referenced in the CHANGELOG
+	@if [ "$(VERSION)" = "$(CHANGELOG_VERSION)" ]; then \
+		echo "version: $(VERSION)"; \
+	else \
+		echo "Version number not found in CHANGELOG.md"; \
+		echo "version: $(VERSION)"; \
+		echo "CHANGELOG: $(CHANGELOG_VERSION)"; \
+		exit 1; \
+	fi
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .PHONY: help
