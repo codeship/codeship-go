@@ -55,18 +55,19 @@ type Response struct {
 	Links
 }
 
+var (
+	urlRegex = regexp.MustCompile(`\s*<(.+)>`)
+	relRegex = regexp.MustCompile(`\s*rel="(\w+)"`)
+)
+
 func newResponse(r *http.Response) Response {
 	response := Response{Response: r}
-
-	urlRegex := regexp.MustCompile(`\s*<(.+)>`)
-	relRegex := regexp.MustCompile(`\s*rel="(\w+)"`)
 
 	if linkText := r.Header.Get("Link"); linkText != "" {
 		linkMap := make(map[string]string)
 
 		// one chunk: <url>; rel="foo"
 		for _, chunk := range strings.Split(linkText, ",") {
-
 			pieces := strings.Split(chunk, ";")
 			urlMatch := urlRegex.FindStringSubmatch(pieces[0])
 			relMatch := relRegex.FindStringSubmatch(pieces[1])
@@ -226,9 +227,12 @@ func (c *Client) do(req *http.Request) ([]byte, Response, error) {
 		return nil, response, errors.Wrap(err, "could not read response body")
 	}
 
-	switch resp.StatusCode {
-	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
-		break
+	code := resp.StatusCode
+	if code < 400 {
+		return body, response, nil
+	}
+
+	switch code {
 	case http.StatusBadRequest:
 		var e ErrBadRequest
 		if err = json.Unmarshal(body, &e); err != nil {
@@ -245,14 +249,12 @@ func (c *Client) do(req *http.Request) ([]byte, Response, error) {
 		return nil, response, ErrUnauthorized("invalid credentials")
 	case http.StatusForbidden, http.StatusTooManyRequests:
 		return nil, response, ErrRateLimitExceeded
-	default:
-		if len(body) > 0 {
-			return nil, response, fmt.Errorf("HTTP status: %d; content %q", resp.StatusCode, string(body))
-		}
-		return nil, response, fmt.Errorf("HTTP status: %d", resp.StatusCode)
 	}
 
-	return body, response, nil
+	if len(body) > 0 {
+		return nil, response, fmt.Errorf("HTTP status: %d; content %q", resp.StatusCode, string(body))
+	}
+	return nil, response, fmt.Errorf("HTTP status: %d", resp.StatusCode)
 }
 
 // cloneHeader returns a shallow copy of the header.
