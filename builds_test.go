@@ -381,6 +381,7 @@ func TestGetBuild(t *testing.T) {
 				FinishedAt:       finishedAt,
 				AllocatedAt:      allocatedAt,
 				QueuedAt:         queuedAt,
+				Branch:           "test-branch",
 				Links: codeship.BuildLinks{
 					Services: "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/services",
 					Steps:    "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/steps",
@@ -489,6 +490,7 @@ func TestListBuilds(t *testing.T) {
 				FinishedAt:       finishedAt,
 				AllocatedAt:      allocatedAt,
 				QueuedAt:         queuedAt,
+				Branch:           "test-branch",
 				Links: codeship.BuildLinks{
 					Services: "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/services",
 					Steps:    "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/steps",
