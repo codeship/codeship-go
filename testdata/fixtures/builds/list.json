@@ -13,6 +13,7 @@
       "finished_at": "2017-09-13T17:13:55.193+00:00",
       "allocated_at": "2017-09-13T17:13:36.967+00:00",
       "queued_at": "2017-09-13T17:13:39.314+00:00",
+      "branch": "test-branch",
       "links": {
         "services": "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/services",
         "steps": "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe621342/steps"
@@ -31,6 +32,7 @@
       "finished_at": "2017-09-13T17:13:55.193+00:00",
       "allocated_at": "2017-09-13T17:13:36.967+00:00",
       "queued_at": "2017-09-13T17:13:39.314+00:00",
+      "branch": "test-branch",
       "links": {
         "services": "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe611111/services",
         "steps": "https://api.codeship.com/v2/organizations/28123f10-e33d-5533-b53f-111ef8d7b14f/projects/28123f10-e33d-5533-b53f-111ef8d7b14f/builds/25a3dd8c-eb3e-4e75-1298-8cbcbe611111/steps"

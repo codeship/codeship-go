@@ -19,6 +19,7 @@ type BuildLinks struct {
 // Build structure of Build object
 type Build struct {
 	AllocatedAt      time.Time  `json:"allocated_at,omitempty"`
+	Branch           string     `json:"branch,omitempty"`
 	CommitMessage    string     `json:"commit_message,omitempty"`
 	CommitSha        string     `json:"commit_sha,omitempty"`
 	FinishedAt       time.Time  `json:"finished_at,omitempty"`
