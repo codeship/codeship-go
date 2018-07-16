@@ -1,1 +1,1 @@
-{"repository_url":"git@github.com/org/repo-name","test_pipelines":[{"commands":["./run-tests.sh"],"name":"run tests"}]}
+{"repository_url":"git@github.com/org/repo-name","test_pipelines":[{"commands":["./run-tests.sh"],"name":"run tests"}],"type":"basic"}

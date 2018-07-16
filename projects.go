@@ -14,9 +14,9 @@ type ProjectType int
 
 const (
 	// ProjectTypeBasic represents a Codeship Basic project type
-	ProjectTypeBasic ProjectType = iota
+	ProjectTypeBasic ProjectType = 1
 	// ProjectTypePro represents a Codeship Pro project type
-	ProjectTypePro
+	ProjectTypePro   ProjectType = 2
 )
 
 var (

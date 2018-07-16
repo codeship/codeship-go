@@ -561,6 +561,12 @@ func TestProjectType_MarshalJSON(t *testing.T) {
 		want        string
 	}{
 		{
+			name:        "invalid",
+			projectType: 0,
+			want:        `""`,
+		},
+
+		{
 			name:        "basic",
 			projectType: codeship.ProjectTypeBasic,
 			want:        `"basic"`,
@@ -572,7 +578,7 @@ func TestProjectType_MarshalJSON(t *testing.T) {
 		},
 		{
 			name:        "invalid",
-			projectType: 2,
+			projectType: 3,
 			want:        `""`,
 		},
 	}
