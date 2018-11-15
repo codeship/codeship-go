@@ -1,7 +1,7 @@
 GOTOOLS = \
-	github.com/alecthomas/gometalinter \
 	golang.org/x/tools/cmd/cover \
 	github.com/golang/dep/cmd/dep \
+	github.com/golangci/golangci-lint/cmd/golangci-lint \
 
 GOPACKAGES := $(go list ./... | grep -v /vendor/)
 VERSION ?= $(shell git describe --abbrev=0 --tags)
@@ -10,7 +10,6 @@ CHANGELOG_VERSION = $(shell perl -ne '/^\#\# (\d+(\.\d+)+) / && print "$$1\n"' C
 .PHONY: setup
 setup: ## Install all the build and lint dependencies
 	go get -u $(GOTOOLS)
-	gometalinter --install
 
 .PHONY: dep
 dep: ## Run dep ensure and prune
@@ -34,7 +33,7 @@ fmt: ## goimports all go files
 
 .PHONY: lint
 lint: ## Run all the linters
-	gometalinter
+	golangci-lint run
 
 .PHONY: ci
 ci: lint ## Run all code checks and tests with coverage reporting

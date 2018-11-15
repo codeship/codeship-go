@@ -1,13 +1,12 @@
 - type: parallel
   name: "multi-version tests"
   steps:
-  - name: "1.8.6 test"
+  - name: "1.9.7 test"
     service: gov
-    command: gov 1.8.6 test -v
-
-  - name: "1.9.4 test"
+    command: go1.9.7 test -v
+  - name: "1.10.5 test"
     service: gov
-    command: gov 1.9.4 test -v
+    command: go1.10.5 test -v
 
 - name: "tests"
   service: test
