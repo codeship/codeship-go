@@ -1,3 +1,5 @@
 {
-  "errors": ["%s not found"]
+    "errors": [
+        "%s not found"
+    ]
 }

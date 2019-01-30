@@ -1,33 +1,33 @@
 {
-  "pipelines": [
-    {
-      "uuid": "0a341890-a899-4492-9c94-86ef24527f05",
-      "build_uuid": "9ec4b230-76f8-0135-86b9-2ee351ae25fe",
-      "type": "build",
-      "status": "success",
-      "created_at": "2017-09-11T19:54:16.556Z",
-      "updated_at": "2017-09-11T19:54:38.394Z",
-      "finished_at": "2017-09-11T19:54:38.391Z",
-      "metrics": {
-        "ami_id": "ami-02322b79",
-        "queries": "112",
-        "cpu_user": "1142",
-        "duration": "11",
-        "cpu_system": "499",
-        "instance_id": "i-0cfcd05a46d4cdb12",
-        "architecture": "trusty_64",
-        "instance_type": "i3.8xlarge",
-        "cpu_per_second": "136",
-        "disk_free_bytes": "128536784896",
-        "disk_used_bytes": "362098688",
-        "network_rx_bytes": "32221720",
-        "network_tx_bytes": "310269",
-        "max_used_connections": "1",
-        "memory_max_usage_in_bytes": "665427968"
-      }
-    }
-  ],
-  "total": 1,
-  "per_page": 30,
-  "page": 1
+    "page": 1,
+    "per_page": 30,
+    "pipelines": [
+        {
+            "build_uuid": "9ec4b230-76f8-0135-86b9-2ee351ae25fe",
+            "created_at": "2017-09-11T19:54:16.556Z",
+            "finished_at": "2017-09-11T19:54:38.391Z",
+            "metrics": {
+                "ami_id": "ami-02322b79",
+                "architecture": "trusty_64",
+                "cpu_per_second": "136",
+                "cpu_system": "499",
+                "cpu_user": "1142",
+                "disk_free_bytes": "128536784896",
+                "disk_used_bytes": "362098688",
+                "duration": "11",
+                "instance_id": "i-0cfcd05a46d4cdb12",
+                "instance_type": "i3.8xlarge",
+                "max_used_connections": "1",
+                "memory_max_usage_in_bytes": "665427968",
+                "network_rx_bytes": "32221720",
+                "network_tx_bytes": "310269",
+                "queries": "112"
+            },
+            "status": "success",
+            "type": "build",
+            "updated_at": "2017-09-11T19:54:38.394Z",
+            "uuid": "0a341890-a899-4492-9c94-86ef24527f05"
+        }
+    ],
+    "total": 1
 }

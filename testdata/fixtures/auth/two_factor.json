@@ -1,3 +1,3 @@
 {
-  "error": "Your account has two-factor authentication enabled, which is not possible to support with the API."
+    "error": "Your account has two-factor authentication enabled, which is not possible to support with the API."
 }

@@ -1,17 +1,17 @@
 {
-  "services": [
-    {
-      "uuid": "b46c6c6c-1bdb-4413-8e55-a9a8b1b27526",
-      "build_uuid": "25a3dd8c-eb3e-4e75-1298-8cbcbe621342",
-      "name": "test",
-      "status": "finished",
-      "updated_at": "2017-09-13T17:13:44+00:00",
-      "pulling_at": null,
-      "building_at": null,
-      "finished_at": "2017-09-13T17:13:41+00:00"
-    }
-  ],
-  "total": 1,
-  "per_page": 30,
-  "page": 1
+    "page": 1,
+    "per_page": 30,
+    "services": [
+        {
+            "build_uuid": "25a3dd8c-eb3e-4e75-1298-8cbcbe621342",
+            "building_at": null,
+            "finished_at": "2017-09-13T17:13:41+00:00",
+            "name": "test",
+            "pulling_at": null,
+            "status": "finished",
+            "updated_at": "2017-09-13T17:13:44+00:00",
+            "uuid": "b46c6c6c-1bdb-4413-8e55-a9a8b1b27526"
+        }
+    ],
+    "total": 1
 }
