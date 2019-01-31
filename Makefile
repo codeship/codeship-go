@@ -1,6 +1,5 @@
 GOTOOLS = \
 	golang.org/x/tools/cmd/cover \
-	github.com/golang/dep/cmd/dep \
 	github.com/golangci/golangci-lint/cmd/golangci-lint \
 
 GOPACKAGES := $(go list ./... | grep -v /vendor/)
@@ -8,12 +7,9 @@ VERSION ?= $(shell git describe --abbrev=0 --tags)
 CHANGELOG_VERSION = $(shell perl -ne '/^\#\# (\d+(\.\d+)+) / && print "$$1\n"' CHANGELOG.md | head -n1)
 
 .PHONY: setup
-setup: ## Install all the build and lint dependencies
+setup: ## Install all the build, test and lint dependencies
+	go get -v -t ./...
 	go get -u $(GOTOOLS)
-
-.PHONY: dep
-dep: ## Run dep ensure and prune
-	dep ensure
 
 .PHONY: test
 test: ## Run all the tests

@@ -1,4 +1,8 @@
-FROM golang:1.11.2
+# Accept the Go version for the image to be set as a build argument.
+# Default to Go 1.11
+ARG GO_VERSION=1.11
+
+FROM golang:${GO_VERSION}
 LABEL maintainer=dev@codeship.com
 
 # go 1.9.7
@@ -11,3 +15,5 @@ RUN go get golang.org/dl/go1.10.5 && \
 
 WORKDIR /go/src/github.com/codeship/codeship-go
 COPY . .
+
+RUN make setup
