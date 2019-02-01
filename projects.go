@@ -61,6 +61,7 @@ type DeploymentBranch struct {
 
 // DeploymentPipeline structure for DeploymentPipeline object for a Basic Project
 type DeploymentPipeline struct {
+	ID       int                    `json:"id,omitempty"`
 	Branch   DeploymentBranch       `json:"branch,omitempty"`
 	Config   map[string]interface{} `json:"config,omitempty"`
 	Position int                    `json:"position,omitempty"`
@@ -91,6 +92,7 @@ type NotificationRule struct {
 
 // TestPipeline structure for Project object
 type TestPipeline struct {
+	ID       int      `json:"id,omitempty"`
 	Commands []string `json:"commands,omitempty"`
 	Name     string   `json:"name,omitempty"`
 }

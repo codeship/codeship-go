@@ -1,24 +1,24 @@
 {
-  "steps": [
-    {
-      "uuid": "21adb0ec-5139-4547-b1cf-7c40160b6e9d",
-      "build_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
-      "service_uuid": "b46c6c6c-1bdb-4413-8e55-a9a8b1b27526",
-      "name": "test",
-      "tag": "",
-      "type": "run",
-      "status": "success",
-      "updated_at": "2017-09-13T17:13:44+00:00",
-      "started_at": "2017-09-13T17:13:41+00:00",
-      "building_at": "2017-09-13T17:13:41+00:00",
-      "finished_at": "2017-09-13T17:13:42+00:00",
-      "steps": [],
-      "command": "./run-tests.sh",
-      "image_name": null,
-      "registry": null
-    }
-  ],
-  "total": 1,
-  "per_page": 30,
-  "page": 1
+    "page": 1,
+    "per_page": 30,
+    "steps": [
+        {
+            "build_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
+            "building_at": "2017-09-13T17:13:41+00:00",
+            "command": "./run-tests.sh",
+            "finished_at": "2017-09-13T17:13:42+00:00",
+            "image_name": null,
+            "name": "test",
+            "registry": null,
+            "service_uuid": "b46c6c6c-1bdb-4413-8e55-a9a8b1b27526",
+            "started_at": "2017-09-13T17:13:41+00:00",
+            "status": "success",
+            "steps": [],
+            "tag": "",
+            "type": "run",
+            "updated_at": "2017-09-13T17:13:44+00:00",
+            "uuid": "21adb0ec-5139-4547-b1cf-7c40160b6e9d"
+        }
+    ],
+    "total": 1
 }

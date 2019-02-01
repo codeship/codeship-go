@@ -1,16 +1,16 @@
 {
-  "expires_at": 9999999999,
-  "access_token": "token",
-  "organizations": [
-    {
-      "uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
-      "name": "codeship",
-      "scopes": [
-        "project.read",
-        "project.write",
-        "build.read",
-        "build.write"
-      ]
-    }
-  ]
+    "access_token": "token",
+    "expires_at": 9999999999,
+    "organizations": [
+        {
+            "name": "codeship",
+            "scopes": [
+                "project.read",
+                "project.write",
+                "build.read",
+                "build.write"
+            ],
+            "uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f"
+        }
+    ]
 }

@@ -1,103 +1,114 @@
 {
-  "projects": [
-    {
-      "id": 1,
-      "uuid": "0059df30-7701-0135-8810-6e5f001a2e3c",
-      "name": "org/test-project",
-      "type": "pro",
-      "repository_url": "https://github.com/org/test-project",
-      "repository_provider": "github",
-      "authentication_user": "Test User",
-      "organization_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
-      "notification_rules": [
+    "page": 1,
+    "per_page": 30,
+    "projects": [
         {
-          "notifier": "github",
-          "branch": null,
-          "branch_match": "exact",
-          "build_statuses": [
-            "failed",
-            "started",
-            "recovered",
-            "success"
-          ],
-          "options": {}
+            "aes_key": "aeskey",
+            "authentication_user": "Test User",
+            "created_at": "2017-09-08T20:19:55.199Z",
+            "id": 1,
+            "name": "org/test-project",
+            "notification_rules": [
+                {
+                    "branch": null,
+                    "branch_match": "exact",
+                    "build_statuses": [
+                        "failed",
+                        "started",
+                        "recovered",
+                        "success"
+                    ],
+                    "notifier": "github",
+                    "options": {}
+                },
+                {
+                    "branch": null,
+                    "branch_match": "exact",
+                    "build_statuses": [
+                        "failed",
+                        "recovered"
+                    ],
+                    "notifier": "email",
+                    "options": {},
+                    "target": "all"
+                }
+            ],
+            "organization_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
+            "repository_provider": "github",
+            "repository_url": "https://github.com/org/test-project",
+            "ssh_key": "ssh-rsa key",
+            "team_ids": [
+                1007
+            ],
+            "type": "pro",
+            "updated_at": "2017-09-13T17:13:36.336Z",
+            "uuid": "0059df30-7701-0135-8810-6e5f001a2e3c"
         },
         {
-          "notifier": "email",
-          "branch": null,
-          "branch_match": "exact",
-          "build_statuses": [
-            "failed",
-            "recovered"
-          ],
-          "target": "all",
-          "options": {}
+            "aes_key": null,
+            "authentication_user": "Test User",
+            "created_at": "2017-09-08T19:19:09.556Z",
+            "deployment_pipelines": [
+                {
+                    "branch": {
+                        "branch_name": "master",
+                        "match_mode": "*"
+                    },
+                    "id": 4,
+                    "position": 1
+                }
+            ],
+            "environment_variables": [],
+            "id": 2,
+            "name": "org/another-project",
+            "notification_rules": [
+                {
+                    "branch": null,
+                    "branch_match": "exact",
+                    "build_statuses": [
+                        "failed",
+                        "started",
+                        "recovered",
+                        "success"
+                    ],
+                    "notifier": "github",
+                    "options": {},
+                    "target": "all"
+                },
+                {
+                    "branch": null,
+                    "branch_match": "exact",
+                    "build_statuses": [
+                        "failed",
+                        "recovered"
+                    ],
+                    "notifier": "email",
+                    "options": {},
+                    "target": "all"
+                }
+            ],
+            "organization_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
+            "repository_provider": "github",
+            "repository_url": "https://github.com/org/another-project",
+            "setup_commands": [],
+            "ssh_key": "ssh-rsa key",
+            "team_ids": [
+                1007,
+                1009
+            ],
+            "test_pipelines": [
+                {
+                    "commands": [
+                        "./run-tests.sh"
+                    ],
+                    "id": 5,
+                    "name": "Test Commands"
+                }
+            ],
+            "type": "basic",
+            "updated_at": "2017-09-08T19:19:55.252Z",
+            "uuid": "83605ef0-76f8-0135-8810-6e5f001a2e3c"
         }
-      ],
-      "ssh_key": "ssh-rsa key",
-      "aes_key": "aeskey",
-      "created_at": "2017-09-08T20:19:55.199Z",
-      "updated_at": "2017-09-13T17:13:36.336Z",
-      "team_ids": [
-        1007
-      ]
-    },
-    {
-      "id": 2,
-      "uuid": "83605ef0-76f8-0135-8810-6e5f001a2e3c",
-      "name": "org/another-project",
-      "type": "basic",
-      "repository_url": "https://github.com/org/another-project",
-      "repository_provider": "github",
-      "authentication_user": "Test User",
-      "organization_uuid": "28123f10-e33d-5533-b53f-111ef8d7b14f",
-      "notification_rules": [
-        {
-          "notifier": "github",
-          "branch": null,
-          "branch_match": "exact",
-          "build_statuses": [
-            "failed",
-            "started",
-            "recovered",
-            "success"
-          ],
-          "target": "all",
-          "options": {}
-        },
-        {
-          "notifier": "email",
-          "branch": null,
-          "branch_match": "exact",
-          "build_statuses": [
-            "failed",
-            "recovered"
-          ],
-          "target": "all",
-          "options": {}
-        }
-      ],
-      "ssh_key": "ssh-rsa key",
-      "aes_key": null,
-      "created_at": "2017-09-08T19:19:09.556Z",
-      "updated_at": "2017-09-08T19:19:55.252Z",
-      "team_ids": [
-        1007, 1009
-      ],
-      "setup_commands": [],
-      "deployment_pipelines": [],
-      "environment_variables": [],
-      "test_pipelines": [
-        {
-          "name": "Test Commands",
-          "commands": [
-            "./run-tests.sh"
-          ]
-        }
-      ]
-    }
-  ],
-  "total": 2,
-  "per_page": 30,
-  "page": 1
+    ],
+    "total": 2
 }
