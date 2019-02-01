@@ -6,10 +6,16 @@ GOPACKAGES := $(go list ./... | grep -v /vendor/)
 VERSION ?= $(shell git describe --abbrev=0 --tags)
 CHANGELOG_VERSION = $(shell perl -ne '/^\#\# (\d+(\.\d+)+) / && print "$$1\n"' CHANGELOG.md | head -n1)
 
+export GOBIN:=$(PWD)/bin
+export PATH:=$(GOBIN):$(PATH)
+
 .PHONY: setup
-setup: ## Install all the build, test and lint dependencies
+setup: ## Install all dependencies
 	go get -v -t ./...
-	go get -u $(GOTOOLS)
+
+.PHONY: tools
+tools: ## Install external tools
+	go get -v $(GOTOOLS)
 
 .PHONY: test
 test: ## Run all the tests

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/codeship/codeship-go"
+	codeship "github.com/codeship/codeship-go"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

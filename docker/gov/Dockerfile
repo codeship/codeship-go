@@ -1,5 +1,3 @@
-# Accept the Go version for the image to be set as a build argument.
-# Default to Go 1.11
 ARG GO_VERSION=1.11
 
 FROM golang:${GO_VERSION}

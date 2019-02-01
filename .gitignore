@@ -17,3 +17,4 @@
 *.aes
 *.env
 .envrc
+bin/

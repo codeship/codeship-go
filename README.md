@@ -133,7 +133,7 @@ Everyone interacting in the project and its sub-projects' codebases, issue track
 To install and all dependencies, run:
 
 ```bash
-make setup
+make setup tools
 ```
 
 ### Testing
