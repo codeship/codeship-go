@@ -130,7 +130,7 @@ Everyone interacting in the project and its sub-projects' codebases, issue track
 
 ### Setup
 
-To install and all dependencies, run:
+To install all dependencies and external tools, run:
 
 ```bash
 make setup tools
@@ -159,7 +159,8 @@ make lint
 ```bash
 $ make help
 
-setup                          Install all the build, test and lint dependencies
+setup                          Install all dependencies
+tools                          Install external tools
 test                           Run all the tests
 integration                    Run integration tests
 cover                          Run all the tests and opens the coverage report
