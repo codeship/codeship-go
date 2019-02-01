@@ -18,8 +18,8 @@ const (
 	proProjectName = "codeship/codeship-tool-examples"
 	proProjectUUID = "5eda0420-40c6-0133-ef9c-0e8a33e740fc"
 
-	basicProjectName = "codeship/merrygoround"
-	basicProjectUUID = "20a13930-c925-0134-952e-3a0fd8dae151"
+	basicProjectName = "codeship/scripts"
+	basicProjectUUID = "7ffee8d0-c443-0132-17cf-0a3d9756066d"
 )
 
 var (
