@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-set -e
+set -euxo pipefail
 
 go test -v -coverprofile=coverage.txt -covermode=atomic
 

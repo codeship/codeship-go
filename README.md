@@ -130,13 +130,10 @@ Everyone interacting in the project and its sub-projects' codebases, issue track
 
 ### Setup
 
-This project uses [dep](https://github.com/golang/dep) for dependency management.
-
-To install/update dep and all dependencies, run:
+To install all dependencies and external tools, run:
 
 ```bash
-make setup
-make dep
+make setup tools
 ```
 
 ### Testing
@@ -162,13 +159,15 @@ make lint
 ```bash
 $ make help
 
-setup                          Install all the build and lint dependencies
-dep                            Run dep ensure and prune
+setup                          Install all dependencies
+tools                          Install external tools
 test                           Run all the tests
+integration                    Run integration tests
 cover                          Run all the tests and opens the coverage report
 fmt                            goimports all go files
 lint                           Run all the linters
-ci                             Run all the tests and code checks
+ci                             Run all code checks and tests with coverage reporting
 build                          Build a version
 clean                          Remove temporary files
+verify                         Verify the version is referenced in the CHANGELOG
 ```
