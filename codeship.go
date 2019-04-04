@@ -93,6 +93,9 @@ type StdLogger interface {
 	Println(...interface{})
 }
 
+// Won't compile if StdLogger can't be realized by a log.Logger
+var _ StdLogger = &log.Logger{}
+
 // Client holds information necessary to make a request to the Codeship API
 type Client struct {
 	baseURL        string

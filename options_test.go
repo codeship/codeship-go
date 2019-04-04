@@ -1,6 +1,7 @@
 package codeship
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -114,33 +115,41 @@ func TestBaseURL(t *testing.T) {
 	}
 }
 
+// avocadoLogger is a StdLogger with more avocados
+type avocadoLogger struct{}
+
+func (a *avocadoLogger) Println(v ...interface{}) {
+	fmt.Printf("\xF0\x9F\xA5\x91 %v \xF0\x9F\xA5\x91\n", v...)
+}
+
 func TestLogger(t *testing.T) {
 	type args struct {
-		logger *log.Logger
+		logger StdLogger
 	}
 	tests := []struct {
 		name string
 		args args
-		want *log.Logger
 	}{
 		{
 			name: "sets logger successfully",
 			args: args{
 				logger: log.New(os.Stderr, "DEBUG: ", log.LUTC),
 			},
-			want: log.New(os.Stderr, "DEBUG: ", log.LUTC),
+		},
+		{
+			name: "sets custom logger successfully",
+			args: args{
+				logger: &avocadoLogger{},
+			},
 		},
 	}
 
-	assert := assert.New(t)
 	require := require.New(t)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			codeship, err := New(NewBasicAuth("username", "password"), Logger(tt.args.logger))
-
+			_, err := New(NewBasicAuth("username", "password"), Logger(tt.args.logger))
 			require.NoError(err)
-			assert.Equal(codeship.logger, tt.want)
 		})
 	}
 }
