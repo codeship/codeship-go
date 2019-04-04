@@ -1,7 +1,6 @@
 package codeship
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -34,7 +33,7 @@ func BaseURL(baseURL string) Option {
 }
 
 // Logger allows overriding the default STDOUT logger
-func Logger(logger *log.Logger) Option {
+func Logger(logger StdLogger) Option {
 	return func(c *Client) error {
 		c.logger = logger
 		return nil
