@@ -9,6 +9,4 @@ COPY . .
 ENV GOBIN /codeship/bin
 ENV PATH $GOBIN:$PATH
 
-RUN go mod download
-
-RUN make setup
+RUN make setup tools
