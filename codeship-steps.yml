@@ -20,4 +20,4 @@
 - name: "verify release"
   service: test
   tag: (\d+(\.\d+)+)
-  command: make verify
+  command: ./scripts/verify
