@@ -8,7 +8,6 @@ Tell us in a few words or lines what this PR is about.
 
 - [ ] Added/updated tests?
 - [ ] Ran `make fmt`?
-- [ ] `make ci` passed?
 - [ ] CHANGELOG.md [Unreleased] section updated?
 
 ## Why was it changed?

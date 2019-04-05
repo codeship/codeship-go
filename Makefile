@@ -1,10 +1,9 @@
 GOTOOLS = \
 	golang.org/x/tools/cmd/cover \
 	github.com/golangci/golangci-lint/cmd/golangci-lint@de1d1ad \
+	github.com/mattn/goveralls \
 
 GOPACKAGES := $(go list ./... | grep -v /vendor/)
-VERSION ?= $(shell git describe --abbrev=0 --tags)
-CHANGELOG_VERSION = $(shell perl -ne '/^\#\# (\d+(\.\d+)+) / && print "$$1\n"' CHANGELOG.md | head -n1)
 
 export GOBIN:=$(PWD)/bin
 export PATH:=$(GOBIN):$(PATH)
@@ -36,29 +35,6 @@ fmt: ## goimports all go files
 .PHONY: lint
 lint: ## Run all the linters
 	golangci-lint run
-
-.PHONY: ci
-ci: lint ## Run all code checks and tests with coverage reporting
-	./scripts/cover
-
-.PHONY: build
-build: ## Build a version
-	CGO_ENABLED=0 go build $(GOPACKAGES)
-
-.PHONY: clean
-clean: ## Remove temporary files
-	go clean
-
-.PHONY: verify
-verify: ## Verify the version is referenced in the CHANGELOG
-	@if [ "$(VERSION)" = "$(CHANGELOG_VERSION)" ]; then \
-		echo "version: $(VERSION)"; \
-	else \
-		echo "Version number not found in CHANGELOG.md"; \
-		echo "version: $(VERSION)"; \
-		echo "CHANGELOG: $(CHANGELOG_VERSION)"; \
-		exit 1; \
-	fi
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .PHONY: help

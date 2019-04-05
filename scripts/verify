@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+
+VERSION=$(git describe --abbrev=0 --tags)
+CHANGELOG_VERSION=$(perl -ne '/^\#\# (\d+(\.\d+)+) / && print "$$1\n"' CHANGELOG.md | head -n1)
+
+if [ "$VERSION" = "$CHANGELOG_VERSION" ]; then \
+  echo "version: $VERSION"; \
+else \
+  echo "Version number not found in CHANGELOG.md"; \
+  echo "version: $VERSION"; \
+  echo "CHANGELOG: $CHANGELOG_VERSION"; \
+  exit 1; \
+fi

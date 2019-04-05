@@ -4,8 +4,7 @@ integration:
 
 test:
   build: ./
-  encrypted_env_file: env.encrypted
-  command: ./scripts/cover
+  encrypted_env_file: test.env.encrypted
 
 gov:
   build:
