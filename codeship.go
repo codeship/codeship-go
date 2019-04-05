@@ -88,6 +88,14 @@ func newResponse(r *http.Response) Response {
 
 const apiURL = "https://api.codeship.com/v2"
 
+// StdLogger allows you to bring your own log implementation for logging
+type StdLogger interface {
+	Println(...interface{})
+}
+
+// Won't compile if StdLogger can't be realized by a log.Logger
+var _ StdLogger = &log.Logger{}
+
 // Client holds information necessary to make a request to the Codeship API
 type Client struct {
 	baseURL        string
@@ -95,7 +103,7 @@ type Client struct {
 	authentication Authentication
 	headers        http.Header
 	httpClient     *http.Client
-	logger         *log.Logger
+	logger         StdLogger
 	verbose        bool
 }
 
@@ -126,8 +134,9 @@ func New(auth Authenticator, opts ...Option) (*Client, error) {
 	// Fall back to default log.Logger (STDOUT) if the user does not provide
 	// their own
 	if client.logger == nil {
-		client.logger = &log.Logger{}
-		client.logger.SetOutput(os.Stdout)
+		logger := &log.Logger{}
+		logger.SetOutput(os.Stdout)
+		client.logger = logger
 	}
 
 	return client, nil

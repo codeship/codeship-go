@@ -111,12 +111,24 @@ auth := codeship.NewBasicAuth("username", "password")
 client, err := codeship.New(auth, codeship.Verbose(true))
 ```
 
-The default logger logs to STDOUT but can be replaced by any instance of `*log.Logger`:
+### Bring your own Logger
+
+The default logger logs to STDOUT but can be replaced by any type that fulfills the `StdLogger` interface:
 
 ```go
+// StdLogger allows you to bring your own log implementation for logging
+type StdLogger interface {
+	Println(...interface{})
+}
+```
+
+Example:
+
+```go
+import "github.com/sirupsen/logrus"
+
 var (
-    buf    bytes.Buffer
-    logger = log.New(&buf, "INFO: ", log.Lshortfile)
+    logger = logrus.New()
     auth   = codeship.NewBasicAuth("username", "password")
 )
 
