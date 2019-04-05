@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -140,6 +141,12 @@ func TestLogger(t *testing.T) {
 			name: "sets custom logger successfully",
 			args: args{
 				logger: &avocadoLogger{},
+			},
+		},
+		{
+			name: "sets third-party logger successfully",
+			args: args{
+				logger: logrus.New(),
 			},
 		},
 	}

@@ -125,9 +125,10 @@ type StdLogger interface {
 Example:
 
 ```go
+import "github.com/sirupsen/logrus"
+
 var (
-    buf    bytes.Buffer
-    logger = log.New(&buf, "INFO: ", log.Lshortfile)
+    logger = logrus.New()
     auth   = codeship.NewBasicAuth("username", "password")
 )
 
