@@ -1,7 +1,7 @@
 # Codeship API v2 Client for Go
 
 [![Codeship Status](https://app.codeship.com/projects/c38f3280-792b-0135-21bb-4e0cf8ff365b/status?branch=master)](https://app.codeship.com/projects/244943)
-[![Codecov](https://codecov.io/gh/codeship/codeship-go/branch/master/graph/badge.svg)](https://codecov.io/gh/codeship/codeship-go)
+[![Coverage Status](https://coveralls.io/repos/github/codeship/codeship-go/badge.svg)](https://coveralls.io/github/codeship/codeship-go)
 [![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](http://godoc.org/github.com/codeship/codeship-go)
 [![Go Report Card](https://goreportcard.com/badge/github.com/codeship/codeship-go?style=flat-square)](https://goreportcard.com/report/github.com/codeship/codeship-go)
 [![GitHub Release](https://img.shields.io/github/release/codeship/codeship-go.svg?style=flat-square)](https://github.com/codeship/codeship-go/releases)
@@ -179,8 +179,4 @@ integration                    Run integration tests
 cover                          Run all the tests and opens the coverage report
 fmt                            goimports all go files
 lint                           Run all the linters
-ci                             Run all code checks and tests with coverage reporting
-build                          Build a version
-clean                          Remove temporary files
-verify                         Verify the version is referenced in the CHANGELOG
 ```

@@ -8,14 +8,14 @@
     service: gov
     command: go1.10.5 test -v
 
-- name: "tests"
+- name: "test"
   service: test
-  command: make ci
+  command: ./scripts/ci
 
 - name: "integration tests"
   service: integration
   tag: master
-  command: make integration
+  command: ./scripts/integration
 
 - name: "verify release"
   service: test

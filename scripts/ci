@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+golangci-lint run
+
+if [ "$CI" = "true" ]; then
+  goveralls -service=codeship
+fi
