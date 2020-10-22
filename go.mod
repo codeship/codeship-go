@@ -13,9 +13,3 @@ require (
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/tools v0.0.0-20200812195022-5ae4c3c160a0
 )
-
-replace (
-	github.com/go-critic/go-critic v0.0.0-20181204210945-ee9bf5809ead => github.com/go-critic/go-critic v0.5.2
-	github.com/golangci/errcheck v0.0.0-20181003203344-ef45e06d44b6 => github.com/golangci/errcheck v0.0.0-20181223084120-ef45e06d44b6
-	github.com/golangci/go-tools v0.0.0-20180109140146-af6baa5dc196 => github.com/golangci/go-tools v0.0.0-20190318060251-af6baa5dc196
-)
