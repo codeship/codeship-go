@@ -1,6 +1,6 @@
 GOTOOLS = \
 	golang.org/x/tools/cmd/cover \
-	github.com/golangci/golangci-lint/cmd/golangci-lint@de1d1ad \
+	github.com/golangci/golangci-lint/cmd/golangci-lint \
 	github.com/mattn/goveralls \
 
 GOPACKAGES := $(go list ./... | grep -v /vendor/)
