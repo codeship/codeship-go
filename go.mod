@@ -1,6 +1,6 @@
 module github.com/codeship/codeship-go
 
-go 1.14
+go 1.15
 
 require (
 	github.com/golangci/golangci-lint v1.31.0
