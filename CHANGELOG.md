@@ -11,11 +11,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
  - Added support for Project Reset AES Key endpoint - https://apidocs.codeship.com/v2/projects/reset-aes-key
 
-### Changed
-
- - Had some Go modules errors with some dependencies and had to use `replace` statement to override broken version 
-   references.
-
 ## 0.5.0 - 2019-04-05
 
 ### Changed
