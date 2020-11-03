@@ -57,7 +57,7 @@ func TestCreateBuild(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "project"))
+				fmt.Fprintf(w, fixture("not_found.json"), "project")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to create build: project not found",
@@ -76,7 +76,7 @@ func TestCreateBuild(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
-				fmt.Fprint(w, fmt.Sprintf(fixture("errors.json"), "ref is required"))
+				fmt.Fprintf(w, fixture("errors.json"), "ref is required")
 			},
 			status: http.StatusBadRequest,
 			err:    "unable to create build: ref is required",
@@ -160,7 +160,7 @@ func TestStopBuild(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
+				fmt.Fprintf(w, fixture("not_found.json"), "build")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to stop build: build not found",
@@ -245,7 +245,7 @@ func TestRestartBuild(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
+				fmt.Fprintf(w, fixture("not_found.json"), "build")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to restart build: build not found",
@@ -330,7 +330,7 @@ func TestGetBuild(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
+				fmt.Fprintf(w, fixture("not_found.json"), "build")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to get build: build not found",
@@ -437,7 +437,7 @@ func TestListBuilds(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "project"))
+				fmt.Fprintf(w, fixture("not_found.json"), "project")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to list builds: project not found",
@@ -552,7 +552,7 @@ func TestListBuildPipelines(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
+				fmt.Fprintf(w, fixture("not_found.json"), "build")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to list pipelines: build not found",
@@ -675,7 +675,7 @@ func TestListBuildServices(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
+				fmt.Fprintf(w, fixture("not_found.json"), "build")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to list build services: build not found",
@@ -779,7 +779,7 @@ func TestListBuildSteps(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "build"))
+				fmt.Fprintf(w, fixture("not_found.json"), "build")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to list build steps: build not found",

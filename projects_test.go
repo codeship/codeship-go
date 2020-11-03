@@ -55,7 +55,7 @@ func TestListProjects(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "organization"))
+				fmt.Fprintf(w, fixture("not_found.json"), "organization")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to list projects: organization not found",
@@ -200,7 +200,7 @@ func TestGetProject(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusNotFound)
-				fmt.Fprint(w, fmt.Sprintf(fixture("not_found.json"), "project"))
+				fmt.Fprintf(w, fixture("not_found.json"), "project")
 			},
 			status: http.StatusNotFound,
 			err:    "unable to get project: project not found",
@@ -349,7 +349,7 @@ func TestCreateProject(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
-				fmt.Fprint(w, fmt.Sprintf(fixture("errors.json"), "repository_url is required"))
+				fmt.Fprintf(w, fixture("errors.json"), "repository_url is required")
 			},
 			status: http.StatusBadRequest,
 			err:    "unable to create project: repository_url is required",
@@ -438,7 +438,7 @@ func TestUpdateProject(t *testing.T) {
 
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusBadRequest)
-				fmt.Fprint(w, fmt.Sprintf(fixture("errors.json"), "repository_url is required"))
+				fmt.Fprintf(w, fixture("errors.json"), "repository_url is required")
 			},
 			status: http.StatusBadRequest,
 			err:    "unable to update project: repository_url is required",
